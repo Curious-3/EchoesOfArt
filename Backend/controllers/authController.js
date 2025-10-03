@@ -1,12 +1,12 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
-// ✅ Function to generate JWT token
+// Function to generate JWT token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// 📌 Register User
+// Register User
 export const registerUser = async (req, res) => {
   const { email, password, dob } = req.body;
 
@@ -26,11 +26,11 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id)
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Successfully Register" });
   }
 };
 
-// 📌 Login User
+// login page
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -51,6 +51,6 @@ export const loginUser = async (req, res) => {
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Successfully Login"});
   }
 };
