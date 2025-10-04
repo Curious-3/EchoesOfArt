@@ -18,7 +18,7 @@ app.use(express.json());
 
 //  Root route
 app.get("/", (req, res) => {
-  res.send("✅ Echoes of Art backend is running!");
+  res.send(" Echoes of Art backend is running!");
 });
 
 //  Auth routes
@@ -28,4 +28,4 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(` Server running on http://localhost:${PORT}`));

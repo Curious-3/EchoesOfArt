@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   dob: { type: Date, required: true }
 }, { timestamps: true });
 
-// ✅ Password Hashing (before save)
+// Password Hashing (before save)
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -15,7 +15,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// ✅ Password Check Function
+// Password Check Function
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
