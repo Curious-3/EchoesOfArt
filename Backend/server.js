@@ -18,7 +18,7 @@ app.use(express.json());
 
 //  Root route
 app.get("/", (req, res) => {
-  res.send(" Echoes of Art backend is running!");
+  res.send(" Server is running!");
 });
 
 //  Auth routes

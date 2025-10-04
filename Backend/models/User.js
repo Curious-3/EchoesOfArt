@@ -4,7 +4,17 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  dob: { type: Date, required: true }
+  dob: { type: Date, required: true },
+  firstName: { type: String },
+  lastName: { type: String },
+  about: { type: String },
+  profileImage: { type: String },
+  interests: [{ type: String }],
+  socialLinks: {
+    facebook: { type: String },
+    instagram: { type: String },
+  },
+  createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 // Password Hashing (before save)
@@ -21,4 +31,6 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 const User = mongoose.model("User", userSchema);
+
+//Use ESM export
 export default User;
