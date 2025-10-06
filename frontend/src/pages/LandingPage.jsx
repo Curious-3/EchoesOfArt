@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
-
+import Sidebar from "../components/Sidebar";
+import ArtCard from "../components/ArtCard";
+import "./../styles/LandingPage.css";
+import Footer from "../components/Footer";
 
 const LandingPage = ({ user, setPage, setUser }) => {
   const [searchTerm, setSearchTerm] = useState("");
