@@ -27,7 +27,7 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id)
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Successfully Register" });
   }
 };
 
@@ -52,6 +52,6 @@ export const loginUser = async (req, res) => {
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Successfully Login"});
   }
 };
