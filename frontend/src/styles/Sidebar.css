@@ -1,0 +1,56 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--sidebar-collapsed);
+  background: #1e3a8a; /* dark blue */
+  color: white;
+  transition: width 300ms ease;
+  padding-top: var(--header-height);
+  z-index: 200;
+}
+.sidebar.open {
+  width: var(--sidebar-expanded);
+}
+
+.slide-btn {
+  position: absolute;
+  top: 12px;
+  right: -24px;
+  background: #3b82f6; /* light blue */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 20px;
+}
+.options button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.options button:hover {
+  background: #2563eb; /* darker blue */
+}
+.register-msg {
+  padding: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fca5a5;
+}

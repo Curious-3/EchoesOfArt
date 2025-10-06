@@ -1,0 +1,242 @@
+/* Global styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .logo {
+    display: flex;
+    align-items: center;
+}
+
+header .logo img {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+}
+
+header .logo span {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+header .search-bar input {
+    width: 400px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 16px;
+}
+
+header .search-bar input:focus {
+    border-color: #ff7f50;
+    box-shadow: 0 0 5px rgba(255,127,80,0.5);
+}
+
+header .user-area button,
+header .user-area .user-initial {
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+}
+
+header .user-area button {
+    border-radius: 8px;
+    width: auto;
+    padding: 8px 15px;
+}
+
+header .user-area button:hover {
+    background-color: #ff5722;
+}
+
+/* Main layout */
+main {
+    display: flex;
+    margin-top: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+    height: calc(100vh - 80px);
+    position: sticky;
+    top: 80px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar p {
+    color: #888;
+}
+
+/* Art grid */
+.art-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Art card */
+.art-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.art-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.art-card .info {
+    padding: 10px 15px;
+}
+
+.art-card .info h3 {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+}
+
+.art-card .info p {
+    font-size: 14px;
+    color: #666;
+}
+
+.art-card:hover {
+    transform: scale(1.03);
+}
+
+/* Login Modal */
+.login-modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.login-modal .modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+}
+
+.login-modal input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.login-modal button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-modal button:hover {
+    background-color: #ff5722;
+}
+
+/* Media Queries */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    header .search-bar input {
+        width: 250px;
+    }
+
+    .sidebar {
+        width: 180px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header .search-bar input {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    main {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        position: relative;
+        top: 0;
+        box-shadow: none;
+    }
+
+    .art-grid {
+        padding: 10px;
+        gap: 15px;
+    }
+}
