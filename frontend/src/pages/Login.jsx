@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios"; // import axios
+import axios from "axios";
 import "./../styles/Login.css";
+import { useAuth } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
-const Login = ({ setUser, setPage }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,8 +24,8 @@ const Login = ({ setUser, setPage }) => {
         localStorage.setItem("token", res.data.token); // store JWT token
       }
 
-      setUser(userData);      // store logged-in user
-      setPage("landing");     // redirect to landing page
+      setUser(userData);      
+      navigate("/");          
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Login failed");
@@ -49,7 +54,8 @@ const Login = ({ setUser, setPage }) => {
         <button type="submit">Login</button>
       </form>
       <p>
-        Don't have an account? <span onClick={() => setPage("register")}>Register</span>
+        Don't have an account?{" "}
+        <span onClick={() => navigate("/register")}>Register</span>
       </p>
     </div>
   );

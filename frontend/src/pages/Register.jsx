@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import axios from "axios"; // ← make sure this is here
+import axios from "axios";
 import "./../styles/Register.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
-const Register = ({ setPage }) => {
+const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [dob, setDob] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -15,14 +20,16 @@ const Register = ({ setPage }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/auth/register", 
+        "http://localhost:8000/api/auth/register",
         { name, email, password, dob },
         { headers: { "Content-Type": "application/json" } }
       );
 
       if (res.status === 201 || res.status === 200) {
         alert("Registration successful! Please login.");
-        setPage("login"); // redirect to login page
+        // If backend returns user, you can set it:
+        // setUser(res.data.user);
+        navigate("/login"); // redirect to login page
       }
     } catch (err) {
       console.error(err);
@@ -66,7 +73,8 @@ const Register = ({ setPage }) => {
         <button type="submit">Register</button>
       </form>
       <p>
-        Already have an account? <span onClick={() => setPage("login")}>Login</span>
+        Already have an account?{" "}
+        <span onClick={() => navigate("/login")}>Login</span>
       </p>
     </div>
   );

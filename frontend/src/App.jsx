@@ -1,18 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { AuthProvider } from "./context/AuthProvider";
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [page, setPage] = useState("landing"); // landing / login / register
-
   return (
-    <>
-      {page === "landing" && <LandingPage user={user} setPage={setPage} setUser={setUser} />}
-      {page === "login" && <Login setUser={setUser} setPage={setPage} />}
-      {page === "register" && <Register setUser={setUser} setPage={setPage} />}
-    </>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
