@@ -15,7 +15,7 @@ const Header = ({ onSearch }) => {
   return (
     <header className="header">
       <div className="logo-section">
-        <img src="logo.jpeg" alt="Logo" className="logo" />
+        <img src="logo.png" alt="Logo" className="logo" />
         <span className="site-name">Echoes Of Art</span>
       </div>
       <div className="search-profile">

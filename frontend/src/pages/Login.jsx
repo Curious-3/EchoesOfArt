@@ -11,10 +11,7 @@ const Login = () => {
 
   const { setUser } = useAuth();
   const navigate = useNavigate();
-useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/");
-  }, [Navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
