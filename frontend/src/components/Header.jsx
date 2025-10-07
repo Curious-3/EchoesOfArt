@@ -1,8 +1,17 @@
-//Header.jsx
+// Header.jsx
 import React from "react";
 import "./../styles/Header.css";
+import { useAuth } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
-const Header = ({ user, onSignIn, onSearch }) => {
+const Header = ({ onSearch }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate("/login"); // redirect to login page
+  };
+
   return (
     <header className="header">
       <div className="logo-section">
@@ -17,12 +26,13 @@ const Header = ({ user, onSignIn, onSearch }) => {
           onChange={(e) => onSearch(e.target.value)}
         />
         {!user ? (
-          <button onClick={onSignIn} className="signin-btn">
+          <button onClick={handleSignIn} className="signin-btn">
             Sign In
           </button>
         ) : (
-        
-          <div className="profile-circle">{user.name?user.name[0]:user.email[0]}</div>
+          <div className="profile-circle">
+            {user.name ? user.name[0] : user.email[0]}
+          </div>
         )}
       </div>
     </header>
