@@ -19,26 +19,10 @@
   align-items: center;
   gap: 14px;
 }
-
 .logo {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%; /* makes it circular */
-  overflow: hidden;   /* ensures image fits inside circle */
-  transition: all 0.3s ease; /* smooth transition */
-  cursor: pointer;
+  width: 60px;
+  height: 60px;
 }
-
-.logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ensures image covers the circle */
-}
-
-.logo:hover {
-  transform: scale(3); /* increases size on hover */
-}
-
 .site-name {
   font-size: 26px;
   font-weight: 700;
@@ -92,3 +76,30 @@
   color: #1e3a8a;
   font-weight: 700;
 }
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px; /* spacing between circle and button */
+}
+
+.logout-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dbeafe;       /* same bg as profile-circle */
+  color: #1e3a8a;           /* same text/icon color */
+  font-weight: 700;
+  font-size: 9px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #bfdbfe;     
+  transform: scale(1.05);   
+}
+
