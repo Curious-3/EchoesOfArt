@@ -7,9 +7,8 @@ const generateToken = (id) => {
 };
 
 //  Register User
-// Register User
 export const registerUser = async (req, res) => {
-  const { email, password, dob } = req.body;
+  const { name,email, password, dob } = req.body;
 
   if (!email || !password || !dob) {
     return res.status(400).json({ message: "All fields are required" });
@@ -19,15 +18,17 @@ export const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: "User already exists" });
 
-    const user = await User.create({ email, password, dob });
+    const user = await User.create({ name,email, password, dob });
     res.status(201).json({
+
       _id: user._id,
+      name:user.name,
       email: user.email,
       dob: user.dob,
       token: generateToken(user._id)
     });
   } catch (error) {
-    res.status(500).json({ message: "Successfully Register" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
