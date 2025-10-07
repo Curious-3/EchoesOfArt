@@ -1,8 +1,8 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./../styles/Login.css";
 import { useAuth } from "../context/AuthProvider";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,20 +12,29 @@ const Login = () => {
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
+ 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/home");
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/login", { email, password });
-      const userData = res.data.user || res.data;
+      const res = await axios.post("http://localhost:8000/api/auth/login", {
+        email,
+        password,
+      });
 
       if (res.data.token) {
-        localStorage.setItem("token", res.data.token); // store JWT token
+        localStorage.setItem("token", res.data.token); 
       }
 
-      setUser(userData);      
-      navigate("/home");          
+     
+      setUser(res.data.user || null);
+      navigate("/home");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Login failed");

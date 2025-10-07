@@ -1,32 +1,14 @@
-const User = require("../models/User");
+import User from "../models/User.js"; 
 
-const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
+    const { firstName, lastName, about, profileImage, interests, socialLinks } = req.body;
 
-    const {
-      firstName,
-      lastName,
-      about,
-      profileImage,
-      interests,
-      socialLinks
-    } = req.body;
-
-    // Use findByIdAndUpdate
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      {
-        $set: {
-          firstName,
-          lastName,
-          about,
-          profileImage,
-          interests,
-          socialLinks
-        }
-      },
-      { new: true } 
+      { $set: { firstName, lastName, about, profileImage, interests, socialLinks } },
+      { new: true }
     );
 
     if (!updatedUser) {
@@ -35,7 +17,7 @@ const updateProfile = async (req, res) => {
 
     res.json({
       message: "Profile updated successfully",
-      user: updatedUser
+      user: updatedUser,
     });
   } catch (error) {
     console.error(error);
@@ -43,4 +25,12 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { updateProfile };
+// Get logged-in user
+export const getMe = async (req, res) => {
+  try {
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    console.error("Error in getMe:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
