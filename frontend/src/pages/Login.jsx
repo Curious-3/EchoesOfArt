@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import axios from "axios";
 import "./../styles/Login.css";
 import { useAuth } from "../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +11,10 @@ const Login = () => {
 
   const { setUser } = useAuth();
   const navigate = useNavigate();
-
+useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/");
+  }, [Navigate]);
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -25,7 +28,7 @@ const Login = () => {
       }
 
       setUser(userData);      
-      navigate("/");          
+      navigate("/home");          
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Login failed");

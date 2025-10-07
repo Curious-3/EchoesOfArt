@@ -26,10 +26,8 @@ const Register = () => {
       );
 
       if (res.status === 201 || res.status === 200) {
-        alert("Registration successful! Please login.");
-        // If backend returns user, you can set it:
-        // setUser(res.data.user);
-        navigate("/login"); // redirect to login page
+        alert("Registration successful!");
+        navigate("/login"); 
       }
     } catch (err) {
       console.error(err);
