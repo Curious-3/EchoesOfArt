@@ -21,7 +21,8 @@ const Header = ({ user, onSignIn, onSearch }) => {
             Sign In
           </button>
         ) : (
-          <div className="profile-circle">{user.name[0]}</div>
+        
+          <div className="profile-circle">{user.name?user.name[0]:user.email[0]}</div>
         )}
       </div>
     </header>
