@@ -1,11 +1,10 @@
-// Header.jsx
 import React from "react";
 import "./../styles/Header.css";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
 const Header = ({ onSearch }) => {
-  const { user, logout } = useAuth(); // get logout from context
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = () => {
@@ -13,10 +12,10 @@ const Header = ({ onSearch }) => {
   };
 
   const handleLogout = () => {
-    logout(); // clear localStorage + reset user
-    navigate("/"); // redirect after logout
+    logout();
+    navigate("/");
   };
-;
+
   return (
     <header className="header">
       <div className="logo-section">
@@ -38,8 +37,8 @@ const Header = ({ onSearch }) => {
           </button>
         ) : (
           <div className="user-actions">
-            <div className="profile-circle">
-              {user.name ? user.name[0] : user.email[0]}
+            <div className="profile-circle" title={user.name || user.email}>
+              {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
             </div>
             <button onClick={handleLogout} className="logout-btn">
               Logout
