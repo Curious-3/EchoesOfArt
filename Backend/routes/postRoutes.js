@@ -6,7 +6,7 @@ import { createPost, getAllPosts, getPostById, updatePost, deletePost } from "..
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-router.post("/", protect, upload.single("media"), createPost);
+router.post("/", protect, upload.single("file"), createPost);
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
 router.put("/:id", protect, updatePost);
