@@ -1,14 +1,20 @@
 import Post from "../models/Post.js";
 import cloudinary from "../config/cloudinary.js";
 
-//  Create new post
+//  Create a new post
 export const createPost = async (req, res) => {
   try {
-    const file = req.file; 
-    if (!file) return res.status(400).json({ message: "Media file is required" });
-      
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: "Media file is required" });
+    }
+
+    //  Upload file to Cloudinary
     const result = await cloudinary.uploader.upload(file.path, { resource_type: "auto" });
-    console.log("req.user:", req.user._id);
+
+    console.log("req.user:", req.user._id); // Debugging: check user ID
+
+    //  Create new post document
     const newPost = await Post.create({
       title: req.body.title,
       description: req.body.description,
@@ -18,66 +24,88 @@ export const createPost = async (req, res) => {
       category: req.body.category,
       createdBy: req.user._id,
     });
-     
-    res.status(201).json({message:"Successfully Posted"});
+
+    res.status(201).json({ message: "Successfully Posted", post: newPost });
   } catch (error) {
-    res.status(500).json({ message: "Error In Creating Post", error });
+    console.error("Error creating post:", error.message);
+    res.status(500).json({ message: "Error in creating post", error: error.message });
   }
 };
 
 //  Get all posts
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("createdBy", "name email").sort({ createdAt: -1 });
+    const posts = await Post.find()
+      .populate("createdBy", "name email")
+      .sort({ createdAt: -1 });
+
     res.status(200).json(posts);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching posts", error });
+    console.error("Error fetching posts:", error.message);
+    res.status(500).json({ message: "Error fetching posts", error: error.message });
   }
 };
 
-//  Get single post
+//  Get single post by ID
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id).populate("createdBy", "name email");
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     post.views += 1;
     await post.save();
-    res.json(post);
+
+    res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching post", error });
+    console.error("Error fetching post:", error.message);
+    res.status(500).json({ message: "Error fetching post", error: error.message });
   }
 };
 
-// Update post
+//  Update post
 export const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    if (post.createdBy.toString() !== req.user) return res.status(403).json({ message: "Not authorized" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    //  FIX: Compare with req.user._id
+    if (post.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
-    res.json(updatedPost);
+    const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({ message: "Post updated successfully", post: updatedPost });
   } catch (error) {
-    res.status(500).json({ message: "Error updating post", error });
+    console.error("Error updating post:", error.message);
+    res.status(500).json({ message: "Error updating post", error: error.message });
   }
 };
 
-
-// Delete post
+//  Delete post
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    if (post.createdBy.toString() !== req.user) return res.status(403).json({ message: "Not authorized" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    //  Compare with req.user._id
+    if (post.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
     await post.deleteOne();
-    res.json({ message: "Post deleted successfully" });
+    res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting post", error });
+    console.error("Error deleting post:", error.message);
+    res.status(500).json({ message: "Error deleting post", error: error.message });
   }
 };

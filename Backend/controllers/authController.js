@@ -11,20 +11,22 @@ const generateToken = (id) => {
 // Generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-
+// ========================= REGISTER USER =========================
 export const registerUser = async (req, res) => {
   const { name, email, password, dob } = req.body;
 
-  if (!email || !password || !dob)
+  if (!email || !password || !dob) {
     return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
     const userExists = await User.findOne({ email });
-    if (userExists)
+    if (userExists) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
     const otp = generateOTP();
-    const otpExpires = Date.now() + 10 * 60 * 1000; 
+    const otpExpires = Date.now() + 10 * 60 * 1000;
 
     const user = await User.create({
       name,
@@ -35,26 +37,25 @@ export const registerUser = async (req, res) => {
       otpExpires,
     });
 
-   
     await sendEmail(
       user.email,
       "Verify your Email - Echoes of Art",
       `<h3>Hi ${user.name || "User"},</h3>
-      <p>Your OTP for email verification is:</p>
-      <h2>${otp}</h2>
-      <p>This OTP will expire in 10 minutes.</p>`
+       <p>Your OTP for email verification is:</p>
+       <h2>${otp}</h2>
+       <p>This OTP will expire in 10 minutes.</p>`
     );
 
-    res
-      .status(201)
-      .json({ message: "OTP sent to your email. Please verify to activate your account." });
+    return res.status(201).json({
+      message: "OTP sent to your email. Please verify to activate your account.",
+    });
   } catch (error) {
     console.error("Register error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
+// ========================= VERIFY EMAIL =========================
 export const verifyEmail = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -62,22 +63,23 @@ export const verifyEmail = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    if (user.isVerified)
+    if (user.isVerified) {
       return res.status(400).json({ message: "Email already verified" });
+    }
 
-    if (user.otp !== otp)
+    if (user.otp !== otp) {
       return res.status(400).json({ message: "Invalid OTP" });
+    }
 
-    if (user.otpExpires < Date.now())
+    if (user.otpExpires < Date.now()) {
       return res.status(400).json({ message: "OTP expired" });
+    }
 
-    // ✅ Mark user verified
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save();
 
-    // ✅ Send welcome email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -89,7 +91,7 @@ export const verifyEmail = async (req, res) => {
     const mailOptions = {
       from: `"Echoes of Art" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Welcome to Echoes of Art 🎨",
+      subject: "Welcome to Echoes of Art",
       html: `
         <div style="font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px; border-radius: 10px;">
           <h2 style="color: #6a1b9a;">Welcome to Echoes of Art, ${user.name}!</h2>
@@ -108,60 +110,69 @@ export const verifyEmail = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.json({ message: "Email verified successfully! Welcome email sent." });
+    return res.json({ message: "Email verified successfully! Welcome email sent." });
   } catch (error) {
     console.error("Verify email error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
+// ========================= LOGIN USER =========================
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password)
-    return res
-      .status(400)
-      .json({ message: "Email and password are required" });
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
   try {
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(400).json({ message: "User not found" });
+    }
 
-    if (!user.isVerified)
+    if (!user.isVerified) {
       return res.status(403).json({
         message: "Email not verified. Please verify before logging in.",
       });
+    }
 
     const isMatch = await user.matchPassword(password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
+    }
 
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      dob: user.dob,
-      token: generateToken(user._id),
+    const token = generateToken(user._id);
+
+    return res.json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        dob: user.dob,
+      },
+      token,
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
+// ========================= RESEND OTP =========================
 export const resendOTP = async (req, res) => {
   const { email } = req.body;
 
   try {
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(400).json({ message: "User not found" });
+    }
 
-    if (user.isVerified)
+    if (user.isVerified) {
       return res.status(400).json({ message: "Email already verified" });
+    }
 
     const otp = generateOTP();
     user.otp = otp;
@@ -172,14 +183,14 @@ export const resendOTP = async (req, res) => {
       user.email,
       "Resend OTP - Echoes of Art",
       `<h3>Hi ${user.name || "User"},</h3>
-      <p>Your new OTP is:</p>
-      <h2>${otp}</h2>
-      <p>Valid for 10 minutes.</p>`
+       <p>Your new OTP is:</p>
+       <h2>${otp}</h2>
+       <p>Valid for 10 minutes.</p>`
     );
 
-    res.json({ message: "OTP resent to your email." });
+    return res.json({ message: "OTP resent to your email." });
   } catch (error) {
     console.error("Resend OTP error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };

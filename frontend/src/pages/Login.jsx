@@ -11,6 +11,7 @@ const Login = () => {
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect if already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/home");
@@ -26,15 +27,21 @@ const Login = () => {
         password,
       });
 
+      // 1. Store token
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
+      } else {
+        throw new Error("No token received from server");
       }
 
+      // 2. Set user globally
       setUser(res.data.user || null);
+
+      // 3. Navigate to home
       navigate("/home");
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Login failed");
+      console.error("Login error:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Login failed. Please try again.");
     }
   };
 
@@ -42,7 +49,6 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 px-4">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 text-white">
         <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-3xl">🎨</span>
           <h1 className="text-3xl font-bold tracking-wide">Echoes of Art</h1>
         </div>
 

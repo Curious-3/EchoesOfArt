@@ -19,41 +19,45 @@ const Upload = () => {
 
   if (!user) return <p>Please login to upload media.</p>;
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  if (!title || !mediaFile) {
-    setError("Title and media file are required.");
-    return;
-  }
+    if (!title || !mediaFile) {
+      setError("Title and media file are required.");
+      return;
+    }
 
-  const formData = new FormData(); 
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("mediaType", mediaType);
-  formData.append("tags", tags);
-  formData.append("category", category);
-  formData.append("file", mediaFile);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("mediaType", mediaType);
+    formData.append("tags", tags);
+    formData.append("category", category);
+    formData.append("file", mediaFile);
 
-  try {
-    setLoading(true);
-    const res = await axios.post("http://localhost:8000/api/posts/", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
+    try {
+      setLoading(true);
 
-    console.log("Post created:", res.data);
-    navigate("/home");
-  } catch (err) {
-    setError(err.response?.data?.message || "Something went wrong.");
-  } finally {
-    setLoading(false);
-  }
-};
+      //   Token ko localStorage se lo
+      const token = localStorage.getItem("token");
+      console.log("Token being sent:", token); // Debug ke liye
 
+      const res = await axios.post("http://localhost:8000/api/posts/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Post created:", res.data);
+      navigate("/home");
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="upload-container">
