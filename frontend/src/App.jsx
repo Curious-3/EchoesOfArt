@@ -1,6 +1,7 @@
 // App.jsx
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,6 +11,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
+import VerifyEmail from "./pages/verifyEmail";
 
 // Layout component to wrap all pages with Header, Sidebar, Footer
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
@@ -17,6 +19,7 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
 
   return (
     <div className="app-layout">
+       <Toaster position="top-right" reverseOrder={false} />
       <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <div className={`main-content ${sidebarOpen ? "shift" : ""}`}>
@@ -58,6 +61,7 @@ const App = () => {
               </Layout>
             }
           />
+          <Route path="/verify-email" element={<VerifyEmail/>}/>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
