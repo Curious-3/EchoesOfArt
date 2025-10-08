@@ -1,0 +1,30 @@
+:root {
+  --header-height: 100px;
+  --sidebar-collapsed: 80px;
+  --sidebar-expanded: 260px;
+}
+
+/* Container for sidebar + content */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - var(--header-height)); /* leaves space for header */
+}
+
+/* Sidebar already has its own CSS */
+.sidebar {
+  flex-shrink: 0;
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: var(--sidebar-collapsed);
+  margin-top: var(--header-height);
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is expanded */
+.main-content.shift {
+  margin-left: var(--sidebar-expanded);
+}

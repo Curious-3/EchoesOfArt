@@ -4,11 +4,11 @@ import cloudinary from "../config/cloudinary.js";
 //  Create new post
 export const createPost = async (req, res) => {
   try {
-    const file = req.file; // multer se aayega
+    const file = req.file; 
     if (!file) return res.status(400).json({ message: "Media file is required" });
-
+      
     const result = await cloudinary.uploader.upload(file.path, { resource_type: "auto" });
-
+    console.log("req.user:", req.user._id);
     const newPost = await Post.create({
       title: req.body.title,
       description: req.body.description,
@@ -16,12 +16,12 @@ export const createPost = async (req, res) => {
       mediaType: req.body.mediaType,
       tags: req.body.tags?.split(","),
       category: req.body.category,
-      createdBy: req.user
+      createdBy: req.user._id,
     });
-
-    res.status(201).json(newPost);
+     
+    res.status(201).json({message:"Successfully Posted"});
   } catch (error) {
-    res.status(500).json({ message: "Error creating post", error });
+    res.status(500).json({ message: "Error In Creating Post", error });
   }
 };
 

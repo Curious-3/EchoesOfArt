@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
- 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -29,8 +28,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem("token"); // remove JWT
+    setUser(null); // reset user state
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );
