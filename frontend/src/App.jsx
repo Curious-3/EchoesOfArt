@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
@@ -9,9 +8,8 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthProvider";
-import "./App.css";
 import MyUploads from "./pages/MyUploads";
-// import ExploreArt from "./pages/ExploreArt";
+import "./App.css";
 
 // Layout component to wrap all pages with Header, Sidebar, Footer
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
@@ -36,7 +34,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public pages (no layout) */}
+          {/* Public pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
@@ -69,7 +67,7 @@ const App = () => {
             path="/my-uploads"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <MyUploads />
+                <MyUploads searchTerm={searchTerm} />
               </Layout>
             }
           />
@@ -77,7 +75,7 @@ const App = () => {
             path="/explore-art"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                {/* <ExploreArt /> */}
+            
               </Layout>
             }
           />

@@ -4,26 +4,36 @@ import cloudinary from "../config/cloudinary.js";
 //  Create new post
 export const createPost = async (req, res) => {
   try {
-    const file = req.file; 
-    if (!file) return res.status(400).json({ message: "Media file is required" });
-      
-    const result = await cloudinary.uploader.upload(file.path, { resource_type: "auto" });
-    console.log("req.user:", req.user._id);
+    const files = req.files;
+    if (!files || !files.file) return res.status(400).json({ message: "Media file is required" });
+
+    // Upload main media
+    const mediaResult = await cloudinary.uploader.upload(files.file[0].path, { resource_type: "auto" });
+
+    // Upload thumbnail if provided
+    let thumbnailUrl = "";
+    if (files.thumbnail) {
+      const thumbResult = await cloudinary.uploader.upload(files.thumbnail[0].path, { resource_type: "image" });
+      thumbnailUrl = thumbResult.secure_url;
+    }
+
     const newPost = await Post.create({
       title: req.body.title,
       description: req.body.description,
-      mediaUrl: result.secure_url,
+      mediaUrl: mediaResult.secure_url,
       mediaType: req.body.mediaType,
+      thumbnailUrl,
       tags: req.body.tags?.split(","),
       category: req.body.category,
       createdBy: req.user._id,
     });
-     
-    res.status(201).json({message:"Successfully Posted"});
+
+    res.status(201).json({ message: "Successfully Posted", post: newPost });
   } catch (error) {
     res.status(500).json({ message: "Error In Creating Post", error });
   }
 };
+
 
 //  Get all posts
 export const getAllPosts = async (req, res) => {

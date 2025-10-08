@@ -10,7 +10,10 @@ const LandingPage = ({ searchTerm }) => {
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/posts")
-      .then((res) => setArts(res.data))
+      .then((res) => {
+        console.log("Fetched arts:", res.data); // Log to check mediaType & mediaUrl
+        setArts(res.data);
+      })
       .catch((err) => console.error("Error fetching arts:", err));
   }, []);
 
@@ -43,11 +46,31 @@ const LandingPage = ({ searchTerm }) => {
                 key={art._id}
                 className="group bg-white/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-[0_6px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)] hover:-translate-y-2"
               >
-                <img
-                  src={art.mediaUrl}
-                  alt={art.title}
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+                {/* Media: image or video */}
+                {art.mediaType === "image" && art.mediaUrl && (
+                  <img
+                    src={art.mediaUrl}
+                    alt={art.title}
+                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                )}
+
+                {art.mediaType === "video" && art.mediaUrl && (
+                  <video
+                    src={art.mediaUrl}
+                    controls
+                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    poster={art.thumbnailUrl || ""}
+                  />
+                )}
+
+                {art.mediaType === "video" && !art.mediaUrl && (
+                  <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                    <p className="text-gray-500">Video not available</p>
+                  </div>
+                )}
+
+                {/* Card Details */}
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">
                     {art.title}
@@ -73,7 +96,8 @@ const LandingPage = ({ searchTerm }) => {
                   {/* Category */}
                   {art.category && (
                     <p className="mt-2 text-sm font-medium text-gray-700">
-                      Category: <span className="text-indigo-600">{art.category}</span>
+                      Category:{" "}
+                      <span className="text-indigo-600">{art.category}</span>
                     </p>
                   )}
                 </div>
