@@ -1,3 +1,4 @@
+@import "tailwindcss";
 :root {
   --sidebar-collapsed: 60px;
   --sidebar-expanded: 200px;
