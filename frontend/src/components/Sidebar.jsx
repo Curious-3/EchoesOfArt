@@ -28,6 +28,9 @@ const Sidebar = ({ open, setOpen }) => {
               <button onClick={() => handleNavigation("/upload")}>Upload</button>
               <button onClick={() => handleNavigation("/profile")}>Edit Profile</button>
               <button onClick={() => handleNavigation("/my-art")}>Saved Art</button>
+              {/* New options */}
+              <button onClick={() => handleNavigation("/my-uploads")}>My Uploads</button>
+              <button onClick={() => handleNavigation("/explore-art")}>Explore Art</button>
             </div>
           ) : (
             <p className="register-msg">Please login or register first</p>
