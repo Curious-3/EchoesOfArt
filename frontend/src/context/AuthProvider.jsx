@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem("token"); // remove JWT
+    localStorage.removeItem("token");// remove token 
+    localStorage.removeItem("user"); // remove user
     setUser(null); // reset user state
   };
 

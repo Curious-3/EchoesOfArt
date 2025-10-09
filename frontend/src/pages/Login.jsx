@@ -13,12 +13,13 @@ const Login = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/home");
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) navigate("/home");
   }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("Login function triggered");
     setError("");
 
     try {
@@ -27,17 +28,30 @@ const Login = () => {
         password,
       });
 
-      // 1. Store token
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      } else {
-        throw new Error("No token received from server");
+      const { user, token } = res.data || {};
+      if (!user || !token) {
+        throw new Error("Invalid login response from server");
       }
 
-      // 2. Set user globally
-      setUser(res.data.user || null);
+      // Save user + token in localStorage
+      const userData = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        token,
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
 
-      // 3. Navigate to home
+      // Debug: check saved user
+      console.log("Saved User:", JSON.parse(localStorage.getItem("user")));
+
+      // Set global context
+      setUser(userData);
+
+      // Optional: set default axios header for future protected requests
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // Redirect to home
       navigate("/home");
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
