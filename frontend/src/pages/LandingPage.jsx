@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark, FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 
 const LandingPage = ({ searchTerm }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [arts, setArts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Get logged-in user from localStorage
     const loggedUser = JSON.parse(localStorage.getItem("user"));
     setUser(loggedUser);
 
-    // Fetch all arts
+    // Fetch all posts with likeCount from backend
     axios
       .get("http://localhost:8000/api/posts")
       .then((res) => setArts(res.data))
       .catch((err) => console.error("Error fetching arts:", err));
 
-    // Fetch saved posts for logged-in user
     if (loggedUser?.id && loggedUser?.token) {
+      // Fetch saved posts
       axios
         .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
           headers: { Authorization: `Bearer ${loggedUser.token}` },
@@ -35,38 +35,89 @@ const LandingPage = ({ searchTerm }) => {
           setSavedPosts(savedIds);
         })
         .catch((err) => console.error("Error fetching saved posts:", err));
+
+      // Fetch liked posts
+      axios
+        .get(`http://localhost:8000/api/liked/${loggedUser.id}`, {
+          headers: { Authorization: `Bearer ${loggedUser.token}` },
+        })
+        .then((res) => {
+          const likedIds = res.data.map((p) => p.post._id || p.post);
+          setLikedPosts(likedIds);
+        })
+        .catch((err) => console.error("Error fetching liked posts:", err));
     }
   }, []);
 
   const handleToggleSavePost = async (postId) => {
-  if (!user?.token) {
-    alert("Please login first to save the post!");
-    return;
-  }
-
-  try {
-    if (savedPosts.includes(postId)) {
-      // Unsave
-      await axios.post(
-        "http://localhost:8000/api/saved/remove",
-        { postId },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setSavedPosts(savedPosts.filter((id) => id !== postId));
-    } else {
-      // Save
-      await axios.post(
-        "http://localhost:8000/api/saved/add",
-        { postId },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setSavedPosts([...savedPosts, postId]);
+    if (!user?.token) {
+      alert("Please login first to save the post!");
+      return;
     }
-  } catch (err) {
-    console.error("Error toggling save:", err);
-    alert("Failed to save/unsave post.");
-  }
-};
+    try {
+      if (savedPosts.includes(postId)) {
+        await axios.post(
+          "http://localhost:8000/api/saved/remove",
+          { postId },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setSavedPosts(savedPosts.filter((id) => id !== postId));
+      } else {
+        await axios.post(
+          "http://localhost:8000/api/saved/add",
+          { postId },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setSavedPosts([...savedPosts, postId]);
+      }
+    } catch (err) {
+      console.error("Error toggling save:", err);
+      alert("Failed to save/unsave post.");
+    }
+  };
+
+  const handleToggleLikePost = async (postId) => {
+    if (!user?.token) {
+      alert("Please login first to like the post!");
+      return;
+    }
+    try {
+      if (likedPosts.includes(postId)) {
+        await axios.post(
+          "http://localhost:8000/api/liked/remove",
+          { postId },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setLikedPosts(likedPosts.filter((id) => id !== postId));
+        // Update like count locally
+        setArts(
+          arts.map((art) =>
+            art._id === postId
+              ? { ...art, likeCount: (art.likeCount || 1) - 1 }
+              : art
+          )
+        );
+      } else {
+        await axios.post(
+          "http://localhost:8000/api/liked/add",
+          { postId },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setLikedPosts([...likedPosts, postId]);
+        // Update like count locally
+        setArts(
+          arts.map((art) =>
+            art._id === postId
+              ? { ...art, likeCount: (art.likeCount || 0) + 1 }
+              : art
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling like:", err);
+      alert("Failed to like/unlike post.");
+    }
+  };
 
   const filteredArts = arts.filter((art) =>
     art.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -105,7 +156,6 @@ const LandingPage = ({ searchTerm }) => {
                     className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 )}
-
                 {art.mediaType === "video" && art.mediaUrl && (
                   <video
                     src={art.mediaUrl}
@@ -114,26 +164,47 @@ const LandingPage = ({ searchTerm }) => {
                     poster={art.thumbnailUrl || ""}
                   />
                 )}
-
                 {art.mediaType === "audio" && art.mediaUrl && (
                   <div className="p-4 bg-gray-100">
                     <audio src={art.mediaUrl} controls className="w-full" />
                   </div>
                 )}
 
-                {/* Save icon - always visible */}
-                <button
-                  className={`absolute top-2 right-2 p-2 rounded-full transition-colors ${
-                    user ? "text-white bg-black/40 hover:bg-black/60" : "text-gray-400 bg-gray-200 cursor-pointer hover:bg-gray-300"
-                  }`}
-                  onClick={() => handleToggleSavePost(art._id)}
-                >
-                  {savedPosts.includes(art._id) ? (
-                    <FaBookmark size={20} />
-                  ) : (
-                    <FaRegBookmark size={20} />
-                  )}
-                </button>
+                {/* Buttons overlay */}
+                <div className="absolute top-2 right-2 flex space-x-2 items-center">
+                  {/* Save button */}
+                  <button
+                    className={`p-2 rounded-full transition-colors ${
+                      user
+                        ? "text-white bg-black/40 hover:bg-black/60"
+                        : "text-gray-400 bg-gray-200 cursor-pointer hover:bg-gray-300"
+                    }`}
+                    onClick={() => handleToggleSavePost(art._id)}
+                  >
+                    {savedPosts.includes(art._id) ? (
+                      <FaBookmark size={20} />
+                    ) : (
+                      <FaRegBookmark size={20} />
+                    )}
+                  </button>
+
+                  {/* Like button with count */}
+                  <button
+                    className={`p-2 rounded-full flex items-center space-x-1 transition-colors ${
+                      user
+                        ? "text-white bg-black/40 hover:bg-black/60"
+                        : "text-gray-400 bg-gray-200 cursor-pointer hover:bg-gray-300"
+                    }`}
+                    onClick={() => handleToggleLikePost(art._id)}
+                  >
+                    {likedPosts.includes(art._id) ? (
+                      <FaHeart size={20} className="text-red-500" />
+                    ) : (
+                      <FaRegHeart size={20} />
+                    )}
+                    <span className="text-sm text-white ml-1">{art.likeCount || 0}</span>
+                  </button>
+                </div>
 
                 {/* Card Details */}
                 <div className="p-4">
@@ -163,7 +234,8 @@ const LandingPage = ({ searchTerm }) => {
                   {/* Category */}
                   {art.category && (
                     <p className="mt-2 text-sm font-medium text-gray-700">
-                      Category: <span className="text-indigo-600">{art.category}</span>
+                      Category:{" "}
+                      <span className="text-indigo-600">{art.category}</span>
                     </p>
                   )}
                 </div>

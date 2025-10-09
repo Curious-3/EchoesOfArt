@@ -1,17 +1,29 @@
+// controllers/postController.js
 import Post from "../models/Post.js";
 import Saved from "../models/Saved.js";
+import Liked from "../models/Liked.js";
 import cloudinary from "../config/cloudinary.js";
+
+// ================ HELPER FUNCTION =================
+const addLikeCount = async (posts) => {
+  if (!posts || !posts.length) return [];
+  return await Promise.all(
+    posts.map(async (post) => {
+      const likeCount = await Liked.countDocuments({ post: post._id });
+      return { ...post._doc, likeCount }; // _doc ensures plain JS object
+    })
+  );
+};
 
 // ================= CREATE NEW POST =================
 export const createPost = async (req, res) => {
   try {
     const files = req.files;
-    if (!files || !files.file) return res.status(400).json({ message: "Media file is required" });
+    if (!files || !files.file)
+      return res.status(400).json({ message: "Media file is required" });
 
-    // Upload main media
     const mediaResult = await cloudinary.uploader.upload(files.file[0].path, { resource_type: "auto" });
 
-    // Upload thumbnail if provided
     let thumbnailUrl = "";
     if (files.thumbnail) {
       const thumbResult = await cloudinary.uploader.upload(files.thumbnail[0].path, { resource_type: "image" });
@@ -32,7 +44,7 @@ export const createPost = async (req, res) => {
     res.status(201).json({ message: "Successfully Posted", post: newPost });
   } catch (error) {
     console.error("Error creating post:", error);
-    res.status(500).json({ message: "Error creating post", error });
+    res.status(500).json({ message: "Error creating post", error: error.message });
   }
 };
 
@@ -40,10 +52,19 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find().populate("createdBy", "name email").sort({ createdAt: -1 });
-    res.status(200).json(posts);
+
+    // Add like count for each post
+    const postsWithLikes = await Promise.all(
+      posts.map(async (post) => {
+        const likeCount = await Liked.countDocuments({ post: post._id });
+        return { ...post._doc, likeCount };
+      })
+    );
+
+    return res.status(200).json(postsWithLikes);
   } catch (error) {
     console.error("Error fetching posts:", error);
-    res.status(500).json({ message: "Error fetching posts", error });
+    return res.status(500).json({ message: "Error fetching posts", error: error.message });
   }
 };
 
@@ -56,10 +77,12 @@ export const getPostById = async (req, res) => {
     post.views += 1;
     await post.save();
 
-    res.status(200).json(post);
+    const likeCount = await Liked.countDocuments({ post: post._id });
+
+    res.status(200).json({ ...post._doc, likeCount });
   } catch (error) {
     console.error("Error fetching post:", error);
-    res.status(500).json({ message: "Error fetching post", error });
+    res.status(500).json({ message: "Error fetching post", error: error.message });
   }
 };
 
@@ -69,9 +92,8 @@ export const updatePost = async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (post.createdBy.toString() !== req.user._id.toString()) {
+    if (post.createdBy.toString() !== req.user._id.toString())
       return res.status(403).json({ message: "Not authorized" });
-    }
 
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
@@ -82,7 +104,7 @@ export const updatePost = async (req, res) => {
     res.status(200).json({ message: "Post updated successfully", post: updatedPost });
   } catch (error) {
     console.error("Error updating post:", error);
-    res.status(500).json({ message: "Error updating post", error });
+    res.status(500).json({ message: "Error updating post", error: error.message });
   }
 };
 
@@ -92,15 +114,14 @@ export const deletePost = async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (post.createdBy.toString() !== req.user._id.toString()) {
+    if (post.createdBy.toString() !== req.user._id.toString())
       return res.status(403).json({ message: "Not authorized" });
-    }
 
     await post.deleteOne();
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     console.error("Error deleting post:", error);
-    res.status(500).json({ message: "Error deleting post", error });
+    res.status(500).json({ message: "Error deleting post", error: error.message });
   }
 };
 
@@ -108,10 +129,11 @@ export const deletePost = async (req, res) => {
 export const getMyUploads = async (req, res) => {
   try {
     const posts = await Post.find({ createdBy: req.user._id }).populate("createdBy", "name email").sort({ createdAt: -1 });
-    res.status(200).json(posts);
+    const postsWithLikes = await addLikeCount(posts);
+    res.status(200).json(postsWithLikes);
   } catch (error) {
     console.error("Error fetching user uploads:", error);
-    res.status(500).json({ message: "Error fetching user uploads", error });
+    res.status(500).json({ message: "Error fetching user uploads", error: error.message });
   }
 };
 
@@ -119,10 +141,11 @@ export const getMyUploads = async (req, res) => {
 export const getExplorePosts = async (req, res) => {
   try {
     const posts = await Post.find({ createdBy: { $ne: req.user._id } }).populate("createdBy", "name email").sort({ createdAt: -1 });
-    res.status(200).json(posts);
+    const postsWithLikes = await addLikeCount(posts);
+    res.status(200).json(postsWithLikes);
   } catch (error) {
     console.error("Error fetching explore posts:", error);
-    res.status(500).json({ message: "Error fetching explore posts", error });
+    res.status(500).json({ message: "Error fetching explore posts", error: error.message });
   }
 };
 
@@ -142,7 +165,7 @@ export const getSavedPosts = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching saved posts:", error);
-    res.status(500).json({ message: "Error fetching saved posts", error });
+    res.status(500).json({ message: "Error fetching saved posts", error: error.message });
   }
 };
 
@@ -151,7 +174,6 @@ export const addSavedPost = async (req, res) => {
   try {
     const { postId } = req.body;
     const userId = req.user?._id;
-
     if (!userId) return res.status(401).json({ message: "User not authenticated" });
     if (!postId) return res.status(400).json({ message: "Post ID required" });
 
@@ -170,17 +192,15 @@ export const addSavedPost = async (req, res) => {
     res.status(200).json({ message: "Post saved successfully", postId });
   } catch (error) {
     console.error("Error saving post:", error);
-    res.status(500).json({ message: "Error saving post", error });
+    res.status(500).json({ message: "Error saving post", error: error.message });
   }
 };
-
 
 // ================= REMOVE A SAVED POST =================
 export const removeSavedPost = async (req, res) => {
   try {
     const { postId } = req.body;
     const userId = req.user?._id;
-
     if (!userId) return res.status(401).json({ message: "User not authenticated" });
     if (!postId) return res.status(400).json({ message: "Post ID required" });
 
@@ -199,6 +219,6 @@ export const removeSavedPost = async (req, res) => {
     res.status(200).json({ message: "Post removed from saved posts", postId });
   } catch (error) {
     console.error("Error removing saved post:", error);
-    res.status(500).json({ message: "Error removing saved post", error });
+    res.status(500).json({ message: "Error removing saved post", error: error.message });
   }
 };
