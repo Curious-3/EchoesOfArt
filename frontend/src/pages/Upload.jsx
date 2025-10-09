@@ -19,6 +19,19 @@ const Upload = () => {
 
   if (!user) return <p>Please login to upload media.</p>;
 
+  // Helper to get token safely
+  const getToken = () => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return null;
+
+    try {
+      const parsed = JSON.parse(storedUser);
+      return parsed.token || localStorage.getItem("token"); // check both
+    } catch {
+      return localStorage.getItem("token");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -39,9 +52,13 @@ const Upload = () => {
     try {
       setLoading(true);
 
-      //   Token ko localStorage se lo
-      const token = localStorage.getItem("token");
-      console.log("Token being sent:", token); // Debug ke liye
+      const token = getToken();
+      console.log("Token being sent:", token);
+
+      if (!token) {
+        setError("You are not authorized. Please login again.");
+        return;
+      }
 
       const res = await axios.post("http://localhost:8000/api/posts/", formData, {
         headers: {

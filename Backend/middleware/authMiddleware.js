@@ -6,7 +6,7 @@ export const protect = async (req, res, next) => {
   try {
     // Authorization header check
     const authHeader = req.headers.authorization;
-    console.log("Authorization Header:", authHeader);
+   
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "No token, authorization denied" });
@@ -14,7 +14,7 @@ export const protect = async (req, res, next) => {
 
     // Extract token
     const token = authHeader.split(" ")[1];
-    console.log("Extracted Token:", token);
+    
 
     if (!token || token === "undefined" || token === "null") {
       return res.status(401).json({ message: "Invalid token format" });
