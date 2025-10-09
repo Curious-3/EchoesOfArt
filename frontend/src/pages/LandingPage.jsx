@@ -10,11 +10,15 @@ const LandingPage = ({ searchTerm }) => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [user, setUser] = useState(null);
 
+  // Filter toggle state
+  const filterOptions = ["all", "image", "video"];
+  const [filterType, setFilterType] = useState("all");
+
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem("user"));
     setUser(loggedUser);
 
-    // Fetch all posts with likeCount from backend
+    // Fetch all posts
     axios
       .get("http://localhost:8000/api/posts")
       .then((res) => setArts(res.data))
@@ -48,6 +52,22 @@ const LandingPage = ({ searchTerm }) => {
         .catch((err) => console.error("Error fetching liked posts:", err));
     }
   }, []);
+
+  // Toggle filter: all → image → video → all
+  const handleToggleFilter = () => {
+    const currentIndex = filterOptions.indexOf(filterType);
+    const nextIndex = (currentIndex + 1) % filterOptions.length;
+    setFilterType(filterOptions[nextIndex]);
+  };
+
+  // Update filtered arts based on search term + filter type
+  const filteredArts = arts.filter((art) => {
+    const matchesSearch = art.title
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    if (filterType === "all") return matchesSearch;
+    return matchesSearch && art.mediaType?.toLowerCase() === filterType;
+  });
 
   const handleToggleSavePost = async (postId) => {
     if (!user?.token) {
@@ -89,7 +109,6 @@ const LandingPage = ({ searchTerm }) => {
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         setLikedPosts(likedPosts.filter((id) => id !== postId));
-        // Update like count locally
         setArts(
           arts.map((art) =>
             art._id === postId
@@ -104,7 +123,6 @@ const LandingPage = ({ searchTerm }) => {
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         setLikedPosts([...likedPosts, postId]);
-        // Update like count locally
         setArts(
           arts.map((art) =>
             art._id === postId
@@ -119,9 +137,13 @@ const LandingPage = ({ searchTerm }) => {
     }
   };
 
-  const filteredArts = arts.filter((art) =>
-    art.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Button text based on current filter
+  const buttonText =
+    filterType === "all"
+      ? "Show Images Only"
+      : filterType === "image"
+      ? "Show Videos Only"
+      : "Show All Posts";
 
   return (
     <>
@@ -133,11 +155,21 @@ const LandingPage = ({ searchTerm }) => {
         }`}
       >
         {/* Header */}
-        <div className="w-full text-center mt-24 mb-12">
+        <div className="w-full text-center mt-24 mb-6">
           <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 bg-clip-text text-transparent drop-shadow-md">
             Featured Artworks
           </h2>
           <div className="w-24 h-1 mt-4 bg-gradient-to-r from-blue-400 to-indigo-500 mx-auto rounded-full shadow-lg"></div>
+        </div>
+
+        {/* Toggle Filter Button */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={handleToggleFilter}
+            className="px-6 py-2 bg-indigo-600 text-white rounded-full shadow-md hover:bg-indigo-700 transition"
+          >
+            {buttonText}
+          </button>
         </div>
 
         {/* Art Grid */}
@@ -202,7 +234,9 @@ const LandingPage = ({ searchTerm }) => {
                     ) : (
                       <FaRegHeart size={20} />
                     )}
-                    <span className="text-sm text-white ml-1">{art.likeCount || 0}</span>
+                    <span className="text-sm text-white ml-1">
+                      {art.likeCount || 0}
+                    </span>
                   </button>
                 </div>
 
