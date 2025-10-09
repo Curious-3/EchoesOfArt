@@ -15,6 +15,7 @@ import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
 import AboutUS from "./pages/AboutUs"
 import ContactUs from "./pages/ContactUs"
+import Feedback from "./pages/Feedback";
 
 
 // Layout component to wrap all pages with Header, Sidebar, Footer
@@ -113,6 +114,17 @@ const App = () => {
               <>
               <Header/>
               <ContactUs/>
+              <Footer/>
+              </>
+            }
+          />
+
+           <Route
+            path="/feedback"
+            element={
+              <>
+              <Header/>
+              <Feedback/>
               <Footer/>
               </>
             }

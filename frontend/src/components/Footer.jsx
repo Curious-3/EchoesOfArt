@@ -18,7 +18,7 @@ const Footer = () => {
           <a href="/">Home</a>
           <Link to = "/about">About</Link>
           <Link to = "/contact">Contact</Link>
-          <a href="#Feedback">Feedback</a>
+          <Link to = "/feedback">Feedback</Link>
         </div>
 
         {/* Right: Social Links with Rounded Bubbles */}
