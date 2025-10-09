@@ -26,6 +26,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Server is running!");
 });
+app.use("/uploads", express.static("uploads"));
 
 // API Routes
 app.use("/api/auth", authRoutes);      // Authentication
