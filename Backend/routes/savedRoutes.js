@@ -4,8 +4,8 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/:id", protect, getSavedPosts); // logged-in user
-router.post("/add", protect, addSavedPost); // logged-in user can add
+router.get("/:id", protect, getSavedPosts); 
+router.post("/add", protect, addSavedPost); 
 router.post("/remove", protect, removeSavedPost); 
 
 export default router;
