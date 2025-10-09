@@ -1,21 +1,64 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import Footer from "../components/Footer";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import axios from "axios";
 
 const LandingPage = ({ searchTerm }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [arts, setArts] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    // Get logged-in user from localStorage
+    const loggedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(loggedUser);
+
+    // Fetch all arts
     axios
       .get("http://localhost:8000/api/posts")
-      .then((res) => {
-        console.log("Fetched arts:", res.data); // Log to check mediaType & mediaUrl
-        setArts(res.data);
-      })
+      .then((res) => setArts(res.data))
       .catch((err) => console.error("Error fetching arts:", err));
+
+    // Fetch saved posts for logged-in user
+    if (loggedUser?.id && loggedUser?.token) {
+      axios
+        .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
+          headers: { Authorization: `Bearer ${loggedUser.token}` },
+        })
+        .then((res) => {
+          const savedIds = [
+            ...(res.data.images || []).map((p) => p._id),
+            ...(res.data.videos || []).map((p) => p._id),
+            ...(res.data.audios || []).map((p) => p._id),
+          ];
+          setSavedPosts(savedIds);
+        })
+        .catch((err) => console.error("Error fetching saved posts:", err));
+    }
   }, []);
+
+  const handleSavePost = async (postId) => {
+    if (!user?.token) {
+      alert("Please login first to save the post!");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:8000/api/saved/add",
+        { postId },
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
+
+      setSavedPosts([...savedPosts, postId]);
+    } catch (err) {
+      console.error("Error saving post:", err);
+      alert("Failed to save post.");
+    }
+  };
 
   const filteredArts = arts.filter((art) =>
     art.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,9 +87,9 @@ const LandingPage = ({ searchTerm }) => {
             filteredArts.map((art) => (
               <div
                 key={art._id}
-                className="group bg-white/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-[0_6px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)] hover:-translate-y-2"
+                className="relative group bg-white/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-[0_6px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)] hover:-translate-y-2"
               >
-                {/* Media: image or video */}
+                {/* Media */}
                 {art.mediaType === "image" && art.mediaUrl && (
                   <img
                     src={art.mediaUrl}
@@ -64,23 +107,39 @@ const LandingPage = ({ searchTerm }) => {
                   />
                 )}
 
-                {art.mediaType === "video" && !art.mediaUrl && (
-                  <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                    <p className="text-gray-500">Video not available</p>
+                {art.mediaType === "audio" && art.mediaUrl && (
+                  <div className="p-4 bg-gray-100">
+                    <audio src={art.mediaUrl} controls className="w-full" />
                   </div>
                 )}
+
+                {/* Save icon - always visible */}
+                <button
+                  className={`absolute top-2 right-2 p-2 rounded-full transition-colors ${
+                    user ? "text-white bg-black/40 hover:bg-black/60" : "text-gray-400 bg-gray-200 cursor-pointer hover:bg-gray-300"
+                  }`}
+                  onClick={() => handleSavePost(art._id)}
+                >
+                  {savedPosts.includes(art._id) ? (
+                    <FaBookmark size={20} />
+                  ) : (
+                    <FaRegBookmark size={20} />
+                  )}
+                </button>
 
                 {/* Card Details */}
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">
                     {art.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                    {art.description}
-                  </p>
+                  {art.description && (
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {art.description}
+                    </p>
+                  )}
 
                   {/* Tags */}
-                  {art.tags && art.tags.length > 0 && (
+                  {art.tags?.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {art.tags.map((tag, idx) => (
                         <span
@@ -96,8 +155,7 @@ const LandingPage = ({ searchTerm }) => {
                   {/* Category */}
                   {art.category && (
                     <p className="mt-2 text-sm font-medium text-gray-700">
-                      Category:{" "}
-                      <span className="text-indigo-600">{art.category}</span>
+                      Category: <span className="text-indigo-600">{art.category}</span>
                     </p>
                   )}
                 </div>

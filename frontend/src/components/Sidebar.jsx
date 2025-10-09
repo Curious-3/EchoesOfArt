@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React, { useState } from "react";
 import "./../styles/Sidebar.css";
 import { useAuth } from "../context/AuthProvider";
@@ -12,7 +11,7 @@ const Sidebar = ({ open, setOpen }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    setOpen(false); 
+    setOpen(false); // Close sidebar after navigation
   };
 
   return (
@@ -27,8 +26,7 @@ const Sidebar = ({ open, setOpen }) => {
             <div className="options">
               <button onClick={() => handleNavigation("/upload")}>Upload</button>
               <button onClick={() => handleNavigation("/profile")}>Edit Profile</button>
-              <button onClick={() => handleNavigation("/my-art")}>Saved Art</button>
-              {/* New options */}
+              <button onClick={() => handleNavigation("/saved")}>Saved Art</button>
               <button onClick={() => handleNavigation("/my-uploads")}>My Uploads</button>
               <button onClick={() => handleNavigation("/explore-art")}>Explore Art</button>
             </div>

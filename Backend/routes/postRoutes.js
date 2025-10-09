@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { protect } from "../middleware/authMiddleware.js";
-import { createPost, getAllPosts, getPostById, updatePost, deletePost, getExplorePosts, getMyUploads } from "../controllers/postController.js";
+import { createPost, getAllPosts, getPostById, updatePost, deletePost, getExplorePosts, getMyUploads ,  getSavedPosts, } from "../controllers/postController.js";
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
@@ -16,4 +16,6 @@ router.put("/:id", protect, updatePost);
 router.delete("/:id", protect, deletePost);
 router.get("/user/my-uploads", protect, getMyUploads);
 router.get("/user/explore", protect, getExplorePosts);
+router.get("/saved/:id", protect, getSavedPosts);
+
 export default router;
