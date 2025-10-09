@@ -1,0 +1,67 @@
+[33m887f1fb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mkamani[m[33m, [m[1;31morigin/kamani[m[33m)[m Filter media and Resolve issues
+[33m30ba0b2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #26 from Curious-3/shweta
+[33m44d7483[m[33m ([m[1;31morigin/shweta[m[33m)[m liked toggle button working
+[33m816cb26[m Merge pull request #25 from Curious-3/shweta
+[33ma28df3a[m saved button toggle to save or unsave post
+[33m5fe8e20[m Merge pull request #24 from Curious-3/shweta
+[33m96c84a9[m backend done for save post
+[33m16423e9[m save post frontend backend done
+[33m6f7c403[m Vedio Uploading  done
+[33mf930f89[m Merge pull request #23 from Curious-3/paras
+[33me58d409[m[33m ([m[1;31morigin/paras[m[33m)[m Edit and Delete post
+[33m23289cb[m Merge pull request #22 from Curious-3/shweta
+[33m7c4d555[m upload image and video corrected
+[33mde38b59[m Merge pull request #21 from Curious-3/shweta
+[33m673db2b[m login otp settlement, ui change
+[33m5c6a03c[m Merge pull request #20 from Curious-3/kamani
+[33m2b59ad1[m upload
+[33m6da11ee[m LocalStorage setup
+[33mf7669d7[m Merge pull request #19 from Curious-3/paras
+[33m4513707[m some change in landing page and header, footer
+[33m14efe23[m Merge pull request #18 from Curious-3/kamani
+[33m4d0ef4d[m Logout setup
+[33mea012f0[m Merge pull request #17 from Curious-3/kamani
+[33md1519b6[m logo image
+[33m318ed3d[m Merge pull request #16 from Curious-3/kamani
+[33mbfb90e8[m Logo and Issue fixed
+[33m1e48e5c[m Merge pull request #15 from Curious-3/kamani
+[33m2a03b59[m Sidebar routes
+[33m9bfa36a[m Merge pull request #14 from Curious-3/kamani
+[33m345deff[m Set All Routes
+[33m15bea2d[m Merge pull request #13 from Curious-3/kamani
+[33m1ebd893[m Register and Login frontend Completed
+[33m22b3ca9[m Merge pull request #12 from Curious-3/paras
+[33m3ac5476[m Pictures set
+[33mfd2fae6[m Merge pull request #11 from Curious-3/kamani
+[33mfa18565[m frontend with css setup
+[33mdcc260f[m Merge remote-tracking branch 'origin' into kamani
+[33m566036c[m Merge pull request #10 from Curious-3/paras
+[33macd9af8[m Merge branch 'main' of https://github.com/Curious-3/EchoesOfArt into kamani
+[33m51b2999[m Tailwind
+[33m54217ff[m React and tailwind setup
+[33m4f41b5a[m Merge pull request #8 from Curious-3/paras
+[33m28f8101[m Merge branch 'main' into paras
+[33m9610a13[m unnecessary delete
+[33mdd0d8c5[m Merge branch 'main' of https://github.com/Curious-3/EchoesOfArt into kamani
+[33mc6ad786[m Merge pull request #7 from Curious-3/shweta
+[33mc211d6a[m Merge branch 'main' of https://github.com/Curious-3/EchoesOfArt into kamani
+[33m5699923[m Merge branch 'main' into shweta
+[33mf68959c[m Edit Profile completed
+[33m505d126[m updated
+[33m059643d[m setup for post, update and delete post
+[33mfd91202[m Merge pull request #6 from Curious-3/kamani
+[33m816ec8d[m feat: New JavaScript (Vite/React) frontend setup
+[33mc24b33f[m Edit Profile completed
+[33m39f2d03[m Not any changes
+[33m267d18c[m Merge pull request #5 from Curious-3/paras
+[33me80b7ef[m feat: New JavaScript (Vite/React) frontend setup
+[33md3b1133[m Removed old TypeScript frontend setup
+[33m8ef36be[m Merge pull request #4 from Curious-3/shweta
+[33m587e82b[m backend part for login and sign up
+[33m6646b0a[m Merge pull request #3 from Curious-3/kamani
+[33mb286dfc[m Database Connect
+[33mf4f8ecb[m Merge pull request #2 from Curious-3/kamani
+[33mef9035d[m Backend Setup
+[33m71783ed[m Merge pull request #1 from Curious-3/shweta
+[33mb888621[m Continue frontend setup
+[33mfb576da[m Initial commit
