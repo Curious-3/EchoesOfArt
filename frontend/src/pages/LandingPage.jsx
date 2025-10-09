@@ -38,27 +38,35 @@ const LandingPage = ({ searchTerm }) => {
     }
   }, []);
 
-  const handleSavePost = async (postId) => {
-    if (!user?.token) {
-      alert("Please login first to save the post!");
-      return;
-    }
+  const handleToggleSavePost = async (postId) => {
+  if (!user?.token) {
+    alert("Please login first to save the post!");
+    return;
+  }
 
-    try {
+  try {
+    if (savedPosts.includes(postId)) {
+      // Unsave
+      await axios.post(
+        "http://localhost:8000/api/saved/remove",
+        { postId },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      setSavedPosts(savedPosts.filter((id) => id !== postId));
+    } else {
+      // Save
       await axios.post(
         "http://localhost:8000/api/saved/add",
         { postId },
-        {
-          headers: { Authorization: `Bearer ${user.token}` },
-        }
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
-
       setSavedPosts([...savedPosts, postId]);
-    } catch (err) {
-      console.error("Error saving post:", err);
-      alert("Failed to save post.");
     }
-  };
+  } catch (err) {
+    console.error("Error toggling save:", err);
+    alert("Failed to save/unsave post.");
+  }
+};
 
   const filteredArts = arts.filter((art) =>
     art.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -118,7 +126,7 @@ const LandingPage = ({ searchTerm }) => {
                   className={`absolute top-2 right-2 p-2 rounded-full transition-colors ${
                     user ? "text-white bg-black/40 hover:bg-black/60" : "text-gray-400 bg-gray-200 cursor-pointer hover:bg-gray-300"
                   }`}
-                  onClick={() => handleSavePost(art._id)}
+                  onClick={() => handleToggleSavePost(art._id)}
                 >
                   {savedPosts.includes(art._id) ? (
                     <FaBookmark size={20} />
