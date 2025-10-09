@@ -4,7 +4,7 @@ import sendEmail from "../utils/sendEmail.js";
 import nodemailer from "nodemailer";
 import path from "path";
 import multer from "multer";
-// Generate JWT token
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -12,7 +12,7 @@ const generateToken = (id) => {
 // Generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// ========================= REGISTER USER =========================
+// REGISTER USER 
 export const registerUser = async (req, res) => {
   const { name, email, password, dob } = req.body;
 
@@ -56,7 +56,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// ========================= VERIFY EMAIL =========================
+//  VERIFY EMAIL 
 export const verifyEmail = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -118,7 +118,7 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-// ========================= LOGIN USER =========================
+//  LOGIN USER 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -161,7 +161,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// ========================= RESEND OTP =========================
+// RESEND OTP
 export const resendOTP = async (req, res) => {
   const { email } = req.body;
 
@@ -199,7 +199,7 @@ export const resendOTP = async (req, res) => {
 
 
 
-// ---------------- Get Profile ----------------
+//  Get Profile
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password -otp -otpExpires");
@@ -210,7 +210,7 @@ export const getProfile = async (req, res) => {
   }
 };
 
-// ---------------- Update Profile (text fields) ----------------
+//  Update Profile (text fields) 
 export const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -237,7 +237,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-// ---------------- Multer Config ----------------
+//  Multer Config 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/profileImages/");
@@ -252,7 +252,7 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ storage });
 
-// ---------------- Update Profile Image ----------------
+// - Update Profile Image 
 export const updateProfileImage = async (req, res) => {
   try {
     if (!req.file) {

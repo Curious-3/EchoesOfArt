@@ -4,7 +4,7 @@ import Saved from "../models/Saved.js";
 import Liked from "../models/Liked.js";
 import cloudinary from "../config/cloudinary.js";
 
-// ================ HELPER FUNCTION =================
+//  HELPER FUNCTION 
 const addLikeCount = async (posts) => {
   if (!posts || !posts.length) return [];
   return await Promise.all(
@@ -15,7 +15,7 @@ const addLikeCount = async (posts) => {
   );
 };
 
-// ================= CREATE NEW POST =================
+// CREATE NEW POST 
 export const createPost = async (req, res) => {
   try {
     const files = req.files;
@@ -196,7 +196,7 @@ export const addSavedPost = async (req, res) => {
   }
 };
 
-// ================= REMOVE A SAVED POST =================
+// REMOVE A SAVED POST
 export const removeSavedPost = async (req, res) => {
   try {
     const { postId } = req.body;

@@ -2,10 +2,10 @@
 :root {
   --sidebar-collapsed: 60px;
   --sidebar-expanded: 200px;
-  --header-height: 70px; /* default */
+  --header-height: 70px; 
 }
 
 
-/* small reset */
+
 * { box-sizing: border-box; }
 html,body,#root { height: 100%; margin: 0; }
