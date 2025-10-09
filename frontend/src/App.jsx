@@ -13,6 +13,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
+import AboutUS from "./pages/AboutUs"
 
 // Layout component to wrap all pages with Header, Sidebar, Footer
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
@@ -92,6 +93,20 @@ const App = () => {
               </Layout>
             }
           />
+          
+          <Route
+            path="/about"
+            element={
+              <>
+              <Header/>
+              <AboutUS/>
+              <Footer/>
+              </>
+            }
+          />
+
+
+
         </Routes>
       </Router>
     </AuthProvider>

@@ -1,0 +1,123 @@
+.about-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1e293b;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 40px 20px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 60px 20px 40px 20px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: white;
+  border-radius: 15px;
+  margin-bottom: 40px;
+}
+
+.hero-section h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.hero-section p {
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.mission-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.section-content {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.section-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #2563eb;
+}
+
+.section-content p {
+  font-size: 1rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.section-content ul {
+  list-style-type: disc;
+  padding-left: 18px;
+}
+
+.section-content ul li {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.team-section {
+  text-align: center;
+}
+
+.team-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #2563eb;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
+}
+
+.team-card {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.team-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.team-card img {
+  width: 100%;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.team-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  color: #1e293b;
+}
+
+.team-card p {
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-section p,
+  .section-content p,
+  .section-content ul li {
+    font-size: 0.95rem;
+  }
+}

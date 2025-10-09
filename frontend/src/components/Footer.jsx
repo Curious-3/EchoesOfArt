@@ -1,6 +1,7 @@
 import React from "react";
 import "./../styles/Footer.css";
 import { FaTwitter, FaFacebookF, FaInstagram, FaTelegramPlane } from "react-icons/fa";
+import {Link} from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -15,7 +16,7 @@ const Footer = () => {
         {/* Center: Quick Links */}
         <div className="footer-center">
           <a href="/">Home</a>
-          <a href="#about">About</a>
+          <Link to = "/about">About</Link>
           <a href="#contact">Contact</a>
           <a href="#Feedback">Feedback</a>
         </div>
