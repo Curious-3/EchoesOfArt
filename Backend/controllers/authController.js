@@ -2,7 +2,8 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
 import nodemailer from "nodemailer";
-
+import path from "path";
+import multer from "multer";
 // Generate JWT token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -194,3 +195,85 @@ export const resendOTP = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+
+
+// ---------------- Get Profile ----------------
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password -otp -otpExpires");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ---------------- Update Profile (text fields) ----------------
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Update only text-based fields
+    const fields = [
+      "name",
+      "firstName",
+      "lastName",
+      "dob",
+      "about",
+      "interests",
+      "socialLinks"
+    ];
+    fields.forEach((field) => {
+      if (req.body[field] !== undefined) user[field] = req.body[field];
+    });
+
+    await user.save();
+    res.json({ message: "Profile updated successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ---------------- Multer Config ----------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/profileImages/");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      req.user.id + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+export const upload = multer({ storage });
+
+// ---------------- Update Profile Image ----------------
+export const updateProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.profileImage = `/uploads/profileImages/${req.file.filename}`;
+    await user.save();
+
+    res.json({
+      message: "Profile image updated successfully",
+      user,
+    });
+  } catch (err) {
+    console.error("Image upload error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+

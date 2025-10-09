@@ -13,10 +13,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
-import AboutUS from "./pages/AboutUs"
-import ContactUs from "./pages/ContactUs"
-import Feedback from "./pages/Feedback";
-
+import Profile from "./pages/Profile";
 
 // Layout component to wrap all pages with Header, Sidebar, Footer
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
@@ -73,6 +70,15 @@ const App = () => {
             }
           />
           <Route
+  path="/profile"
+  element={
+    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+      <Profile />
+    </Layout>
+  }
+/>
+
+          <Route
             path="/saved"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
@@ -96,43 +102,6 @@ const App = () => {
               </Layout>
             }
           />
-          
-          <Route
-            path="/about"
-            element={
-              <>
-              <Header/>
-              <AboutUS/>
-              <Footer/>
-              </>
-            }
-          />
-
-           <Route
-            path="/contact"
-            element={
-              <>
-              <Header/>
-              <ContactUs/>
-              <Footer/>
-              </>
-            }
-          />
-
-           <Route
-            path="/feedback"
-            element={
-              <>
-              <Header/>
-              <Feedback/>
-              <Footer/>
-              </>
-            }
-          />
-
-
-
-
         </Routes>
       </Router>
     </AuthProvider>
