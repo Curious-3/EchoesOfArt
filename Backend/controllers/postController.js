@@ -173,3 +173,32 @@ export const addSavedPost = async (req, res) => {
     res.status(500).json({ message: "Error saving post", error });
   }
 };
+
+
+// ================= REMOVE A SAVED POST =================
+export const removeSavedPost = async (req, res) => {
+  try {
+    const { postId } = req.body;
+    const userId = req.user?._id;
+
+    if (!userId) return res.status(401).json({ message: "User not authenticated" });
+    if (!postId) return res.status(400).json({ message: "Post ID required" });
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const saved = await Saved.findOne({ user: userId });
+    if (!saved) return res.status(404).json({ message: "No saved posts found" });
+
+    const type = post.mediaType;
+    if (type === "image") saved.images = saved.images.filter((id) => id.toString() !== postId);
+    if (type === "video") saved.videos = saved.videos.filter((id) => id.toString() !== postId);
+    if (type === "audio") saved.audios = saved.audios.filter((id) => id.toString() !== postId);
+
+    await saved.save();
+    res.status(200).json({ message: "Post removed from saved posts", postId });
+  } catch (error) {
+    console.error("Error removing saved post:", error);
+    res.status(500).json({ message: "Error removing saved post", error });
+  }
+};
