@@ -17,8 +17,8 @@ const Footer = () => {
         <div className="footer-center">
           <a href="/">Home</a>
           <Link to = "/about">About</Link>
-          <a href="#contact">Contact</a>
-          <a href="#Feedback">Feedback</a>
+          <Link to = "/contact">Contact</Link>
+          <Link to = "/feedback">Feedback</Link>
         </div>
 
         {/* Right: Social Links with Rounded Bubbles */}
