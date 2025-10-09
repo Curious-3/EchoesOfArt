@@ -7,13 +7,13 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Left: Logo + Site Name */}
+        {/* Left -->Logo + Site Name */}
         <div className="footer-left">
           <img src="/logo.jpeg" alt="Echoes of Art" className="footer-logo" />
           <span className="footer-site-name">Echoes of Art</span>
         </div>
 
-        {/* Center: Quick Links */}
+        {/*Links */}
         <div className="footer-center">
           <a href="/">Home</a>
           <Link to = "/about">About</Link>
@@ -21,7 +21,7 @@ const Footer = () => {
           <Link to = "/feedback">Feedback</Link>
         </div>
 
-        {/* Right: Social Links with Rounded Bubbles */}
+        {/* Right -->Social Links  */}
         <div className="footer-right footer-social">
           <a href="https://twitter.com" target="_blank" rel="noreferrer">
             <FaTwitter />
@@ -38,7 +38,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom copyright */}
+      {/* copyright */}
       <div className="footer-bottom">
         &copy; {new Date().getFullYear()} Echoes of Art. All rights reserved.
       </div>

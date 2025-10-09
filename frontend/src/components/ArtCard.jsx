@@ -1,14 +1,5 @@
 import React, { useState } from "react";
 
-/*
-  ArtCard Component
-  -----------------
-  Reusable card to display any type of media (image, video, audio).
-  Supports:
-    - Image
-    - Video (with optional thumbnail and play toggle)
-    - Audio
-*/
 
 const ArtCard = ({ art }) => {
   const [isPlaying, setIsPlaying] = useState(false);

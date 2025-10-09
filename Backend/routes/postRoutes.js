@@ -15,7 +15,7 @@ import {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-// ✅ Create post
+// Create post
 router.post(
   "/",
   protect,
@@ -26,25 +26,25 @@ router.post(
   createPost
 );
 
-// ✅ Get all posts
+// Get all posts
 router.get("/", getAllPosts); // <-- ensure res is automatically passed here
 
-// ✅ Get post by ID
+// Get post by ID
 router.get("/:id", getPostById);
 
-// ✅ Update post
+// Update post
 router.put("/:id", protect, updatePost);
 
-// ✅ Delete post
+// Delete post
 router.delete("/:id", protect, deletePost);
 
-// ✅ User uploads
+// User uploads
 router.get("/user/my-uploads", protect, getMyUploads);
 
-// ✅ Explore posts
+// Explore posts
 router.get("/user/explore", protect, getExplorePosts);
 
-// ✅ Saved posts
+// Saved posts
 router.get("/saved/:id", protect, getSavedPosts);
 
 export default router;
