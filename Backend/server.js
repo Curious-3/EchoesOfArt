@@ -1,37 +1,38 @@
+// server.js
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
+
+// Import routes
 import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js"; 
 import savedRoutes from "./routes/savedRoutes.js";
+import likedRoutes from "./routes/liked.js";
 
 dotenv.config();
 
-//  Connect to MongoDB
+// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-
+// Middlewares
 app.use(cors());
-
-//  Middlewares
 app.use(express.json());
 
-//  Root route
+// Root route
 app.get("/", (req, res) => {
-  res.send(" Server is running!");
+  res.send("Server is running!");
 });
 
-//  Auth routes
-app.use("/api/auth", authRoutes);
+// API Routes
+app.use("/api/auth", authRoutes);      // Authentication
+app.use("/api/posts", postRoutes);     // Posts CRUD
+app.use("/api/saved", savedRoutes);    // Saved posts
+app.use("/api/liked", likedRoutes);    // Liked posts
 
-//  Post CRUD routes
-app.use("/api/posts", postRoutes);
-
-// Saved posts routes
-app.use("/api/saved", savedRoutes);
-
+// Start server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(` Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
