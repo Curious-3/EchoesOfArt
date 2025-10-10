@@ -1,8 +1,26 @@
 import React, { useState } from "react";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ArtCard = ({ art }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Notify helper
+  const notify = (msg, type = "info") => {
+    switch (type) {
+      case "success":
+        toast.success(msg);
+        break;
+      case "error":
+        toast.error(msg);
+        break;
+      case "warn":
+        toast.warn(msg);
+        break;
+      default:
+        toast.info(msg);
+    }
+  };
 
   const renderMedia = () => {
     switch (art.mediaType || art.type) {
@@ -12,6 +30,8 @@ const ArtCard = ({ art }) => {
             src={art.mediaUrl}
             alt={art.title}
             className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+            onLoad={() => notify("Image loaded ✅", "success")}
+            onError={() => notify("Failed to load image ❌", "error")}
           />
         );
 
@@ -23,7 +43,10 @@ const ArtCard = ({ art }) => {
                 src={art.thumbnailUrl || "fallback-thumbnail.jpg"}
                 alt={art.title}
                 className="w-full h-64 object-cover cursor-pointer"
-                onClick={() => setIsPlaying(true)}
+                onClick={() => {
+                  setIsPlaying(true);
+                  notify("Video started ▶️", "info");
+                }}
               />
             ) : (
               <video
@@ -31,7 +54,11 @@ const ArtCard = ({ art }) => {
                 controls
                 autoPlay
                 className="w-full h-64 object-cover"
-                onEnded={() => setIsPlaying(false)}
+                onEnded={() => {
+                  setIsPlaying(false);
+                  notify("Video ended ⏹", "warn");
+                }}
+                onError={() => notify("Error playing video ❌", "error")}
               />
             )}
           </div>
@@ -40,7 +67,14 @@ const ArtCard = ({ art }) => {
       case "audio":
         return (
           <div className="p-4 bg-gray-100">
-            <audio src={art.mediaUrl} controls className="w-full" />
+            <audio
+              src={art.mediaUrl}
+              controls
+              className="w-full"
+              onPlay={() => notify("Audio started 🎵", "info")}
+              onEnded={() => notify("Audio finished ✅", "success")}
+              onError={() => notify("Error playing audio ❌", "error")}
+            />
           </div>
         );
 
@@ -50,6 +84,7 @@ const ArtCard = ({ art }) => {
             src={art.mediaUrl}
             alt={art.title}
             className="w-full h-64 object-cover"
+            onError={() => notify("Media failed to load ❌", "error")}
           />
         );
     }

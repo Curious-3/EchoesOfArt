@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
-import "./../styles/MyUploads.css";
+import toast, { Toaster } from "react-hot-toast";
 
 const MyUploads = ({ searchTerm }) => {
   const { user } = useAuth();
@@ -9,11 +9,9 @@ const MyUploads = ({ searchTerm }) => {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editData, setEditData] = useState({ title: "", description: "" });
 
-  // Helper to get token safely
   const getToken = () => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return null;
-
     try {
       const parsed = JSON.parse(storedUser);
       return parsed.token || localStorage.getItem("token");
@@ -29,19 +27,19 @@ const MyUploads = ({ searchTerm }) => {
   const fetchUserUploads = async () => {
     try {
       const token = getToken();
-      console.log("Token being sent:", token);
-
       if (!token) {
-        console.error("No token found. Please login.");
+        toast.error("No token found. Please login.");
         return;
       }
 
-      const res = await axios.get("http://localhost:8000/api/posts/user/my-uploads", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "http://localhost:8000/api/posts/user/my-uploads",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setPosts(res.data);
     } catch (err) {
       console.error("Error fetching uploads:", err.response?.data || err.message);
+      toast.error("Failed to fetch uploads.");
     }
   };
 
@@ -58,8 +56,10 @@ const MyUploads = ({ searchTerm }) => {
       });
       setEditingPostId(null);
       fetchUserUploads();
+      toast.success("Post updated successfully!");
     } catch (err) {
       console.error("Error updating post:", err.response?.data || err.message);
+      toast.error("Failed to update post.");
     }
   };
 
@@ -70,8 +70,10 @@ const MyUploads = ({ searchTerm }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchUserUploads();
+      toast.success("Post deleted successfully!");
     } catch (err) {
       console.error("Error deleting post:", err.response?.data || err.message);
+      toast.error("Failed to delete post.");
     }
   };
 
@@ -84,47 +86,94 @@ const MyUploads = ({ searchTerm }) => {
   });
 
   return (
-    <div className="uploads-page">
-      <h2>My Uploaded Art</h2>
-      {filteredPosts.length === 0 ? (
-        <p>No uploads found!</p>
-      ) : (
-        filteredPosts.map((post) => (
-          <div key={post._id} className="upload-card">
-            {post.mediaType === "image" && post.mediaUrl && (
-              <img src={post.mediaUrl} alt={post.title} className="upload-img" />
-            )}
-            {post.mediaType === "video" && post.mediaUrl && (
-              <video src={post.mediaUrl} controls className="upload-img" poster={post.thumbnailUrl || ""} />
-            )}
+    <div className="max-w-6xl mx-auto px-4 mt-10">
+      <h2 className="text-2xl font-semibold mb-6 text-center">My Uploaded Art</h2>
 
-            {editingPostId === post._id ? (
-              <div className="edit-form">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                  placeholder="Title"
+      {filteredPosts.length === 0 ? (
+        <p className="text-center text-gray-500">No uploads found!</p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {filteredPosts.map((post) => (
+            <div
+              key={post._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
+            >
+              {post.mediaType === "image" && post.mediaUrl && (
+                <img
+                  src={post.mediaUrl}
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
                 />
-                <textarea
-                  value={editData.description}
-                  onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                  placeholder="Description"
-                ></textarea>
-                <button onClick={() => handleUpdate(post._id)}>Save</button>
-                <button onClick={() => setEditingPostId(null)}>Cancel</button>
-              </div>
-            ) : (
-              <div className="post-info">
-                <h3>{post.title}</h3>
-                <p>{post.description}</p>
-                <button onClick={() => handleEdit(post)}>Edit</button>
-                <button onClick={() => handleDelete(post._id)}>Delete</button>
-              </div>
-            )}
-          </div>
-        ))
+              )}
+              {post.mediaType === "video" && post.mediaUrl && (
+                <video
+                  src={post.mediaUrl}
+                  controls
+                  className="w-full h-48 object-cover"
+                  poster={post.thumbnailUrl || ""}
+                />
+              )}
+
+              {editingPostId === post._id ? (
+                <div className="p-4 flex flex-col gap-2">
+                  <input
+                    type="text"
+                    value={editData.title}
+                    onChange={(e) =>
+                      setEditData({ ...editData, title: e.target.value })
+                    }
+                    placeholder="Title"
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  />
+                  <textarea
+                    value={editData.description}
+                    onChange={(e) =>
+                      setEditData({ ...editData, description: e.target.value })
+                    }
+                    placeholder="Description"
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdate(post._id)}
+                      className="flex-1 bg-blue-500 text-white rounded-md py-2 hover:bg-blue-600"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingPostId(null)}
+                      className="flex-1 bg-gray-300 rounded-md py-2 hover:bg-gray-400"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 flex flex-col gap-2">
+                  <h3 className="text-lg font-medium text-gray-800">{post.title}</h3>
+                  <p className="text-sm text-gray-600">{post.description}</p>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => handleEdit(post)}
+                      className="flex-1 bg-yellow-400 text-white rounded-md py-1 hover:bg-yellow-500 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(post._id)}
+                      className="flex-1 bg-red-500 text-white rounded-md py-1 hover:bg-red-600 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       )}
+
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };

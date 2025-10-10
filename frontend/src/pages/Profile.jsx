@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
+import toast, { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ const Profile = () => {
         setLoading(false);
       } catch (err) {
         console.error(err);
+        toast.error("Failed to load profile");
         setLoading(false);
       }
     };
@@ -26,16 +28,15 @@ const Profile = () => {
 
   // Auto-update full name when firstName or lastName changes
   useEffect(() => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      name: `${prev.firstName || ""} ${prev.lastName || ""}`.trim()
+      name: `${prev.firstName || ""} ${prev.lastName || ""}`.trim(),
     }));
   }, [profile.firstName, profile.lastName]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Nested fields like socialLinks.social1
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setProfile({
@@ -58,11 +59,11 @@ const Profile = () => {
         profile,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      alert(data.message);
+      toast.success(data.message || "Profile updated successfully!");
       setEditMode(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     }
   };
 
@@ -86,10 +87,10 @@ const Profile = () => {
       );
 
       setProfile({ ...profile, profileImage: data.user.profileImage });
-      alert("Profile image updated successfully!");
+      toast.success("Profile image updated successfully!");
     } catch (err) {
       console.error("Upload error:", err.response || err);
-      alert("Failed to upload image");
+      toast.error("Failed to upload image");
     }
   };
 
@@ -97,7 +98,6 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-16 p-6 md:p-10 bg-white shadow-2xl rounded-3xl border border-gray-200 transition-all duration-500 hover:shadow-3xl">
-      
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-10">
         <h2 className="text-3xl md:text-4xl font-extrabold text-indigo-600 animate-pulse mb-4 md:mb-0">
@@ -118,7 +118,11 @@ const Profile = () => {
         </h3>
         <div className="relative w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-indigo-500 shadow-lg transition-transform duration-500 hover:scale-110">
           <img
-            src={profile.profileImage ? `http://localhost:8000${profile.profileImage}` : "/default-avatar.png"}
+            src={
+              profile.profileImage
+                ? `http://localhost:8000${profile.profileImage}`
+                : "/default-avatar.png"
+            }
             alt="Profile"
             className="w-full h-full object-cover"
           />
@@ -131,7 +135,11 @@ const Profile = () => {
             />
           )}
         </div>
-        {editMode && <p className="text-sm mt-2 text-gray-500">Click to change profile picture</p>}
+        {editMode && (
+          <p className="text-sm mt-2 text-gray-500">
+            Click to change profile picture
+          </p>
+        )}
 
         {/* Social Links Display */}
         <div className="flex space-x-6 mt-4">
@@ -160,11 +168,12 @@ const Profile = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-
         {/* First & Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">First Name</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">
+              First Name
+            </label>
             <input
               type="text"
               name="firstName"
@@ -175,7 +184,9 @@ const Profile = () => {
             />
           </div>
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">Last Name</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">
+              Last Name
+            </label>
             <input
               type="text"
               name="lastName"
@@ -189,7 +200,9 @@ const Profile = () => {
 
         {/* Full Name */}
         <div>
-          <label className="block text-lg font-semibold mb-2 text-gray-700">Full Name</label>
+          <label className="block text-lg font-semibold mb-2 text-gray-700">
+            Full Name
+          </label>
           <input
             type="text"
             name="name"
@@ -202,7 +215,9 @@ const Profile = () => {
 
         {/* Email */}
         <div>
-          <label className="block text-lg font-semibold mb-2 text-gray-700">Email</label>
+          <label className="block text-lg font-semibold mb-2 text-gray-700">
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -214,7 +229,9 @@ const Profile = () => {
 
         {/* DOB */}
         <div>
-          <label className="block text-lg font-semibold mb-2 text-gray-700">Date of Birth</label>
+          <label className="block text-lg font-semibold mb-2 text-gray-700">
+            Date of Birth
+          </label>
           <input
             type="date"
             name="dob"
@@ -227,7 +244,9 @@ const Profile = () => {
 
         {/* About */}
         <div>
-          <label className="block text-lg font-semibold mb-2 text-gray-700">About</label>
+          <label className="block text-lg font-semibold mb-2 text-gray-700">
+            About
+          </label>
           <textarea
             name="about"
             value={profile.about || ""}
@@ -240,7 +259,9 @@ const Profile = () => {
         {/* Custom Social Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">Social Link 1</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">
+              Social Link 1
+            </label>
             <input
               type="text"
               name="socialLinks.social1"
@@ -252,7 +273,9 @@ const Profile = () => {
             />
           </div>
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">Social Link 2</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">
+              Social Link 2
+            </label>
             <input
               type="text"
               name="socialLinks.social2"
@@ -267,7 +290,9 @@ const Profile = () => {
 
         {/* Interests */}
         <div>
-          <label className="block text-lg font-semibold mb-2 text-gray-700">Interests (comma separated)</label>
+          <label className="block text-lg font-semibold mb-2 text-gray-700">
+            Interests (comma separated)
+          </label>
           <input
             type="text"
             name="interests"
@@ -292,6 +317,9 @@ const Profile = () => {
           </button>
         )}
       </form>
+
+      {/* Toast container */}
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
