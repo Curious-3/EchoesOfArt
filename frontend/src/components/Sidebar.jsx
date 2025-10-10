@@ -33,22 +33,19 @@ const Sidebar = ({ open, setOpen }) => {
 
   return (
     <>
-      
       {!open && (
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md shadow-md transition-transform duration-300 hover:scale-110"
+          className="fixed top-4 left-4 z-40 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md shadow-md transition-transform duration-300 hover:scale-110"
         >
           <Bars3Icon className="w-6 h-6" />
         </button>
       )}
 
-      
       <div
         style={{ width: open ? "16rem" : "4rem" }}
-        className="fixed top-0 left-0 h-full z-50 bg-gradient-to-b from-blue-900 to-blue-600 text-white shadow-lg pt-16 transition-all duration-300 ease-in-out"
+        className="fixed top-0 left-0 h-full z-30 bg-gradient-to-b from-blue-900 to-blue-600 text-white shadow-lg pt-16 transition-all duration-300 ease-in-out"
       >
-      
         <button
           onClick={toggleSidebar}
           className="absolute top-3 -right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-11 h-11 flex items-center justify-center text-lg shadow-md transition-transform duration-300 hover:scale-110"
@@ -56,7 +53,6 @@ const Sidebar = ({ open, setOpen }) => {
           ☰
         </button>
 
-      
         <div className="flex flex-col gap-3 mt-4 m-2">
           {user ? (
             menuItems.map((item) => (
@@ -68,17 +64,13 @@ const Sidebar = ({ open, setOpen }) => {
                   {item.icon}
                 </button>
 
-              
                 {!open && (
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-1 bg-blue-700 text-white text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 whitespace-nowrap">
                     {item.label}
                   </div>
                 )}
 
-               
-                {open && (
-                  <span className="ml-3 font-semibold">{item.label}</span>
-                )}
+                {open && <span className="ml-3 font-semibold">{item.label}</span>}
               </div>
             ))
           ) : (
