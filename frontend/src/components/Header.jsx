@@ -17,6 +17,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
     navigate("/");
   };
 
+
   return (
     <header className="header">
       <div className="logo-section">
@@ -40,7 +41,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
         ) : (
           <div className="user-actions">
             <div className="profile-circle">
-              {user.name ? user.name[0] : user.email[0]}
+              {user.name ? user?.name[0] : user?.email[0]}
             </div>
             <button onClick={handleLogout} className="logout-btn">
               Logout
