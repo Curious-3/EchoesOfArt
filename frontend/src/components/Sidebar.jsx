@@ -28,6 +28,7 @@ const Sidebar = ({ open, setOpen }) => {
               <button onClick={() => handleNavigation("/profile")}>Edit Profile</button>
               <button onClick={() => handleNavigation("/saved")}>Saved Art</button>
               <button onClick={() => handleNavigation("/my-uploads")}>My Uploads</button>
+               <button onClick={() => handleNavigation("/writing")}>Writing</button>
               <button onClick={() => handleNavigation("/explore-art")}>Explore Art</button>
             </div>
           ) : (

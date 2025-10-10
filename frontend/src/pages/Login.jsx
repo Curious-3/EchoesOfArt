@@ -40,7 +40,9 @@ const Login = () => {
         email: user.email,
         token,
       };
-      localStorage.setItem("user", JSON.stringify(userData));
+       const token1 = userData.token || userData.user?.token; // depends on backend
+    localStorage.setItem("token", token1); 
+    localStorage.setItem("user", JSON.stringify(userData)); 
 
       // Debug: check saved user
       console.log("Saved User:", JSON.parse(localStorage.getItem("user")));

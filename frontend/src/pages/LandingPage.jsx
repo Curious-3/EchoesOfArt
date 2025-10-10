@@ -40,16 +40,19 @@ const LandingPage = ({ searchTerm }) => {
         })
         .catch((err) => console.error("Error fetching saved posts:", err));
 
-      // Fetch liked posts
-      axios
-        .get(`http://localhost:8000/api/liked/${loggedUser.id}`, {
-          headers: { Authorization: `Bearer ${loggedUser.token}` },
-        })
-        .then((res) => {
-          const likedIds = res.data.map((p) => p.post._id || p.post);
-          setLikedPosts(likedIds);
-        })
-        .catch((err) => console.error("Error fetching liked posts:", err));
+   // Fetch liked posts
+axios
+  .get(`http://localhost:8000/api/liked/${loggedUser.id}`, {
+    headers: { Authorization: `Bearer ${loggedUser.token}` },
+  })
+  .then((res) => {
+    const likedIds = res.data
+      .filter(p => p && p.post)       // remove null/undefined posts
+      .map((p) => p.post._id || p.post);
+    setLikedPosts(likedIds);
+  })
+  .catch((err) => console.error("Error fetching liked posts:", err));
+
     }
   }, []);
 
