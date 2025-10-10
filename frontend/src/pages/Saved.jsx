@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ArtCard from "../components/ArtCard";
+import toast, { Toaster } from "react-hot-toast";
 
 const Saved = () => {
   const [images, setImages] = useState([]);
@@ -15,6 +16,7 @@ const Saved = () => {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user || !user.token) {
           setError("Please login to view saved posts.");
+          toast.error("Please login to view saved posts.");
           setLoading(false);
           return;
         }
@@ -29,9 +31,11 @@ const Saved = () => {
         setImages(response.data.images || []);
         setVideos(response.data.videos || []);
         setAudios(response.data.audios || []);
+        toast.success("Saved posts loaded successfully!");
       } catch (err) {
         console.error("Error fetching saved posts:", err);
         setError("Failed to load saved posts.");
+        toast.error("Failed to load saved posts.");
       } finally {
         setLoading(false);
       }
@@ -51,6 +55,7 @@ const Saved = () => {
     return (
       <div className="flex justify-center items-center h-screen text-red-600 font-medium">
         {error}
+        <Toaster position="top-right" reverseOrder={false} />
       </div>
     );
 
@@ -106,6 +111,9 @@ const Saved = () => {
           </div>
         )}
       </section>
+
+      {/* Toast container */}
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
