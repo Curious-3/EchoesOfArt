@@ -2,6 +2,8 @@
 
 import express from "express";
 import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import writingRoutes from './routes/writingRoutes.js';
 import cors from "cors";
 import connectDB from "./config/db.js";
 
@@ -33,6 +35,7 @@ app.use("/api/auth", authRoutes);      // Authentication
 app.use("/api/posts", postRoutes);     // Posts CRUD
 app.use("/api/saved", savedRoutes);    // Saved posts
 app.use("/api/liked", likedRoutes);    // Liked posts
+app.use('/api/writing', writingRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import WritingPage from "./pages/WritingPage";
 import LandingPage from "./pages/LandingPage";
+import WritingEditor from './components/WritingEditor';
+import MyWritings from './components/MyWritings';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Upload from "./pages/Upload";
@@ -97,6 +100,18 @@ const App = () => {
               </Layout>
             }
           />
+
+
+          <Route
+            path="/writing"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <WritingPage />
+              </Layout>
+            }
+          />
+
+          
           <Route
             path="/explore-art"
             element={
