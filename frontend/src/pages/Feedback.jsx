@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./../styles/Feedback.css";
 
 const Feedback = () => {
   const [formData, setFormData] = useState({
@@ -24,19 +23,28 @@ const Feedback = () => {
   };
 
   return (
-    <div className="feedback-container">
-      <div className="feedback-header">
-        <h1>We Value Your Feedback</h1>
-        <p>
+    <div className="max-w-4xl mx-auto mt-20 p-12 bg-white rounded-3xl shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">
+          We Value Your Feedback
+        </h1>
+        <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
           Your thoughts help us improve Echoes Of Art. Share your experience,
           suggestions, or ideas with us.
         </p>
       </div>
 
-      <div className="feedback-form-section">
-        {submitted && <p className="thank-you">Thank you for your feedback!</p>}
-        <form className="feedback-form" onSubmit={handleSubmit}>
-          <label>
+      {/* Form Section */}
+      <div className="flex flex-col items-center">
+        {submitted && (
+          <p className="text-green-600 font-semibold text-lg mb-6 text-center">
+            Thank you for your feedback!
+          </p>
+        )}
+        <form className="w-full flex flex-col gap-5" onSubmit={handleSubmit}>
+          {/* Name */}
+          <label className="flex flex-col font-medium text-gray-900 text-base">
             Name
             <input
               type="text"
@@ -45,10 +53,12 @@ const Feedback = () => {
               onChange={handleChange}
               placeholder="Your name"
               required
+              className="mt-2 p-4 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
           </label>
 
-          <label>
+          {/* Email */}
+          <label className="flex flex-col font-medium text-gray-900 text-base">
             Email
             <input
               type="email"
@@ -57,15 +67,18 @@ const Feedback = () => {
               onChange={handleChange}
               placeholder="Your email"
               required
+              className="mt-2 p-4 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
           </label>
 
-          <label>
+          {/* Rating */}
+          <label className="flex flex-col font-medium text-gray-900 text-base">
             Rating
             <select
               name="rating"
               value={formData.rating}
               onChange={handleChange}
+              className="mt-2 p-4 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             >
               <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
               <option value="4">⭐⭐⭐⭐ Good</option>
@@ -75,7 +88,8 @@ const Feedback = () => {
             </select>
           </label>
 
-          <label>
+          {/* Message */}
+          <label className="flex flex-col font-medium text-gray-900 text-base">
             Message
             <textarea
               name="message"
@@ -84,10 +98,17 @@ const Feedback = () => {
               placeholder="Write your feedback here..."
               rows="5"
               required
+              className="mt-2 p-4 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
             ></textarea>
           </label>
 
-          <button type="submit">Submit Feedback</button>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="mt-3 py-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold text-lg rounded-2xl shadow-lg hover:from-blue-700 hover:to-blue-600 hover:-translate-y-1 transition-all"
+          >
+            Submit Feedback
+          </button>
         </form>
       </div>
     </div>
