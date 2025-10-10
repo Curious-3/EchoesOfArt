@@ -16,8 +16,14 @@ const Header = ({ searchTerm, setSearchTerm }) => {
     return (
       <header className="flex items-center bg-gradient-to-r from-blue-700 to-blue-500 text-white h-[70px] px-10 shadow-md sticky top-0 z-[150] w-full">
         <div className="flex items-center gap-3 ml-16">
-          <img src="logo.jpeg" alt="Logo" className="w-12 h-12 rounded-full cursor-pointer transition-transform duration-300 hover:scale-125 hover:shadow-lg" />
-          <span className="text-2xl font-bold tracking-wide text-sky-100">Echoes Of Art</span>
+          <img
+            src="logo.jpeg"
+            alt="Logo"
+            className="w-12 h-12 rounded-full cursor-pointer transition-transform duration-300 hover:scale-125 hover:shadow-lg"
+          />
+          <span className="text-2xl font-bold tracking-wide text-sky-100">
+            Echoes Of Art
+          </span>
         </div>
       </header>
     );

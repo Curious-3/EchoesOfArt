@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-blue-500 text-white w-full border-t-4 border-white/20 font-sans">
-      <div className="flex flex-wrap justify-between items-start gap-8 max-w-6xl mx-auto px-5 py-6">
+    <footer className="bg-gradient-to-r from-blue-700 to-blue-500 text-white w-full border-t-4 border-white/20 font-sans z-50 relative">
+      
+      <div className="flex flex-wrap justify-between items-start gap-8 max-w-6xl mx-auto px-6 py-6"> {/* px reduced for closer left alignment */}
         
         {/* 🔹 Left: Logo + Site Name */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 ml-2"> {/* slight left shift */}
           <img
             src="/logo.jpeg"
             alt="Echoes of Art"
@@ -21,52 +22,24 @@ const Footer = () => {
 
         {/* 🔹 Center: Links */}
         <div className="flex flex-wrap items-center gap-6 text-blue-100 text-[15px]">
-          <a href="/" className="hover:text-white hover:-translate-y-0.5 transition-all">
-            Home
-          </a>
-          <Link to="/about" className="hover:text-white hover:-translate-y-0.5 transition-all">
-            About
-          </Link>
-          <Link to="/contact" className="hover:text-white hover:-translate-y-0.5 transition-all">
-            Contact
-          </Link>
-          <Link to="/feedback" className="hover:text-white hover:-translate-y-0.5 transition-all">
-            Feedback
-          </Link>
+          <Link to="/" className="hover:text-white hover:-translate-y-0.5 transition-all">Home</Link>
+          <Link to="/about" className="hover:text-white hover:-translate-y-0.5 transition-all">About</Link>
+          <Link to="/contact" className="hover:text-white hover:-translate-y-0.5 transition-all">Contact</Link>
+          <Link to="/feedback" className="hover:text-white hover:-translate-y-0.5 transition-all">Feedback</Link>
         </div>
 
         {/* 🔹 Right: Social Icons */}
         <div className="flex gap-4">
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110"
-          >
+          <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110">
             <FaTwitter />
           </a>
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110"
-          >
+          <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110">
             <FaFacebookF />
           </a>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110"
-          >
+          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110">
             <FaInstagram />
           </a>
-          <a
-            href="https://t.me/username"
-            target="_blank"
-            rel="noreferrer"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110"
-          >
+          <a href="https://t.me/username" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white hover:text-blue-600 transition-all transform hover:scale-110">
             <FaTelegramPlane />
           </a>
         </div>
