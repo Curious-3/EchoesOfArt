@@ -20,14 +20,14 @@ const LandingPage = ({ searchTerm }) => {
 
     // Fetch all posts
     axios
-      .get("http://localhost:8000/api/posts")
+      .get("https://echoesofart-backend.onrender.com/api/posts")
       .then((res) => setArts(res.data))
       .catch((err) => console.error("Error fetching arts:", err));
 
     if (loggedUser?.id && loggedUser?.token) {
       // Fetch saved posts
       axios
-        .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
+        .get(`https://echoesofart-backend.onrender.com/api/saved/${loggedUser.id}`, {
           headers: { Authorization: `Bearer ${loggedUser.token}` },
         })
         .then((res) => {
@@ -42,7 +42,7 @@ const LandingPage = ({ searchTerm }) => {
 
       // Fetch liked posts
       axios
-        .get(`http://localhost:8000/api/liked/${loggedUser.id}`, {
+        .get(`https://echoesofart-backend.onrender.com/api/liked/${loggedUser.id}`, {
           headers: { Authorization: `Bearer ${loggedUser.token}` },
         })
         .then((res) => {
@@ -77,14 +77,14 @@ const LandingPage = ({ searchTerm }) => {
     try {
       if (savedPosts.includes(postId)) {
         await axios.post(
-          "http://localhost:8000/api/saved/remove",
+          "https://echoesofart-backend.onrender.com/api/saved/remove",
           { postId },
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         setSavedPosts(savedPosts.filter((id) => id !== postId));
       } else {
         await axios.post(
-          "http://localhost:8000/api/saved/add",
+          "https://echoesofart-backend.onrender.com/api/saved/add",
           { postId },
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
@@ -104,7 +104,7 @@ const LandingPage = ({ searchTerm }) => {
     try {
       if (likedPosts.includes(postId)) {
         await axios.post(
-          "http://localhost:8000/api/liked/remove",
+          "https://echoesofart-backend.onrender.com/api/liked/remove",
           { postId },
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
@@ -118,7 +118,7 @@ const LandingPage = ({ searchTerm }) => {
         );
       } else {
         await axios.post(
-          "http://localhost:8000/api/liked/add",
+          "https://echoesofart-backend.onrender.com/api/liked/add",
           { postId },
           { headers: { Authorization: `Bearer ${user.token}` } }
         );

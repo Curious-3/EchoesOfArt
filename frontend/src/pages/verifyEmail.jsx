@@ -22,7 +22,7 @@ const VerifyEmail = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/auth/verify-email",
+        "https://echoesofart-backend.onrender.com/api/auth/verify-email",
         { email, otp },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -47,7 +47,7 @@ const VerifyEmail = () => {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/auth/resend-otp",
+        "https://echoesofart-backend.onrender.com/api/auth/resend-otp",
         { email },
         { headers: { "Content-Type": "application/json" } }
       );

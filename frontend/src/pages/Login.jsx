@@ -23,7 +23,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/login", {
+      const res = await axios.post("https://echoesofart-backend.onrender.com/api/auth/login", {
         email,
         password,
       });
