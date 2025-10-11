@@ -149,11 +149,12 @@ const LandingPage = ({ searchTerm }) => {
     <>
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-      <main
-  className={`transition-all duration-300 min-h-screen flex flex-col items-center bg-[#f0f9ff] ${
+     <main
+  className={`transition-all duration-300 flex flex-col items-center bg-[#f0f9ff] min-h-screen w-full ${
     sidebarOpen ? "ml-64" : "ml-20"
   } md:ml-20 sm:ml-0`}
 >
+
   {/* Featured Works */}
   <div className="w-full flex flex-col items-center mt-[calc(var(--header-height)+50px)] mb-10">
     <h2 className="text-3xl md:text-5xl font-bold text-center bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent drop-shadow-md">
