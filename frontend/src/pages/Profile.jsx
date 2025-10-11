@@ -12,7 +12,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8000/api/auth/profile", {
+        const { data } = await axios.get("https://echoesofart-backend.onrender.com/api/auth/profile", {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setProfile(data);
@@ -55,7 +55,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const { data } = await axios.put(
-        "http://localhost:8000/api/auth/profile",
+        "https://echoesofart-backend.onrender.com/api/auth/profile",
         profile,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -76,7 +76,7 @@ const Profile = () => {
       formData.append("profileImage", file);
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/auth/profile-image",
+        "https://echoesofart-backend.onrender.com/api/auth/profile-image",
         formData,
         {
           headers: {
@@ -120,7 +120,7 @@ const Profile = () => {
           <img
             src={
               profile.profileImage
-                ? `http://localhost:8000${profile.profileImage}`
+                ? `https://echoesofart-backend.onrender.com${profile.profileImage}`
                 : "/default-avatar.png"
             }
             alt="Profile"
