@@ -13,13 +13,12 @@ const WritingEditor = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const userToken = user?.token;
 
-  //  Save Draft (manual only)
+  // Save draft function
   const saveDraft = async (title, content) => {
     if (!userToken) {
       toast.error("You must be logged in to save a draft!");
       return;
     }
-
     if (!title && !content?.trim()) {
       toast.error("Please write something before saving!");
       return;
@@ -42,7 +41,7 @@ const WritingEditor = () => {
     }
   };
 
-  //  Publish Writing
+  // Publish writing function
   const publishWriting = async () => {
     if (!userToken) {
       toast.error("You must be logged in to publish!");
@@ -73,46 +72,28 @@ const WritingEditor = () => {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
+    <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md mx-auto">
+      {/* Title Input */}
       <input
         type="text"
         placeholder="Enter title here..."
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={{
-          width: "100%",
-          marginBottom: "10px",
-          padding: "10px",
-          fontSize: "16px",
-          borderRadius: "6px",
-          border: "1px solid #ccc",
-        }}
+        className="w-full mb-4 p-3 border rounded-md border-gray-300 text-lg"
       />
 
+      {/* Quill Editor */}
       <div
         ref={quillRef}
-        style={{
-          height: "400px",
-          background: "#fff",
-          borderRadius: "6px",
-          border: "1px solid #ddd",
-        }}
+        className="h-96 bg-white border rounded-md border-gray-300"
       />
 
-      <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+      {/* Action Buttons */}
+      <div className="mt-4 flex gap-3">
         <button
-          onClick={() => {
-            const content = quill?.root?.innerHTML;
-            saveDraft(title, content);
-          }}
+          onClick={() => saveDraft(title, quill?.root?.innerHTML)}
           disabled={loading}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#ccc",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition"
         >
           {loading ? "Saving..." : "Save as Draft"}
         </button>
@@ -120,14 +101,7 @@ const WritingEditor = () => {
         <button
           onClick={publishWriting}
           disabled={loading}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#4caf50",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
         >
           {loading ? "Publishing..." : "Publish"}
         </button>

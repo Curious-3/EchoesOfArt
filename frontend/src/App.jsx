@@ -26,15 +26,19 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="app-layout">
-      <Toaster position="top-right" reverseOrder={false} />
-      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-      <div className={`main-content ${sidebarOpen ? "shift" : ""}`}>
-        {children}
-      </div>
-      <Footer />
-    </div>
+   <div className="flex flex-col min-h-screen bg-[#f0f9ff]">
+  <Toaster position="top-right" reverseOrder={false} />
+  <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+  <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+
+  {/* Main content expands to push footer down */}
+  <main className={`flex-grow transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-20"} md:ml-20 sm:ml-0`}>
+    {children}
+  </main>
+
+  <Footer />
+</div>
+
   );
 };
 
