@@ -3,6 +3,7 @@ import Post from "../models/Post.js";
 import Saved from "../models/Saved.js";
 import Liked from "../models/Liked.js";
 import cloudinary from "../config/cloudinary.js";
+import User from "../models/User.js";
 
 //  HELPER FUNCTION 
 const addLikeCount = async (posts) => {
@@ -16,37 +17,60 @@ const addLikeCount = async (posts) => {
 };
 
 // CREATE NEW POST 
+// ================= CREATE NEW POST =================
 export const createPost = async (req, res) => {
+  console.log("Logged-in User ID:", req.user._id);
+  console.log("Media Type:", req.body.mediaType);
+
   try {
     const files = req.files;
     if (!files || !files.file)
       return res.status(400).json({ message: "Media file is required" });
 
-    const mediaResult = await cloudinary.uploader.upload(files.file[0].path, { resource_type: "auto" });
+    // Upload main media
+    const mediaResult = await cloudinary.uploader.upload(files.file[0].path, {
+      resource_type: "auto",
+    });
 
+    // Upload thumbnail (optional)
     let thumbnailUrl = "";
     if (files.thumbnail) {
-      const thumbResult = await cloudinary.uploader.upload(files.thumbnail[0].path, { resource_type: "image" });
+      const thumbResult = await cloudinary.uploader.upload(
+        files.thumbnail[0].path,
+        { resource_type: "image" }
+      );
       thumbnailUrl = thumbResult.secure_url;
     }
 
+    // Create new post
     const newPost = await Post.create({
       title: req.body.title,
       description: req.body.description,
       mediaUrl: mediaResult.secure_url,
-      mediaType: req.body.mediaType,
+      mediaType: req.body.mediaType, // "image" | "video" | "audio"
       thumbnailUrl,
       tags: req.body.tags?.split(","),
       category: req.body.category,
       createdBy: req.user._id,
     });
 
+    // ✅ Update user's postStats count dynamically
+    const mediaType = req.body.mediaType; // e.g. image
+    const updateField = `postStats.${mediaType}s`; // postStats.images
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { [updateField]: 1 },
+    });
+
     res.status(201).json({ message: "Successfully Posted", post: newPost });
   } catch (error) {
     console.error("Error creating post:", error);
-    res.status(500).json({ message: "Error creating post", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error creating post", error: error.message });
   }
 };
+
 
 // ================= GET ALL POSTS =================
 export const getAllPosts = async (req, res) => {
@@ -109,6 +133,7 @@ export const updatePost = async (req, res) => {
 };
 
 // ================= DELETE POST =================
+// ================= DELETE POST =================
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -117,11 +142,23 @@ export const deletePost = async (req, res) => {
     if (post.createdBy.toString() !== req.user._id.toString())
       return res.status(403).json({ message: "Not authorized" });
 
+    // ✅ Decrease user's postStats count
+    const mediaType = post.mediaType; // e.g. image, video, audio
+    const updateField = `postStats.${mediaType}s`;
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { [updateField]: -1 },
+    });
+
+    // Then delete the post
     await post.deleteOne();
+
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     console.error("Error deleting post:", error);
-    res.status(500).json({ message: "Error deleting post", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting post", error: error.message });
   }
 };
 
@@ -222,3 +259,88 @@ export const removeSavedPost = async (req, res) => {
     res.status(500).json({ message: "Error removing saved post", error: error.message });
   }
 };
+
+// ================= GET LIKED POSTS =================
+export const getLikedPosts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Populate liked posts, include post and its creator
+    const likedPosts = await Liked.find({ user: userId })
+      .populate({
+        path: "post",
+        populate: { path: "createdBy", select: "name email" },
+      });
+
+    // Filter out deleted or null posts to avoid frontend crashes
+    const validLikedPosts = likedPosts.filter((item) => item.post !== null);
+
+    res.status(200).json(validLikedPosts);
+  } catch (error) {
+    console.error("Error fetching liked posts:", error);
+    res.status(500).json({ message: "Error fetching liked posts", error: error.message });
+  }
+};
+
+// ================= GET LIKES BY DATE FOR CHART =================
+export const getLikesByDate = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Fetch all likes of the user
+    const likes = await Liked.find({ user: userId }).select("createdAt");
+
+    // Group likes by date
+    const likesByDate = {};
+    likes.forEach((like) => {
+      const date = like.createdAt.toISOString().split("T")[0]; // format: YYYY-MM-DD
+      likesByDate[date] = (likesByDate[date] || 0) + 1;
+    });
+
+    // Optional: sort dates ascending
+    const sortedLikes = Object.keys(likesByDate)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = likesByDate[key];
+        return acc;
+      }, {});
+
+    res.status(200).json(sortedLikes);
+  } catch (err) {
+    console.error("Error fetching likes by date:", err);
+    res.status(500).json({ message: "Error fetching likes by date", error: err.message });
+  }
+}
+// ----------Get Posts By Date-------------
+export const getPostsByDate = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Fetch all posts of the user
+    console.log(userId);
+    const posts = await Post.find({ createdBy: userId }).select("createdAt");
+
+    // Group posts by date
+    
+    console.log(posts);
+    const postsByDate = {};
+    posts.forEach((post) => {
+      const date = post.createdAt.toISOString().split("T")[0]; // YYYY-MM-DD
+      postsByDate[date] = (postsByDate[date] || 0) + 1;
+    });
+
+    // Optional: sort dates ascending
+    const sortedPosts = Object.keys(postsByDate)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = postsByDate[key];
+        return acc;
+      }, {});
+
+    res.status(200).json(sortedPosts);
+  } catch (err) {
+    console.error("Error fetching posts by date:", err);
+    res.status(500).json({ message: "Error fetching posts by date", error: err.message });
+  }
+};
+

@@ -7,18 +7,31 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     dob: { type: Date, required: true },
+
     firstName: { type: String },
     lastName: { type: String },
     about: { type: String },
     profileImage: { type: String },
     interests: [{ type: String }],
     socialLinks: {
-      facebook: { type: String },
-      instagram: { type: String },
+  social1: { type: String },
+  social2: { type: String },
     },
+
+    // Verification fields
     isVerified: { type: Boolean, default: false },
     otp: { type: String },
     otpExpires: { type: Date },
+
+    // New Fields for Analytics
+    postStats: {
+      images: { type: Number, default: 0 },   // total image posts uploaded
+      videos: { type: Number, default: 0 },   // total video posts uploaded
+      audios: { type: Number, default: 0 },   // total audio posts uploaded
+      others: { type: Number, default: 0 },   // any other post type (optional)
+    },
+
+    totalLikes: { type: Number, default: 0 }, // total likes received on all posts
   },
   { timestamps: true }
 );

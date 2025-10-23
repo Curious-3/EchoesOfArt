@@ -66,7 +66,7 @@ const Upload = () => {
         return;
       }
 
-      await axios.post("https://echoesofart-backend.onrender.com/api/posts/", formData, {
+      await axios.post("http://localhost:8000/api/posts/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,

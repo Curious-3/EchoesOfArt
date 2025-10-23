@@ -22,7 +22,7 @@ const MyWritings = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          "https://echoesofart-backend.onrender.com/api/writing/my-writings",
+          "http://localhost:8000/api/writing/my-writings",
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
         setWritings(res.data.writings);
