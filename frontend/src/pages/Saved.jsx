@@ -22,7 +22,7 @@ const Saved = () => {
         }
 
         const response = await axios.get(
-          `https://echoesofart-backend.onrender.com/api/saved/${user.id}`,
+          `http://localhost:8000/api/saved/${user.id}`,
           {
             headers: { Authorization: `Bearer ${user.token}` },
           }

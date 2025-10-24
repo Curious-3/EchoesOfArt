@@ -26,18 +26,18 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-   <div className="flex flex-col min-h-screen bg-[#f0f9ff]">
-  <Toaster position="top-right" reverseOrder={false} />
-  <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-  <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex flex-col min-h-screen bg-[#f0f9ff]">
+      <Toaster position="top-right" reverseOrder={false} />
+      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-  {/* Main content expands to push footer down */}
-  <main className={`flex-grow transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-20"} md:ml-20 sm:ml-0`}>
-    {children}
-  </main>
+      {/* Main content expands to push footer down */}
+      <main className={`flex-grow transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-20"} md:ml-20 sm:ml-0`}>
+        {children}
+      </main>
 
-  <Footer />
-</div>
+      <Footer />
+    </div>
 
   );
 };
@@ -80,13 +80,13 @@ const App = () => {
             }
           />
           <Route
-  path="/profile"
-  element={
-    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-      <Profile />
-    </Layout>
-  }
-/>
+            path="/profile"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <Profile />
+              </Layout>
+            }
+          />
 
           <Route
             path="/saved"
@@ -115,7 +115,7 @@ const App = () => {
             }
           />
 
-          
+
           <Route
             path="/explore-art"
             element={
@@ -130,9 +130,9 @@ const App = () => {
             path="/about"
             element={
               <>
-              <Header/>
-              <AboutUs/>
-              <Footer/>
+                <Header />
+                <AboutUs />
+                <Footer />
               </>
             }
           />
@@ -141,9 +141,9 @@ const App = () => {
             path="/contact"
             element={
               <>
-              <Header/>
-              <ContactUs/>
-              <Footer/>
+                <Header />
+                <ContactUs />
+                <Footer />
               </>
             }
           />
@@ -152,9 +152,9 @@ const App = () => {
             path="/feedback"
             element={
               <>
-              <Header/>
-              <Feedback/>
-              <Footer/>
+                <Header />
+                <Feedback />
+                <Footer />
               </>
             }
           />

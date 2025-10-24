@@ -10,10 +10,36 @@ import {
   getExplorePosts,
   getMyUploads,
   getSavedPosts,
+  getLikedPosts,
+  getLikesByDate,
+  getPostsByDate,
 } from "../controllers/postController.js";
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
+
+/// User-specific routes first
+router.get("/user/my-uploads", protect, getMyUploads);
+router.get("/user/explore", protect, getExplorePosts);
+router.get("/saved/:id", protect, getSavedPosts);
+router.get("/liked", protect, getLikedPosts);
+
+router.get("/likes/graph", protect, (req, res, next) => {
+    console.log("Route /likes/graph called");
+    console.log("User ID (from protect middleware):", req.user ? req.user._id : "No user");
+    console.log("Query params:", req.query);
+    next(); // pass control to the actual handler
+}, getPostsByDate);
+
+// Public routes
+router.get("/", getAllPosts);
+
+// Post by ID
+router.get("/:id", getPostById);
+
+// Update / delete posts
+router.put("/:id", protect, updatePost);
+router.delete("/:id", protect, deletePost);
 
 // Create post
 router.post(
@@ -25,26 +51,5 @@ router.post(
   ]),
   createPost
 );
-
-// Get all posts
-router.get("/", getAllPosts); // <-- ensure res is automatically passed here
-
-// Get post by ID
-router.get("/:id", getPostById);
-
-// Update post
-router.put("/:id", protect, updatePost);
-
-// Delete post
-router.delete("/:id", protect, deletePost);
-
-// User uploads
-router.get("/user/my-uploads", protect, getMyUploads);
-
-// Explore posts
-router.get("/user/explore", protect, getExplorePosts);
-
-// Saved posts
-router.get("/saved/:id", protect, getSavedPosts);
 
 export default router;

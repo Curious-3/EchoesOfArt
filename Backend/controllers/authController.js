@@ -195,25 +195,34 @@ export const resendOTP = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
-
-
-
-
-//  Get Profile
+// controllers/authController.js
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password -otp -otpExpires");
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
+
+    // Transform DB data to match frontend expected shape
+    const response = {
+      ...user.toObject(),
+      stats: {
+        totalLikes: user.totalLikes || 0,
+        categoryWise: user.postStats || { images: 0, videos: 0, audios: 0, others: 0 },
+      },
+    };
+
+    res.json({ user: response });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
 //  Update Profile (text fields) 
 export const updateProfile = async (req, res) => {
+        console.log("Request body2 Vivek :", req.body);
   try {
     const user = await User.findById(req.user.id);
+   
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Update only text-based fields

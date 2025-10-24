@@ -27,7 +27,7 @@ const WritingEditor = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://echoesofart-backend.onrender.com/api/writing/save",
+        "http://localhost:8000/api/writing/save",
         { writingId, title, content, status: "draft" },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
@@ -57,7 +57,7 @@ const WritingEditor = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://echoesofart-backend.onrender.com/api/writing/save",
+        "http://localhost:8000/api/writing/save",
         { writingId, title, content, status: "published" },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );

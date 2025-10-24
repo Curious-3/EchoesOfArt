@@ -33,7 +33,7 @@ const MyUploads = ({ searchTerm }) => {
       }
 
       const res = await axios.get(
-        "https://echoesofart-backend.onrender.com/api/posts/user/my-uploads",
+        "http://localhost:8000/api/posts/user/my-uploads",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPosts(res.data);
@@ -51,7 +51,7 @@ const MyUploads = ({ searchTerm }) => {
   const handleUpdate = async (id) => {
     try {
       const token = getToken();
-      await axios.put(`https://echoesofart-backend.onrender.com/api/posts/${id}`, editData, {
+      await axios.put(`http://localhost:8000/api/posts/${id}`, editData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEditingPostId(null);
@@ -66,7 +66,7 @@ const MyUploads = ({ searchTerm }) => {
   const handleDelete = async (id) => {
     try {
       const token = getToken();
-      await axios.delete(`https://echoesofart-backend.onrender.com/api/posts/${id}`, {
+      await axios.delete(`http://localhost:8000/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchUserUploads();

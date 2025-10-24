@@ -20,7 +20,7 @@ const Register = () => {
 
     try {
       const res = await axios.post(
-        "https://echoesofart-backend.onrender.com/api/auth/register",
+        "http://localhost:8000/api/auth/register",
         { name, email, password, dob },
         { headers: { "Content-Type": "application/json" } }
       );

@@ -31,12 +31,29 @@ app.get("/", (req, res) => {
 app.use("/uploads", express.static("uploads"));
 
 // API Routes
-app.use("/api/auth", authRoutes);      // Authentication
-app.use("/api/posts", postRoutes);     // Posts CRUD
+app.use("/api/auth", (req, res, next) => {
+  console.log("🚦 [AUTH ROUTE HIT]");
+  console.log("➡️  Method:", req.method);
+  console.log("➡️  URL:", req.originalUrl);
+  console.log("➡️  Time:", new Date().toLocaleString());
+  console.log("➡️  Body:", req.body);
+  console.log("➡️  Headers:", req.headers.authorization ? "✅ Auth header present" : "❌ No auth header");
+  next();
+});    // Authentication
+
+// Missing:
+app.use("/api/auth", authRoutes);
+
+app.use("/api/posts", (req, res, next) => {
+    console.log(`Request received at /api/posts -> Method: ${req.method}, URL: ${req.url}`);
+    next(); // pass control to postRoutes
+}, postRoutes);
+
+
 app.use("/api/saved", savedRoutes);    // Saved posts
 app.use("/api/liked", likedRoutes);    // Liked posts
 app.use('/api/writing', writingRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on https://localhost:${PORT}`));
