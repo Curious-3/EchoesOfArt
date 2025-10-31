@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // Can be email or username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -19,12 +19,11 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login function triggered");
     setError("");
 
     try {
       const res = await axios.post("http://localhost:8000/api/auth/login", {
-        email,
+        identifier, // backend can accept either email or username
         password,
       });
 
@@ -37,20 +36,18 @@ const Login = () => {
       const userData = {
         id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         token,
       };
-       const token1 = userData.token || userData.user?.token; // depends on backend
-    localStorage.setItem("token", token1); 
-    localStorage.setItem("user", JSON.stringify(userData)); 
 
-      // Debug: check saved user
-      console.log("Saved User:", JSON.parse(localStorage.getItem("user")));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
 
-      // Set global context
+      // Update global context
       setUser(userData);
 
-      // Optional: set default axios header for future protected requests
+      // Set default axios header for authenticated requests
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // Redirect to home
@@ -64,7 +61,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 px-4">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 text-white">
-        <div className="flex items-center justify-center gap-2 mb-6">
+        <div className="flex items-center justify-center mb-6">
           <h1 className="text-3xl font-bold tracking-wide">Echoes of Art</h1>
         </div>
 
@@ -78,13 +75,14 @@ const Login = () => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1 ml-1">Email</label>
+            <label className="block text-sm mb-1 ml-1">Email or Username</label>
             <input
-              type="email"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
+                         focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              placeholder="Enter your email or username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           </div>
@@ -93,7 +91,8 @@ const Login = () => {
             <label className="block text-sm mb-1 ml-1">Password</label>
             <input
               type="password"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
+                         focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -103,7 +102,8 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 py-2 rounded-lg font-semibold tracking-wide shadow-md hover:scale-105 transition-transform duration-200"
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 py-2 rounded-lg 
+                       font-semibold tracking-wide shadow-md hover:scale-105 transition-transform duration-200"
           >
             Login
           </button>
