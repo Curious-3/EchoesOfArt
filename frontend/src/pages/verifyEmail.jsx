@@ -2,18 +2,20 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+
 const VerifyEmail = () => {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Handle verification
   const handleVerify = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
 
-    const email = localStorage.getItem("pendingEmail");
+    const email = localStorage.getItem("pendingEmail")?.trim().toLowerCase();
     if (!email) {
       toast.error("Session expired. Please register again.");
       navigate("/register");
@@ -33,13 +35,14 @@ const VerifyEmail = () => {
         navigate("/login");
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Verification failed.");
+      console.error("Verification error:", err);
+      setError(err.response?.data?.message || "Verification failed. Try again.");
     }
   };
 
+  // Handle resend OTP
   const handleResend = async () => {
-    const email = localStorage.getItem("pendingEmail");
+    const email = localStorage.getItem("pendingEmail")?.trim().toLowerCase();
     if (!email) {
       setError("No pending verification email found.");
       return;
@@ -52,8 +55,9 @@ const VerifyEmail = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       setMessage("OTP resent successfully!");
+      toast.success("OTP resent successfully!");
     } catch (err) {
-      console.error(err);
+      console.error("Resend OTP error:", err);
       toast.error("Failed to resend OTP. Try again later.");
     }
   };
@@ -61,17 +65,11 @@ const VerifyEmail = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-100 via-white to-pink-100">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md text-center border border-gray-100">
-        <h2 className="text-2xl font-bold text-purple-700 mb-2">
-          Email Verification
-        </h2>
-        <p className="text-gray-600 mb-4">Enter the 6-digit OTP sent to your email.</p>
+        <h2 className="text-2xl font-bold text-purple-700 mb-2">Email Verification</h2>
+        <p className="text-gray-600 mb-4">Enter the 6-digit OTP sent to your registered email.</p>
 
-        {message && (
-          <p className="text-green-600 text-sm font-medium mb-3">{message}</p>
-        )}
-        {error && (
-          <p className="text-red-600 text-sm font-medium mb-3">{error}</p>
-        )}
+        {message && <p className="text-green-600 text-sm font-medium mb-3">{message}</p>}
+        {error && <p className="text-red-600 text-sm font-medium mb-3">{error}</p>}
 
         <form onSubmit={handleVerify} className="flex flex-col gap-4">
           <input
