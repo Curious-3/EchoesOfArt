@@ -34,10 +34,13 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [graphData, setGraphData] = useState([]);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
+
 
   // Fetch profile from backend
   useEffect(() => {
-    if (!user?.token) return;
+    if (!user?.token || !user) return;
 
     const fetchProfile = async () => {
       try {
@@ -52,8 +55,10 @@ const Profile = () => {
           totalLikes: data.user.totalLikes || 0,
         };
 
-        setProfile(fetchedProfile);
-        setLoading(false);
+         setProfile(fetchedProfile);
+         setFollowers(data.user.followers?.length || 0);
+         setFollowing(data.user.following?.length || 0);
+         setLoading(false);
       } catch (err) {
         console.error(err);
         toast.error("Failed to load profile");
@@ -191,6 +196,7 @@ const handleTotalPostsToggle = () => {
           {editMode ? "Cancel" : "Edit Profile"}
         </button>
       </div>
+       
 
       {/* Profile Image & Name */}
       <div className="flex flex-col items-center mb-6">
@@ -236,7 +242,17 @@ const handleTotalPostsToggle = () => {
           )}
         </div>
       </div>
-
+       {/* Followers */}
+        <div className="flex justify-center gap-8 mt-4">
+  <div className="text-center">
+    <h4 className="text-lg font-semibold text-indigo-700">Followers</h4>
+    <p className="text-2xl font-bold text-gray-800">{followers}</p>
+  </div>
+  <div className="text-center">
+    <h4 className="text-lg font-semibold text-indigo-700">Following</h4>
+    <p className="text-2xl font-bold text-gray-800">{following}</p>
+  </div>
+</div>
       {/* Stats Section */}
       {profile.stats && (
         <section className="mb-10">
