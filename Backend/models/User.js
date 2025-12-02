@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 // ======================= SCHEMA DEFINITION =======================
 const userSchema = new mongoose.Schema(
   {
-    // Basic Info
+    // =================== Basic Info ===================
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -40,27 +40,27 @@ const userSchema = new mongoose.Schema(
       required: [true, "Date of birth is required"],
     },
 
-    // Verification
-    isVerified: { type: Boolean, default: false },
-    otp: { type: String },
-    otpExpires: { type: Date },
-
-    // Profile Details
+    // =================== Profile Details ===================
     firstName: { type: String },
     lastName: { type: String },
     about: { type: String, maxlength: 500 },
     profileImage: { type: String, default: "" },
     interests: [{ type: String }],
 
-    // Social Links
-    socialLinks: {
-      facebook: { type: String },
-      instagram: { type: String },
-      twitter: { type: String },
-      linkedin: { type: String },
-    },
+    // =================== Social Links ===================
+    social1: { type: String },
+    social2: { type: String },
 
-    // Analytics / Stats
+    // =================== Verification ===================
+    isVerified: { type: Boolean, default: false },
+    otp: { type: String },
+    otpExpires: { type: Date },
+
+    // =================== Followers & Following ===================
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
+    // =================== Analytics / Stats ===================
     postStats: {
       images: { type: Number, default: 0 },
       videos: { type: Number, default: 0 },

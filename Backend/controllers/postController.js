@@ -75,7 +75,7 @@ export const createPost = async (req, res) => {
 // ================= GET ALL POSTS =================
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("createdBy", "name email").sort({ createdAt: -1 });
+    const posts = await Post.find().populate("createdBy", "name profileImage").sort({ createdAt: -1 });
 
     // Add like count for each post
     const postsWithLikes = await Promise.all(

@@ -1,5 +1,3 @@
-// routes/postRoutes.js
-
 import express from "express";
 import multer from "multer";
 import { protect } from "../middleware/authMiddleware.js";
@@ -20,21 +18,25 @@ import {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-// ======================= USER-SPECIFIC ROUTES =======================
+/// User-specific routes first
 router.get("/user/my-uploads", protect, getMyUploads);
 router.get("/user/explore", protect, getExplorePosts);
 router.get("/saved/:id", protect, getSavedPosts);
 router.get("/liked", protect, getLikedPosts);
 
-// Likes & Posts Analytics (for graph views)
-router.get("/likes/graph", protect, getLikesByDate);
-router.get("/posts/graph", protect, getPostsByDate);
+router.get("/likes/graph", protect, getPostsByDate);
 
-// ======================= PUBLIC ROUTES =======================
+// Public routes
 router.get("/", getAllPosts);
+
+// Post by ID
 router.get("/:id", getPostById);
 
-// ======================= POST CREATION & MODIFICATION =======================
+// Update / delete posts
+router.put("/:id", protect, updatePost);
+router.delete("/:id", protect, deletePost);
+
+// Create post
 router.post(
   "/",
   protect,
@@ -44,8 +46,5 @@ router.post(
   ]),
   createPost
 );
-
-router.put("/:id", protect, updatePost);
-router.delete("/:id", protect, deletePost);
 
 export default router;

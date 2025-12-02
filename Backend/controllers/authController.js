@@ -124,7 +124,7 @@ export const verifyEmail = async (req, res) => {
       html: `
         <div style="font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px; border-radius: 10px;">
           <h2 style="color: #6a1b9a;">Welcome to Echoes of Art, ${user.name}!</h2>
-          <p>We’re thrilled to have you join our creative community.</p>
+          <p>We’re thrilled to have you join our creative community where art meets imagination.</p>
           <br />
           <a href="${process.env.CLIENT_URL}/login" 
             style="background-color: #6a1b9a; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
@@ -256,13 +256,15 @@ export const updateProfile = async (req, res) => {
       "dob",
       "about",
       "interests",
-      "socialLinks",
+      "social1",
+      "social2",
     ];
 
     for (const field of updatableFields) {
       if (req.body[field] !== undefined) user[field] = req.body[field];
     }
 
+    // Check unique username
     if (req.body.username && req.body.username !== user.username) {
       const existing = await User.findOne({ username: req.body.username });
       if (existing)

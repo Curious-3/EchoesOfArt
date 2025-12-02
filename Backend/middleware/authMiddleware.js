@@ -4,7 +4,7 @@ import User from '../models/User.js';
 
 // Auth middleware to protect routes
 export const protect = async (req, res, next) => {
-  try {
+    try {
     //  Check for authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -36,6 +36,3 @@ export const protect = async (req, res, next) => {
     res.status(401).json({ message: 'Token is not valid or expired' });
   }
 };
-
-// Export default for ES Modules
-//export default protect;
