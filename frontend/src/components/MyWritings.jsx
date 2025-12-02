@@ -3,130 +3,105 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const MyWritings = () => {
+const MyWritings = ({ userToken }) => {
   const [writings, setWritings] = useState([]);
   const [activeTab, setActiveTab] = useState("draft");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userToken = user?.token;
+
+  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const finalToken = userToken || storedUser?.token;
 
   useEffect(() => {
-    if (!userToken) {
-      toast.error("Please log in to see your writings.");
+    if (!finalToken) {
+      toast.error("Login required!");
       return;
     }
 
-    const fetchWritings = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         const res = await axios.get(
           "http://localhost:8000/api/writing/my-writings",
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${finalToken}` } }
         );
         setWritings(res.data.writings);
       } catch (err) {
-        console.error("Error fetching writings:", err);
-        toast.error("Failed to load writings");
+        toast.error("Failed to fetch");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWritings();
-  }, [userToken]);
+    fetchData();
+  }, [finalToken]);
 
-  const filteredWritings = writings.filter((w) => w.status === activeTab);
+  const filtered = writings.filter((w) => w.status === activeTab);
 
   const handleEdit = (writing) => {
     localStorage.setItem("editingWriting", JSON.stringify(writing));
-    navigate("/writing"); // Go to editor page
+    navigate("/writing");
+  };
+
+  const deleteWriting = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/writing/${id}`, {
+        headers: { Authorization: `Bearer ${finalToken}` },
+      });
+
+      setWritings((prev) => prev.filter((w) => w._id !== id));
+      toast.success("Deleted");
+    } catch {
+      toast.error("Couldn't delete");
+    }
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>My Writings</h2>
+    <div className="max-w-3xl mx-auto p-4">
+      <h2 className="text-center text-xl mb-4">My Writings</h2>
 
-      {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          marginBottom: "20px",
-        }}
-      >
+      <div className="flex justify-center gap-4 mb-4">
         {["draft", "published"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "6px",
-              border: "none",
-              cursor: "pointer",
-              fontWeight: "500",
-              backgroundColor:
-                activeTab === tab ? (tab === "draft" ? "#2196f3" : "#4caf50") : "#ddd",
-              color: activeTab === tab ? "#fff" : "#000",
-              transition: "all 0.3s",
-            }}
+            className={`px-4 py-2 rounded ${
+              activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-300"
+            }`}
           >
-            {tab === "draft" ? "Drafts" : "Published"}
+            {tab}
           </button>
         ))}
       </div>
 
-      {/* Loading / Empty State */}
       {loading ? (
-        <p style={{ textAlign: "center" }}>Loading writings...</p>
-      ) : filteredWritings.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No {activeTab} writings found.</p>
+        <p>Loading...</p>
+      ) : filtered.length === 0 ? (
+        <p>No writings found.</p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {filteredWritings.map((w) => (
-            <li
-              key={w._id}
-              onClick={() => handleEdit(w)}
-              style={{
-                background: "#fff",
-                borderRadius: "8px",
-                padding: "15px",
-                marginBottom: "10px",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                cursor: "pointer",
-                transition: "transform 0.2s, box-shadow 0.2s",
+        filtered.map((w) => (
+          <div
+            key={w._id}
+            onClick={() => handleEdit(w)}
+            className="p-4 bg-white shadow rounded mb-3 relative cursor-pointer"
+          >
+            <h3 className="font-bold">{w.title}</h3>
+            <p className="text-sm text-gray-600">
+              {w.content.replace(/<[^>]+>/g, "").slice(0, 100)}...
+            </p>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteWriting(w._id);
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
-              }}
+              className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded"
             >
-              <h3 style={{ marginBottom: "5px" }}>{w.title}</h3>
-
-              {/* Single-line preview for drafts */}
-              <p
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  marginBottom: "5px",
-                  color: "#555",
-                  fontSize: "14px",
-                }}
-              >
-                {w.content.replace(/<[^>]+>/g, "")}
-              </p>
-
-              <small>Status: {w.status}</small>
-            </li>
-          ))}
-        </ul>
+              Delete
+            </button>
+          </div>
+        ))
       )}
     </div>
   );

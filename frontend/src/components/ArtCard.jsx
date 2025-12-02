@@ -1,27 +1,15 @@
 import React, { useState } from "react";
+import { BookmarkIcon, HeartIcon } from "@heroicons/react/24/solid";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const ArtCard = ({ art }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Notify helper
-  const notify = (msg, type = "info") => {
-    switch (type) {
-      case "success":
-        toast.success(msg);
-        break;
-      case "error":
-        toast.error(msg);
-        break;
-      case "warn":
-        toast.warn(msg);
-        break;
-      default:
-        toast.info(msg);
-    }
+  const notify = (msg, type = "error") => {
+    if (type === "error") toast.error(msg);
   };
 
+  // Render correct media type
   const renderMedia = () => {
     switch (art.mediaType || art.type) {
       case "image":
@@ -29,51 +17,65 @@ const ArtCard = ({ art }) => {
           <img
             src={art.mediaUrl}
             alt={art.title}
-            className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-            onLoad={() => notify("Image loaded ✅", "success")}
-            onError={() => notify("Failed to load image ❌", "error")}
+            className="
+              w-full h-56 object-cover 
+              rounded-xl 
+              transition-transform duration-500 group-hover:scale-105
+            "
+            onError={() => notify("Failed to load image")}
           />
         );
 
       case "video":
         return (
-          <div className="relative w-full h-64">
+          <div className="relative w-full h-56 rounded-xl overflow-hidden">
             {!isPlaying ? (
               <img
-                src={art.thumbnailUrl || "fallback-thumbnail.jpg"}
+                src={art.thumbnailUrl || art.mediaUrl}
                 alt={art.title}
-                className="w-full h-64 object-cover cursor-pointer"
-                onClick={() => {
-                  setIsPlaying(true);
-                  notify("Video started ▶️", "info");
-                }}
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={() => setIsPlaying(true)}
               />
             ) : (
               <video
                 src={art.mediaUrl}
-                controls
                 autoPlay
-                className="w-full h-64 object-cover"
-                onEnded={() => {
-                  setIsPlaying(false);
-                  notify("Video ended ⏹", "warn");
-                }}
-                onError={() => notify("Error playing video ❌", "error")}
+                controls
+                className="w-full h-full object-cover"
+                onEnded={() => setIsPlaying(false)}
+                onError={() => notify("Video failed to play")}
               />
+            )}
+
+            {!isPlaying && (
+              <div className="
+                absolute inset-0 
+                flex items-center justify-center 
+                bg-black/40
+              ">
+                <div className="
+                  w-14 h-14 
+                  bg-white/90 text-blue-700 
+                  rounded-full 
+                  flex items-center justify-center
+                  text-xl font-bold
+                  shadow-xl
+                ">
+                  ▶
+                </div>
+              </div>
             )}
           </div>
         );
 
       case "audio":
         return (
-          <div className="p-4 bg-gray-100">
+          <div className="w-full h-20 rounded-xl bg-blue-50 flex items-center px-4">
             <audio
-              src={art.mediaUrl}
               controls
+              src={art.mediaUrl}
               className="w-full"
-              onPlay={() => notify("Audio started 🎵", "info")}
-              onEnded={() => notify("Audio finished ✅", "success")}
-              onError={() => notify("Error playing audio ❌", "error")}
+              onError={() => notify("Audio failed to load")}
             />
           </div>
         );
@@ -83,35 +85,76 @@ const ArtCard = ({ art }) => {
           <img
             src={art.mediaUrl}
             alt={art.title}
-            className="w-full h-64 object-cover"
-            onError={() => notify("Media failed to load ❌", "error")}
+            className="w-full h-56 object-cover rounded-xl"
+            onError={() => notify("Media failed to load")}
           />
         );
     }
   };
 
   return (
-    <div className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-transform duration-300 hover:-translate-y-1 bg-white">
-      {renderMedia()}
+    <div
+      className="
+        group 
+        bg-white/70 backdrop-blur-xl 
+        shadow-lg 
+        hover:shadow-2xl 
+        hover:-translate-y-2 
+        transition-all duration-300 
+        rounded-2xl 
+        overflow-hidden
+        cursor-pointer
+        w-[280px]
+      "
+    >
+      {/* Media */}
+      <div className="relative">
+        {renderMedia()}
 
-      <div className="p-4 bg-white/90">
-        <h3 className="text-lg font-semibold text-gray-800">{art.title}</h3>
+        {/* Bookmark & Like */}
+        <div className="absolute top-3 right-3 flex gap-2 z-10">
+          <div className="
+            bg-white/80 backdrop-blur-md 
+            p-2 rounded-full shadow-md 
+            hover:scale-110 transition-transform
+          ">
+            <BookmarkIcon className="w-5 h-5 text-blue-700" />
+          </div>
+          <div className="
+            bg-white/80 backdrop-blur-md 
+            p-2 rounded-full shadow-md 
+            hover:scale-110 transition-transform
+          ">
+            <HeartIcon className="w-5 h-5 text-red-500" />
+          </div>
+        </div>
+      </div>
+
+      {/* Text Content */}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-blue-900">
+          {art.title}
+        </h3>
 
         {art.description && (
-          <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+          <p className="text-sm text-gray-700 mt-1 line-clamp-2 leading-relaxed">
             {art.description}
           </p>
         )}
 
-        {art.tags && art.tags.length > 0 && (
+        {art.category && (
           <p className="text-xs text-gray-500 mt-2">
-            Tags: <span className="text-gray-700">{art.tags.join(", ")}</span>
+            Category: <span className="font-medium">{art.category}</span>
           </p>
         )}
 
-        {art.category && (
+        {art.tags?.length > 0 && (
           <p className="text-xs text-gray-500 mt-1">
-            Category: <span className="text-gray-700">{art.category}</span>
+            Tags:
+            <span className="text-gray-700 ml-1">
+              {art.tags.slice(0, 3).join(", ")}
+              {art.tags.length > 3 && "…"}
+            </span>
           </p>
         )}
       </div>

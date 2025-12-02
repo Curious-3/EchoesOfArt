@@ -1,6 +1,8 @@
 import React from "react";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import "../styles/Sidebar.css";
+
 import {
   CloudArrowUpIcon,
   UserIcon,
@@ -17,11 +19,6 @@ const Sidebar = ({ open, setOpen }) => {
 
   const toggleSidebar = () => setOpen(!open);
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setOpen(false);
-  };
-
   const menuItems = [
     { label: "Upload", path: "/upload", icon: <CloudArrowUpIcon className="w-6 h-6" /> },
     { label: "Edit Profile", path: "/profile", icon: <UserIcon className="w-6 h-6" /> },
@@ -29,58 +26,38 @@ const Sidebar = ({ open, setOpen }) => {
     { label: "My Uploads", path: "/my-uploads", icon: <FolderIcon className="w-6 h-6" /> },
     { label: "Writing", path: "/writing", icon: <PencilSquareIcon className="w-6 h-6" /> },
     { label: "Explore Art", path: "/explore-art", icon: <EyeIcon className="w-6 h-6" /> },
+    { label: "Explore Writings", path: "/explore-writings", icon: <EyeIcon className="w-6 h-6" /> },
+    { label: "Saved Writings", path: "/saved-writings", icon: <BookmarkIcon className="w-6 h-6" /> },
+    { label: "Following Authors", path: "/following", icon: <UserIcon className="w-6 h-6" /> },
   ];
 
   return (
     <>
-      {!open && (
-        <button
-          onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-40 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md shadow-md transition-transform duration-300 hover:scale-110"
-        >
-          <Bars3Icon className="w-6 h-6" />
-        </button>
-      )}
+      {/* Hamburger */}
+      <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+        <Bars3Icon className="w-7 h-7" />
+      </button>
 
-      <div
-        style={{ width: open ? "16rem" : "4rem" }}
-        className="fixed top-0 left-0 h-full z-30 bg-gradient-to-b from-blue-900 to-blue-600 text-white shadow-lg pt-16 transition-all duration-300 ease-in-out"
-      >
-        <button
-          onClick={toggleSidebar}
-          className="absolute top-3 -right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-11 h-11 flex items-center justify-center text-lg shadow-md transition-transform duration-300 hover:scale-110"
-        >
-          ☰
-        </button>
+      {/* Sidebar */}
+      <div className={`sidebar-container ${open ? "sidebar-expanded" : ""}`}>
+        {user ? (
+          menuItems.map((item) => (
+            <div key={item.label} className="sidebar-item">
+              <button
+                className="sidebar-item-button"
+                onClick={() => navigate(item.path)}
+              >
+                {item.icon}
+              </button>
 
-        <div className="flex flex-col gap-3 mt-4 m-2">
-          {user ? (
-            menuItems.map((item) => (
-              <div key={item.label} className="relative flex items-center group">
-                <button
-                  onClick={() => handleNavigation(item.path)}
-                  className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-500 hover:bg-blue-600 shadow-md transition-all duration-300"
-                >
-                  {item.icon}
-                </button>
+              {open && <span className="sidebar-label">{item.label}</span>}
 
-                {!open && (
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-1 bg-blue-700 text-white text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 whitespace-nowrap">
-                    {item.label}
-                  </div>
-                )}
-
-                {open && <span className="ml-3 font-semibold">{item.label}</span>}
-              </div>
-            ))
-          ) : (
-            open && (
-              <p className="text-red-400 font-medium p-3 text-sm transition-all duration-300">
-                Please login or register first
-              </p>
-            )
-          )}
-        </div>
+              {!open && <span className="sidebar-tooltip">{item.label}</span>}
+            </div>
+          ))
+        ) : (
+          <p className="text-white ml-3 mt-6">Please log in</p>
+        )}
       </div>
     </>
   );
