@@ -1,0 +1,122 @@
+/* -----------------------------------
+   FINAL PREMIUM ATTACHED SIDEBAR
+------------------------------------*/
+
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 4.4rem;  /* collapsed width */
+  padding: 1rem 0.6rem;
+
+  background: linear-gradient(145deg, #0b3b85, #0a59d7);
+  border-radius: 0 20px 20px 0;
+  box-shadow: 4px 0px 20px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  transition: width 0.30s ease;
+  z-index: 130;
+}
+
+/* EXPANDED WIDTH (REDUCED FROM 17rem → 13rem) */
+.sidebar-expanded {
+  width: 13rem;
+}
+
+/* -------- SMALL PREMIUM SCROLLBAR -------- */
+.sidebar-container::-webkit-scrollbar {
+  width: 4px;                    /* very small */
+}
+.sidebar-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+}
+.sidebar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Menu item */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+/* Icon button */
+.sidebar-item-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s ease;
+}
+
+.sidebar-item-button:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateX(4px);
+}
+
+/* Label */
+.sidebar-label {
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Tooltip */
+.sidebar-tooltip {
+  position: absolute;
+  left: 4.6rem;
+  background: #0a3fab;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: white;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: .20s ease;
+}
+
+.sidebar-item:hover .sidebar-tooltip {
+  opacity: 1;
+  left: 4.9rem;
+}
+
+/* Hamburger */
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  z-index: 150;
+
+  width: 50px;
+  height: 50px;
+  border-radius: 0 16px 16px 0;
+
+  background: linear-gradient(145deg, #0b3b85, #0a59d7);
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow: 4px 0px 20px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: translateX(4px);
+}

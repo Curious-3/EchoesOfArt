@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import SavedWritings from "./pages/SavedWritings";
+import FollowedAuthors from "./pages/FollowedAuthors";
+import ExploreWritings from "./pages/ExploreWritings";
+import SingleWriting from "./pages/SingleWriting";
 import WritingPage from "./pages/WritingPage";
 import LandingPage from "./pages/LandingPage";
 import WritingEditor from './components/WritingEditor';
@@ -17,30 +21,12 @@ import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
 import Profile from "./pages/Profile";
+import Layout from "./components/Layout";
+
 import Feedback from "./pages/Feedback"
 import AboutUs from "./pages/AboutUs"
 import ContactUs from "./pages/ContactUs"
 
-// Layout component to wrap all pages with Header, Sidebar, Footer
-const Layout = ({ children, searchTerm, setSearchTerm }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  return (
-    <div className="flex flex-col min-h-screen bg-[#f0f9ff]">
-      <Toaster position="top-right" reverseOrder={false} />
-      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-
-      {/* Main content expands to push footer down */}
-      <main className={`flex-grow transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-20"} md:ml-20 sm:ml-0`}>
-        {children}
-      </main>
-
-      <Footer />
-    </div>
-
-  );
-};
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -104,6 +90,14 @@ const App = () => {
               </Layout>
             }
           />
+          <Route
+            path="/explore-writings"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <ExploreWritings />
+              </Layout>
+            }
+          />
 
 
           <Route
@@ -114,6 +108,32 @@ const App = () => {
               </Layout>
             }
           />
+
+           <Route
+            path="/writing/:id"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <SingleWriting />
+              </Layout>
+            }
+          />
+  <Route
+  path="/saved-writings"
+  element={
+    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+      <SavedWritings />
+    </Layout>
+  }
+/>
+
+<Route
+  path="/following"
+  element={
+    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+      <FollowedAuthors />
+    </Layout>
+  }
+/>
 
 
           <Route
@@ -136,6 +156,8 @@ const App = () => {
               </>
             }
           />
+
+         
 
           <Route
             path="/contact"
