@@ -1,10 +1,64 @@
-import React from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+
+/** Moved out so it doesn't get redefined each render */
+const HeaderShell = ({ children }) => (
+  <header className="fixed top-0 left-0 w-full z-[150]">
+    <div className="backdrop-blur-2xl bg-gradient-to-r from-blue-900/90 via-blue-700/85 to-blue-500/90 shadow-lg border-b border-white/15">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
+        {children}
+      </div>
+    </div>
+  </header>
+);
 
 const Header = ({ searchTerm, setSearchTerm }) => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Debounced query used only for searching
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Ref to keep focus & caret stable even if the tree re-renders
+  const inputRef = useRef(null);
+  const selectionRef = useRef({ start: null, end: null });
+
+  // ---- Debounce: instant on space, 2s otherwise (do not touch searchTerm) ----
+  useEffect(() => {
+    if (searchTerm.endsWith(" ")) {
+      setDebouncedSearch(searchTerm.trim());
+      return;
+    }
+    const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 2000);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  // ---- Trigger your search here ----
+  useEffect(() => {
+    if (debouncedSearch !== "") {
+      // console.log("SEARCH:", debouncedSearch);
+      // Call API / filter here
+    }
+  }, [debouncedSearch]);
+
+  // ---- Preserve focus & caret position if the node was replaced ----
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+
+    // If input lost focus due to remount, refocus it
+    if (document.activeElement !== el) {
+      el.focus();
+      // restore caret if we saved it
+      const { start, end } = selectionRef.current;
+      if (start !== null && end !== null) {
+        try {
+          el.setSelectionRange(start, end);
+        } catch {}
+      }
+    }
+  });
 
   const handleSignIn = () => navigate("/login");
   const handleLogout = () => {
@@ -14,43 +68,9 @@ const Header = ({ searchTerm, setSearchTerm }) => {
   const handleAvatarClick = () => navigate("/profile");
   const handleLogoClick = () => navigate("/");
 
-  const HeaderShell = ({ children }) => (
-    <header className="fixed top-0 left-0 w-full z-[150]">
-      <div className="backdrop-blur-2xl bg-gradient-to-r from-blue-900/90 via-blue-700/85 to-blue-500/90 shadow-lg border-b border-white/15">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
-          {children}
-        </div>
-      </div>
-    </header>
-  );
-
-  if (loading) {
-    return (
-      <HeaderShell>
-        {/* Left: Logo & Name */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={handleLogoClick}>
-          <img
-            src="logo.jpeg"
-            alt="Logo"
-            className="w-11 h-11 rounded-2xl object-cover shadow-md border border-white/40"
-          />
-          <span className="text-2xl font-extrabold tracking-wide text-sky-100">
-            Echoes Of Art
-          </span>
-        </div>
-        {/* Center: Placeholder */}
-        <div className="flex-1 flex justify-center">
-          <div className="w-full max-w-[550px] h-[40px] rounded-full bg-white/10 animate-pulse" />
-        </div>
-        {/* Right: Skeleton */}
-        <div className="w-24 h-9 rounded-full bg-white/10 animate-pulse" />
-      </HeaderShell>
-    );
-  }
-
   return (
     <HeaderShell>
-      {/* Left: Logo & Name */}
+      {/* Left: Logo */}
       <div className="flex items-center gap-3 cursor-pointer" onClick={handleLogoClick}>
         <img
           src="logo.jpeg"
@@ -66,11 +86,21 @@ const Header = ({ searchTerm, setSearchTerm }) => {
       <div className="flex-1 flex justify-center">
         <div className="w-full max-w-[550px] relative">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Search art, writings, creators..."
-            className="w-full px-5 py-2.5 rounded-full bg-sky-50/95 text-blue-900 text-sm md:text-base shadow-md outline-none transition-all duration-300 focus:shadow-xl focus:shadow-blue-300 focus:ring-2 focus:ring-blue-400"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              // Save current caret so we can restore if the node re-renders
+              const el = e.target;
+              selectionRef.current = {
+                start: el.selectionStart,
+                end: el.selectionEnd,
+              };
+              // IMPORTANT: do not trim/transform here
+              setSearchTerm(e.target.value);
+            }}
+            className="w-full px-5 py-2.5 rounded-full bg-sky-50/95 text-blue-900 text-sm md:text-base shadow-md outline-none transition-all duration-300 focus:shadow-xl focus:shadow-blue-300 focus:ring-2 focus:ring-blue-400"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-blue-500">
             ⌕
@@ -88,7 +118,6 @@ const Header = ({ searchTerm, setSearchTerm }) => {
         </button>
       ) : (
         <div className="flex items-center gap-3">
-          {/* User badge */}
           <div
             onClick={handleAvatarClick}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/30 cursor-pointer hover:bg-white/25 transition-all duration-300"
@@ -105,11 +134,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span>
-                  {user?.name
-                    ? user.name[0].toUpperCase()
-                    : user?.email?.[0]?.toUpperCase()}
-                </span>
+                <span>{user?.name ? user.name[0].toUpperCase() : user?.email?.[0]?.toUpperCase()}</span>
               )}
             </div>
             <div className="hidden sm:flex flex-col">
@@ -120,7 +145,6 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             </div>
           </div>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
             className="px-4 py-2 rounded-full bg-white/90 text-blue-700 text-xs md:text-sm font-semibold shadow-md hover:bg-blue-100 hover:-translate-y-0.5 transition-all duration-300"
@@ -133,4 +157,5 @@ const Header = ({ searchTerm, setSearchTerm }) => {
   );
 };
 
-export default Header;
+// Prevent unnecessary remounts
+export default memo(Header);

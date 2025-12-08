@@ -1,7 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import "../styles/Sidebar.css";
 
 import {
   CloudArrowUpIcon,
@@ -10,56 +9,61 @@ import {
   FolderIcon,
   PencilSquareIcon,
   EyeIcon,
-  Bars3Icon,
 } from "@heroicons/react/24/outline";
 
 const Sidebar = ({ open, setOpen }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const toggleSidebar = () => setOpen(!open);
-
   const menuItems = [
-    { label: "Upload", path: "/upload", icon: <CloudArrowUpIcon className="w-6 h-6" /> },
-    { label: "Edit Profile", path: "/profile", icon: <UserIcon className="w-6 h-6" /> },
-    { label: "Saved Art", path: "/saved", icon: <BookmarkIcon className="w-6 h-6" /> },
-    { label: "My Uploads", path: "/my-uploads", icon: <FolderIcon className="w-6 h-6" /> },
-    { label: "Writing", path: "/writing", icon: <PencilSquareIcon className="w-6 h-6" /> },
-    { label: "Explore Art", path: "/explore-art", icon: <EyeIcon className="w-6 h-6" /> },
-    { label: "Explore Writings", path: "/explore-writings", icon: <EyeIcon className="w-6 h-6" /> },
-    { label: "Saved Writings", path: "/saved-writings", icon: <BookmarkIcon className="w-6 h-6" /> },
-    { label: "Following Authors", path: "/following", icon: <UserIcon className="w-6 h-6" /> },
+    { label: "Upload", path: "/upload", icon: CloudArrowUpIcon },
+    { label: "Edit Profile", path: "/profile", icon: UserIcon },
+    { label: "Saved Art", path: "/saved", icon: BookmarkIcon },
+    { label: "My Uploads", path: "/my-uploads", icon: FolderIcon },
+    { label: "Writing", path: "/writing", icon: PencilSquareIcon },
+    { label: "Explore Art", path: "/explore-art", icon: EyeIcon },
   ];
 
   return (
-    <>
-      {/* Hamburger */}
-      <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
-        <Bars3Icon className="w-7 h-7" />
-      </button>
-
-      {/* Sidebar */}
-      <div className={`sidebar-container ${open ? "sidebar-expanded" : ""}`}>
-        {user ? (
-          menuItems.map((item) => (
-            <div key={item.label} className="sidebar-item">
-              <button
-                className="sidebar-item-button"
+    <aside
+      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] 
+      transition-all duration-300 
+      ${open ? "w-56" : "w-16"} 
+      bg-[#004aad] z-[120] overflow-visible`}
+    >
+      {user && (
+        <nav className="flex flex-col mt-4">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.label}
+                className="group relative flex items-center px-4 py-4 cursor-pointer"
                 onClick={() => navigate(item.path)}
               >
-                {item.icon}
-              </button>
+                <Icon className="w-5 h-5 text-black" />
 
-              {open && <span className="sidebar-label">{item.label}</span>}
+                {open && (
+                  <span className="ml-3 text-sm font-medium text-white">
+                    {item.label}
+                  </span>
+                )}
 
-              {!open && <span className="sidebar-tooltip">{item.label}</span>}
-            </div>
-          ))
-        ) : (
-          <p className="text-white ml-3 mt-6">Please log in</p>
-        )}
-      </div>
-    </>
+                {!open && (
+                  <span
+                    className="absolute pointer-events-none left-full top-1/2 -translate-y-1/2 ml-3
+                    bg-white text-black shadow-lg border border-gray-300 px-3 py-1 text-sm rounded 
+                    whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-[999]"
+                  >
+                    {item.label}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      )}
+    </aside>
   );
 };
 
