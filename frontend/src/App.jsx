@@ -90,15 +90,7 @@ const App = () => {
               </Layout>
             }
           />
-          <Route
-            path="/explore-writings"
-            element={
-              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <ExploreWritings />
-              </Layout>
-            }
-          />
-
+       
 
           <Route
             path="/writing"
@@ -117,25 +109,7 @@ const App = () => {
               </Layout>
             }
           />
-  <Route
-  path="/saved-writings"
-  element={
-    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-      <SavedWritings />
-    </Layout>
-  }
-/>
-
-<Route
-  path="/following"
-  element={
-    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-      <FollowedAuthors />
-    </Layout>
-  }
-/>
-
-
+  
           <Route
             path="/explore-art"
             element={

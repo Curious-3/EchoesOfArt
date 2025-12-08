@@ -86,6 +86,7 @@ const MyUploads = ({ searchTerm }) => {
   });
 
   return (
+     <div className="pb-32">
     <div className="max-w-6xl mx-auto px-4 mt-10">
       <h2 className="text-2xl font-semibold mb-6 text-center">My Uploaded Art</h2>
 
@@ -174,6 +175,7 @@ const MyUploads = ({ searchTerm }) => {
       )}
 
       <Toaster position="top-right" reverseOrder={false} />
+    </div>
     </div>
   );
 };

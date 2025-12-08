@@ -2,35 +2,35 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
-import "./../styles/Layout.css";
 
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="layout-wrapper">
-      {/* Fixed Header */}
-      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+    <>
+      {/* HEADER */}
+      <Header
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
-      {/* Body Area */}
-      <div className="layout-body">
-        
-        {/* Sidebar (fixed left) */}
-        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+      {/* SIDEBAR */}
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-        {/* Main Content */}
-        <main
-          className={`main-content ${
-            sidebarOpen ? "sidebar-expanded" : "sidebar-collapsed"
-          }`}
-        >
-          {children}
-        </main>
-      </div>
+      {/* MAIN CONTENT */}
+      <main
+        className={`transition-all duration-300 pt-20 ${
+          sidebarOpen ? "ml-56" : "ml-16"
+        } p-4`}
+      >
+        {children}
+      </main>
 
-      {/* Footer */}
+      {/* FOOTER */}
       <Footer />
-    </div>
+    </>
   );
 };
 

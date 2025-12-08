@@ -81,7 +81,8 @@ const Upload = () => {
     }
   };
 
-  return (
+ return (
+  <div className="pb-32">   {/* ← added to prevent footer overlap */}
     <div className="max-w-md mx-auto mt-10 p-6 bg-gray-50 rounded-md shadow-sm sm:mt-12 sm:p-8">
       <h2 className="text-center text-xl font-semibold mb-6">Upload Media</h2>
 
@@ -171,14 +172,18 @@ const Upload = () => {
           type="submit"
           disabled={loading}
           className={`mt-2 py-2 rounded-md font-medium text-white ${
-            loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            loading
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
           }`}
         >
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Upload;
