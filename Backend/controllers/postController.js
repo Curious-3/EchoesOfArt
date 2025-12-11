@@ -4,6 +4,7 @@ import Saved from "../models/Saved.js";
 import Liked from "../models/Liked.js";
 import cloudinary from "../config/cloudinary.js";
 import User from "../models/User.js";
+import OpenAI from "openai";
 
 //  HELPER FUNCTION 
 const addLikeCount = async (posts) => {
@@ -75,7 +76,16 @@ export const createPost = async (req, res) => {
 // ================= GET ALL POSTS =================
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("createdBy", "name profileImage").sort({ createdAt: -1 });
+    // Pagination values from query params
+    const page = parseInt(req.query.page) || 0;     // default page = 0
+    const limit = parseInt(req.query.limit) || 10;  // default limit = 10
+
+    // Fetch posts with pagination
+    const posts = await Post.find()
+      .populate("createdBy", "name profileImage")
+      .sort({ createdAt: -1 })
+      .skip(page * limit)
+      .limit(limit);
 
     // Add like count for each post
     const postsWithLikes = await Promise.all(
@@ -85,12 +95,27 @@ export const getAllPosts = async (req, res) => {
       })
     );
 
-    return res.status(200).json(postsWithLikes);
+    const totalPosts = await Post.countDocuments();
+
+    return res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalPosts,
+      postsReturned: posts.length,
+      posts: postsWithLikes,
+    });
+
   } catch (error) {
     console.error("Error fetching posts:", error);
-    return res.status(500).json({ message: "Error fetching posts", error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching posts",
+      error: error.message
+    });
   }
 };
+
 
 // ================= GET POST BY ID =================
 export const getPostById = async (req, res) => {
