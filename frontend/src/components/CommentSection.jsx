@@ -44,13 +44,21 @@ const CommentSection = ({ postId }) => {
     socket.emit("join_post", postId);
 
     // listen for realtime comments
-    socket.on("comment_added", (newComment) => {
-      setComments((prev) => [newComment, ...prev]);
-    });
+    const handleCommentAdded = (newComment) => {
+      console.log("📨 Received new comment:", newComment);
+      setComments((prev) => {
+        // Prevent duplicates
+        const exists = prev.some((c) => c._id === newComment._id);
+        if (exists) return prev;
+        return [newComment, ...prev];
+      });
+    };
+
+    socket.on("comment_added", handleCommentAdded);
 
     // cleanup to avoid duplicate listeners
     return () => {
-      socket.off("comment_added");
+      socket.off("comment_added", handleCommentAdded);
     };
   }, [isDrawerOpen, postId]);
 
@@ -71,11 +79,8 @@ const CommentSection = ({ postId }) => {
 
       const newComment = res.data.comment;
 
-      // send real-time comment
+      // send real-time comment - server will broadcast to all including sender
       socket.emit("new_comment", { postId, comment: newComment });
-
-      // show instantly for the current user
-      setComments((prev) => [newComment, ...prev]);
 
       setText("");
     } catch (error) {
