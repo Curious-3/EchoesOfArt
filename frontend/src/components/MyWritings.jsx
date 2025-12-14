@@ -41,7 +41,8 @@ const MyWritings = ({ userToken }) => {
 
   const handleEdit = (writing) => {
     localStorage.setItem("editingWriting", JSON.stringify(writing));
-    navigate("/writing");
+    navigate("/writing?edit=true");
+
   };
 
   const deleteWriting = async (id) => {

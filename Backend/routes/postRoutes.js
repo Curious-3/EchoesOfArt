@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { protect } from "../middleware/authMiddleware.js";
+
 import {
   createPost,
   getAllPosts,
@@ -10,33 +11,48 @@ import {
   getExplorePosts,
   getMyUploads,
   getSavedPosts,
+  addSavedPost,
+  removeSavedPost,
   getLikedPosts,
-  getLikesByDate,
+  addLike,
+  removeLike,
   getPostsByDate,
 } from "../controllers/postController.js";
+
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-/// User-specific routes first
-router.get("/user/my-uploads", protect, getMyUploads);
-router.get("/user/explore", protect, getExplorePosts);
-router.get("/saved/:id", protect, getSavedPosts);
+/* ---------------- LIKE ROUTES ---------------- */
+router.post("/liked/add", protect, addLike);
+router.post("/liked/remove", protect, removeLike);
 router.get("/liked", protect, getLikedPosts);
 
+/* ---------------- USER ROUTES ---------------- */
+router.get("/user/my-uploads", protect, getMyUploads);
+
+/* ---------------- EXPLORE (PUBLIC) ---------------- */
+// ⭐ MUST be above "/:id"
+router.get("/explore", getExplorePosts);
+
+/* ---------------- SAVED ---------------- */
+router.get("/saved/:id", protect, getSavedPosts);
+
+/* ---------------- ANALYTICS ---------------- */
 router.get("/likes/graph", protect, getPostsByDate);
 
-// Public routes
+/* ---------------- ALL POSTS ---------------- */
 router.get("/", getAllPosts);
 
-// Post by ID
+/* ---------------- SINGLE POST ---------------- */
+// ❗ ALWAYS LAST
 router.get("/:id", getPostById);
 
-// Update / delete posts
+/* ---------------- UPDATE / DELETE ---------------- */
 router.put("/:id", protect, updatePost);
 router.delete("/:id", protect, deletePost);
 
-// Create post
+/* ---------------- CREATE POST ---------------- */
 router.post(
   "/",
   protect,
