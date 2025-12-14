@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import { FaBookmark, FaRegBookmark, FaHeart, FaRegHeart } from "react-icons/fa";
+import {
+  FaBookmark,
+  FaRegBookmark,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import CommentSection from "../components/CommentSection";
@@ -9,7 +14,6 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import LazyVideo from "../components/LazyVideo";
 import { debounce } from "lodash";
 
-
 const LandingPage = ({ searchTerm = "" }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [arts, setArts] = useState([]);
@@ -17,167 +21,180 @@ const LandingPage = ({ searchTerm = "" }) => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [user, setUser] = useState(null);
 
-  // Pagination states
+  // pagination
   const [page, setPage] = useState(0);
   const limit = 10;
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const filterOptions = ["all", "image", "video"];
-  const [filterType, setFilterType] = useState("all");
+  // filters
+  const [filters, setFilters] = useState({
+    sort: "recent",
+    mediaType: "",
+    category: "",
+    tag: "",
+  });
 
-  // Fetch posts with pagination
+  /* ================= FETCH POSTS ================= */
   const fetchPosts = async () => {
-    if (!hasMore || loading) return;
+  if (!hasMore || loading) return;
 
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        `http://localhost:8000/api/posts?page=${page}&limit=${limit}`
-      );
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      "http://localhost:8000/api/posts/explore",
+      {
+        params: {
+          page,
+          limit,
+          search: searchTerm,
+          ...filters,
+        },
+      }
+    );
 
-      const newPosts = res.data.posts || [];
+    // ✅ FIX: define newPosts properly
+    const newPosts = res.data || [];
 
-      // Prevent duplicate posts
-      setArts((prev) => {
-        const ids = new Set(prev.map((p) => p._id));
-        const filtered = newPosts.filter((p) => !ids.has(p._id));
-        return [...prev, ...filtered];
-      });
+    setArts((prev) => {
+      const ids = new Set(prev.map((p) => p._id));
+      const unique = newPosts.filter((p) => !ids.has(p._id));
+      return page === 0 ? unique : [...prev, ...unique];
+    });
 
-      if (newPosts.length < limit) setHasMore(false);
-    } catch (err) {
-      console.error("Pagination error:", err);
+    if (newPosts.length < limit) {
+      setHasMore(false);
     }
+  } catch (err) {
+    console.error("Pagination error:", err);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  // Fetch posts when page changes
+
   useEffect(() => {
     fetchPosts();
   }, [page]);
 
-  // 👉 Debounced Infinite Scroll
-  useEffect(() => {
-    const debouncedScroll = debounce(() => {
-      const bottomReached =
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 300;
+  // reset on filter / search
+ useEffect(() => {
+  setArts([]);
+  setPage(0);
+  setHasMore(true);
 
-      if (bottomReached && !loading && hasMore) {
+  // 🔥 IMPORTANT: force fresh fetch
+  setTimeout(() => {
+    fetchPosts();
+  }, 0);
+
+}, [filters, searchTerm]);
+
+
+  /* ================= INFINITE SCROLL ================= */
+  useEffect(() => {
+    const onScroll = debounce(() => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 300 &&
+        !loading &&
+        hasMore
+      ) {
         setPage((prev) => prev + 1);
       }
     }, 200);
 
-    window.addEventListener("scroll", debouncedScroll);
-
+    window.addEventListener("scroll", onScroll);
     return () => {
-      debouncedScroll.cancel();
-      window.removeEventListener("scroll", debouncedScroll);
+      onScroll.cancel();
+      window.removeEventListener("scroll", onScroll);
     };
   }, [loading, hasMore]);
 
-  // Load saved / liked posts
+  /* ================= LOAD USER / SAVED / LIKED ================= */
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem("user"));
     setUser(loggedUser);
 
-    if (loggedUser?.id && loggedUser?.token) {
-      axios
-        .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
-          headers: { Authorization: `Bearer ${loggedUser.token}` },
-        })
-        .then((res) => {
-          const savedIds = [
-            ...(res.data.images || []).map((p) => p._id),
-            ...(res.data.videos || []).map((p) => p._id),
-            ...(res.data.audios || []).map((p) => p._id),
-          ];
-          setSavedPosts(savedIds);
-        });
+    if (!loggedUser?.token) return;
 
-      axios
-        .get(`http://localhost:8000/api/liked/${loggedUser.id}`, {
-          headers: { Authorization: `Bearer ${loggedUser.token}` },
-        })
-        .then((res) => {
-          const likedIds = res.data
-            .filter((p) => p?.post)
-            .map((p) => p.post._id || p.post);
-          setLikedPosts(likedIds);
-        });
-    }
+    axios
+      .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
+        headers: { Authorization: `Bearer ${loggedUser.token}` },
+      })
+      .then((res) => {
+        const ids = [
+          ...(res.data.images || []).map((p) => p._id),
+          ...(res.data.videos || []).map((p) => p._id),
+          ...(res.data.audios || []).map((p) => p._id),
+        ];
+        setSavedPosts(ids);
+      });
+
+    axios
+      .get("http://localhost:8000/api/posts/liked", {
+        headers: { Authorization: `Bearer ${loggedUser.token}` },
+      })
+      .then((res) => {
+        const ids = res.data
+          .map((p) => p.post?._id)
+          .filter(Boolean);
+        setLikedPosts(ids);
+      });
   }, []);
 
-  // Filter logic
-  const filteredArts = arts.filter((art) => {
-    const matchesSearch = art.title
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    if (filterType === "all") return matchesSearch;
-    return matchesSearch && art.mediaType?.toLowerCase() === filterType;
-  });
-
-  // Save / like logic
+  /* ================= SAVE ================= */
   const handleToggleSavePost = async (postId) => {
     if (!user?.token) return toast.error("Please login first!");
 
+    const isSaved = savedPosts.includes(postId);
+    setSavedPosts((prev) =>
+      isSaved ? prev.filter((id) => id !== postId) : [...prev, postId]
+    );
+
     try {
-      const isSaved = savedPosts.includes(postId);
-      setSavedPosts((prev) =>
-        isSaved ? prev.filter((id) => id !== postId) : [...prev, postId]
-      );
-
-      const url = isSaved
-        ? "http://localhost:8000/api/saved/remove"
-        : "http://localhost:8000/api/saved/add";
-
       await axios.post(
-        url,
+        `http://localhost:8000/api/saved/${isSaved ? "remove" : "add"}`,
         { postId },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-
-      toast.success(isSaved ? "Removed from saved!" : "Post saved!");
-    } catch (err) {
-      toast.error("Failed to save post.");
+    } catch {
+      toast.error("Save failed");
     }
   };
 
+  /* ================= LIKE ================= */
   const handleToggleLikePost = async (postId) => {
-    if (!user?.token) return toast.error("Login to like posts!");
+    if (!user?.token) return toast.error("Login to like!");
+
+    const isLiked = likedPosts.includes(postId);
+    setLikedPosts((prev) =>
+      isLiked ? prev.filter((id) => id !== postId) : [...prev, postId]
+    );
+
+    setArts((prev) =>
+      prev.map((art) =>
+        art._id === postId
+          ? {
+              ...art,
+              likeCount: (art.likeCount || 0) + (isLiked ? -1 : 1),
+            }
+          : art
+      )
+    );
 
     try {
-      const isLiked = likedPosts.includes(postId);
-      setLikedPosts((prev) =>
-        isLiked ? prev.filter((id) => id !== postId) : [...prev, postId]
-      );
-
-      setArts((prev) =>
-        prev.map((art) =>
-          art._id === postId
-            ? { ...art, likeCount: (art.likeCount || 0) + (isLiked ? -1 : 1) }
-            : art
-        )
-      );
-
-      const url = isLiked
-        ? "http://localhost:8000/api/liked/remove"
-        : "http://localhost:8000/api/liked/add";
-
       await axios.post(
-        url,
+        `http://localhost:8000/api/posts/liked/${isLiked ? "remove" : "add"}`,
         { postId },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-
-      toast.success(isLiked ? "Unliked 💔" : "Liked ❤️");
-    } catch (err) {
-      toast.error("Failed to like post.");
+    } catch {
+      toast.error("Like failed");
     }
   };
 
+  /* ================= UI ================= */
   return (
     <>
       <Toaster position="top-right" />
@@ -190,51 +207,110 @@ const LandingPage = ({ searchTerm = "" }) => {
       >
         <h2 className="text-3xl mt-24 font-bold">Featured Artworks</h2>
 
+        {/* FILTER BAR */}
+        <div className="w-full max-w-[1300px] px-4 mt-6 mb-4 flex gap-3">
+          {["", "image", "video", "audio", "text"].map((type) => (
+            <button
+              key={type || "all"}
+              onClick={() => setFilters({ ...filters, mediaType: type })}
+              className={`px-4 py-1.5 rounded-full border text-sm ${
+                filters.mediaType === type
+                  ? "bg-black text-white"
+                  : "bg-white"
+              }`}
+            >
+              {type || "All"}
+            </button>
+          ))}
+
+          <select
+            value={filters.sort}
+            onChange={(e) =>
+              setFilters({ ...filters, sort: e.target.value })
+            }
+            className="ml-auto px-4 py-2 border rounded-md text-sm"
+          >
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest</option>
+            <option value="views">Most Viewed</option>
+            <option value="likes">Most Liked</option>
+          </select>
+        </div>
+
         {/* GRID */}
-        <div className="w-full max-w-[1300px] px-4 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pb-24 mt-6">
-          {filteredArts.map((art) => (
+        <div className="w-full max-w-[1300px] px-4 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pb-24">
+          {arts.map((art) => (
             <div
               key={art._id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:scale-[1.02] transition flex flex-col"
+              className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
             >
-              {/* Media */}
-              {art.mediaType === "image" && (
-                <LazyLoadImage
-                  src={art.mediaUrl}
-                  alt={art.title}
-                  effect="blur"
-                  className="w-full h-56 object-cover"
-                />
-              )}
+              <div className="relative">
+                {art.mediaType === "image" && (
+                  <LazyLoadImage
+                    src={art.mediaUrl}
+                    alt={art.title}
+                    effect="blur"
+                    className="w-full h-56 object-cover"
+                  />
+                )}
 
-              {art.mediaType === "video" && (
-                <LazyVideo
-                  src={art.mediaUrl}
-                  poster={art.thumbnailUrl}
-                  className="w-full h-56 object-cover"
-                />
-              )}
+                {art.mediaType === "video" && (
+                  <LazyVideo
+                    src={art.mediaUrl}
+                    poster={art.thumbnailUrl}
+                    className="w-full h-56 object-cover"
+                  />
+                )}
 
-              {/* Content */}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+  onClick={() => handleToggleLikePost(art._id)}
+  className="flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow"
+>
+  {likedPosts.includes(art._id) ? (
+    <FaHeart className="text-red-500" />
+  ) : (
+    <FaRegHeart />
+  )}
+  <span className="text-xs font-semibold">
+    {art.likeCount || 0}
+  </span>
+</button>
+
+
+                  <button
+  onClick={() => handleToggleSavePost(art._id)}
+  className="flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow"
+>
+  {savedPosts.includes(art._id) ? (
+    <FaBookmark className="text-indigo-600" />
+  ) : (
+    <FaRegBookmark />
+  )}
+  <span className="text-xs font-semibold">
+    {savedPosts.includes(art._id) ? 1 : 0}
+  </span>
+</button>
+
+                </div>
+              </div>
+
               <div className="p-3 flex-1">
-                <h3 className="text-indigo-900 font-semibold">{art.title}</h3>
-                <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                <h3 className="font-semibold">{art.title}</h3>
+                <p className="text-sm text-gray-600 line-clamp-2">
                   {art.description}
                 </p>
               </div>
 
-              {/* COMMENT SECTION */}
-              <div className="mt-auto p-3 border-t bg-gray-50">
+              <div className="border-t bg-gray-50 p-3">
                 <CommentSection postId={art._id} />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Loading indicator */}
-        {loading && <p className="text-gray-600 mb-10">Loading more...</p>}
-
-        {!hasMore && <p className="text-gray-600 mb-10">End of posts.</p>}
+        {loading && <p className="mb-10">Loading...</p>}
+        {!hasMore && <p className="mb-10">End of posts</p>}
       </main>
     </>
   );

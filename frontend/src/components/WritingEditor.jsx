@@ -13,13 +13,18 @@ const WritingEditor = ({ userToken }) => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const finalToken = userToken || storedUser?.token;
 
-  useEffect(() => {
+  console.log("FINAL TOKEN:", finalToken);
+
+ useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("editingWriting") || "null");
     if (stored && quill) {
       setTitle(stored.title);
       setWritingId(stored._id);
       quill.root.innerHTML = stored.content;
-      localStorage.removeItem("editingWriting");
+      setTimeout(() => {
+  localStorage.removeItem("editingWriting");
+}, 100);
+
     }
   }, [quill]);
 
@@ -46,9 +51,17 @@ const WritingEditor = ({ userToken }) => {
       setWritingId(res.data.writing._id);
       toast.success("Draft saved!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to save");
-    } finally {
+  console.error(err);
+
+  if (err.response?.status === 401) {
+    toast.error("Session expired. Please login again.");
+    localStorage.removeItem("user");
+    return;
+  }
+
+  toast.error("Failed to save");
+}
+finally {
       setLoading(false);
     }
   };
@@ -72,10 +85,18 @@ const WritingEditor = ({ userToken }) => {
 
       setWritingId(res.data.writing._id);
       toast.success("Published!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to publish");
-    } finally {
+    }catch (err) {
+  console.error(err);
+
+  if (err.response?.status === 401) {
+    toast.error("Session expired. Please login again.");
+    localStorage.removeItem("user");
+    return;
+  }
+
+  toast.error("Failed to publish");
+}
+finally {
       setLoading(false);
     }
   };

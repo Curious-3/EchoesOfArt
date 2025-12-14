@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WritingEditor from "../components/WritingEditor";
 import MyWritings from "../components/MyWritings";
 import ExploreWritings from "../pages/ExploreWritings";
 import SavedWritings from "../pages/SavedWritings";
 import FollowedAuthors from "../pages/FollowedAuthors";
+import { useSearchParams } from "react-router-dom";
 
 const WritingPage = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const token = storedUser?.token || null;
 
   const [activeTab, setActiveTab] = useState("write");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const isEditing = searchParams.get("edit");
+    const storedDraft = localStorage.getItem("editingWriting");
+
+    if (isEditing || storedDraft) {
+      setActiveTab("write"); // force Write tab
+    }
+  }, [searchParams]);
+
 
   return (
     <div className="flex flex-col w-full px-4 md:px-8 py-10">
