@@ -15,6 +15,8 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", authRoutes); // 👈 ADD THIS
+
 app.use("/api/posts", postRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/liked", likedRoutes);

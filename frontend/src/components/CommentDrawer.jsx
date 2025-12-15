@@ -8,67 +8,59 @@ const CommentDrawer = ({
   comments,
   text,
   setText,
-  handleAddComment
+  handleAddComment,
 }) => {
-
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
   return ReactDOM.createPortal(
-    <div
-      className="fixed top-0 right-0 h-full w-[350px] bg-white shadow-2xl 
-                 transform transition-transform duration-300 z-[9999] 
-                 translate-x-0"
-    >
-      {/* Header */}
+    <div className="fixed top-0 right-0 h-full w-[360px] bg-white shadow-2xl z-[9999]">
+      {/* HEADER */}
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">Comments</h2>
         <button onClick={onClose}>
-          <FaTimes className="text-gray-600 hover:text-black text-xl" />
+          <FaTimes className="text-xl text-gray-600 hover:text-black" />
         </button>
       </div>
 
-      {/* Comments list */}
-      <div className="p-4 overflow-y-auto h-[75%] space-y-3">
-        {comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment._id} className="border-b pb-2">
-              <div className="font-semibold text-sm">
-                {comment.username || "User"}
+      {/* COMMENTS */}
+      <div className="p-4 overflow-y-auto h-[75%] space-y-4">
+        {comments.length ? (
+          comments.map((c) => (
+            <div key={c._id}>
+              <div className="text-sm font-semibold">
+                {c.username || "User"}
               </div>
-              <div className="text-sm">{comment.text}</div>
-
-              <div className="text-xs text-gray-500">
-                {new Date(comment.createdAt).toLocaleString()}
+              <div className="text-sm">{c.text}</div>
+              <div className="text-xs text-gray-400">
+                {new Date(c.createdAt).toLocaleString()}
               </div>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">No comments yet.</p>
+          <p className="text-center text-gray-500">
+            No comments yet
+          </p>
         )}
       </div>
 
-      {/* Input */}
+      {/* INPUT */}
       <form
         onSubmit={handleAddComment}
-        className="absolute bottom-0 w-full flex items-center gap-2 
-                   border-t px-3 py-2 bg-white"
+        className="absolute bottom-0 w-full border-t p-3 flex gap-2"
       >
         <input
-          type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a comment..."
-          className="flex-1 p-2 text-sm focus:outline-none"
+          className="flex-1 text-sm p-2 outline-none"
         />
-
         <button
-          type="submit"
           disabled={!text.trim()}
-          className={`px-3 py-1 rounded-full ${
+          className={`px-4 py-1 rounded-full ${
             text.trim()
               ? "bg-blue-600 text-white"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-300 text-gray-500"
           }`}
         >
           Send
