@@ -11,48 +11,45 @@ import {
   getExplorePosts,
   getMyUploads,
   getSavedPosts,
+  getPostsByUser,
   addSavedPost,
   removeSavedPost,
   getLikedPosts,
   addLike,
   removeLike,
   getPostsByDate,
+  getSimilarPosts,
 } from "../controllers/postController.js";
-
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-/* ---------------- LIKE ROUTES ---------------- */
+/* ================= LIKE ================= */
 router.post("/liked/add", protect, addLike);
 router.post("/liked/remove", protect, removeLike);
 router.get("/liked", protect, getLikedPosts);
 
-/* ---------------- USER ROUTES ---------------- */
-router.get("/user/my-uploads", protect, getMyUploads);
-
-/* ---------------- EXPLORE (PUBLIC) ---------------- */
-// ⭐ MUST be above "/:id"
-router.get("/explore", getExplorePosts);
-
-/* ---------------- SAVED ---------------- */
+/* ================= SAVED ================= */
+router.post("/saved/add", protect, addSavedPost);
+router.post("/saved/remove", protect, removeSavedPost);
 router.get("/saved/:id", protect, getSavedPosts);
 
-/* ---------------- ANALYTICS ---------------- */
+/* ================= USER POSTS ================= */
+router.get("/user/my-uploads", protect, getMyUploads);
+router.get("/user/:id", getPostsByUser); // 🔥 REQUIRED FOR CREATOR PROFILE
+
+/* ================= EXPLORE & SIMILAR ================= */
+// ⭐ MUST be above "/:id"
+router.get("/explore", getExplorePosts);
+router.get("/similar/:id", getSimilarPosts);
+
+/* ================= ANALYTICS ================= */
 router.get("/likes/graph", protect, getPostsByDate);
 
-/* ---------------- ALL POSTS ---------------- */
+/* ================= ALL POSTS ================= */
 router.get("/", getAllPosts);
 
-/* ---------------- SINGLE POST ---------------- */
-// ❗ ALWAYS LAST
-router.get("/:id", getPostById);
-
-/* ---------------- UPDATE / DELETE ---------------- */
-router.put("/:id", protect, updatePost);
-router.delete("/:id", protect, deletePost);
-
-/* ---------------- CREATE POST ---------------- */
+/* ================= CREATE POST ================= */
 router.post(
   "/",
   protect,
@@ -62,5 +59,11 @@ router.post(
   ]),
   createPost
 );
+
+/* ================= SINGLE POST ================= */
+// ❗ ALWAYS LAST
+router.get("/:id", getPostById);
+router.put("/:id", protect, updatePost);
+router.delete("/:id", protect, deletePost);
 
 export default router;

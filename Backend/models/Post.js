@@ -1,3 +1,4 @@
+// models/Post.js
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
@@ -23,12 +24,29 @@ const postSchema = new mongoose.Schema(
 
     thumbnailUrl: String,
 
-    // 🔥 NEW (SAFE ADDITIONS)
+    // views system (already used)
     views: { type: Number, default: 0 },
+
+    // likes system (already used)
     likeCount: { type: Number, default: 0 },
 
+    // 🔥 ADDITION (SAFE & REQUIRED)
+    // 👉 used only for display, comments never disappear
+    commentsCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+// ✅ VIRTUAL CREATOR (DO NOT REMOVE)
+postSchema.virtual("creator", {
+  ref: "User",
+  localField: "createdBy",
+  foreignField: "_id",
+  justOne: true,
+});
+
+// ✅ required for populate + frontend usage
+postSchema.set("toJSON", { virtuals: true });
+postSchema.set("toObject", { virtuals: true });
 
 export default mongoose.model("Post", postSchema);

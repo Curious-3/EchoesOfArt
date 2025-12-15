@@ -26,6 +26,8 @@ import Layout from "./components/Layout";
 import Feedback from "./pages/Feedback"
 import AboutUs from "./pages/AboutUs"
 import ContactUs from "./pages/ContactUs"
+import PostDetails from "./pages/PostDetails";
+import CreatorProfile from "./pages/CreatorProfile";
 
 
 const App = () => {
@@ -73,6 +75,23 @@ const App = () => {
               </Layout>
             }
           />
+<Route
+  path="/post/:id"
+  element={
+    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+      <PostDetails />
+    </Layout>
+  }
+/>
+
+<Route
+  path="/profile/:creatorId"
+  element={
+    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+      <CreatorProfile />
+    </Layout>
+  }
+/>
 
           <Route
             path="/saved"
