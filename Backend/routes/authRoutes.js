@@ -16,7 +16,8 @@ import {
   unfollowUser,
   getFollowers,
   getFollowing,
-  getMe
+  getMe,
+  getUserById
 } from "../controllers/userController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -41,10 +42,21 @@ router.put(
 );
 
 /* FOLLOW SYSTEM */
-router.put("/follow/:id", protect, followUser);
+router.put(
+  "/follow/:id",
+  (req, res, next) => {
+    console.log("🚀 [ROUTE HIT] PUT /follow/:id");
+    console.log("🚀 Params:", req.params);
+    next();
+  },
+  protect,
+  followUser
+);
 router.put("/unfollow/:id", protect, unfollowUser);
 router.get("/followers/:id", protect, getFollowers);
 router.get("/following/:id", protect, getFollowing);
+
+router.get("/:id", getUserById);
 
 /* ================= PUBLIC CREATOR PROFILE ================= */
 router.get("/:id", async (req, res) => {

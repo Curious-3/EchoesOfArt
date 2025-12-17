@@ -70,6 +70,23 @@ export const getMe = async (req, res) => {
 };
 
 
+// 🟢 GET USER BY ID (Required for Creator Profile)
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .populate("followers", "name profileImage email")
+      .populate("following", "name profileImage email");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Get user error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 // 🟢 Follow a user
 export const followUser = async (req, res) => {

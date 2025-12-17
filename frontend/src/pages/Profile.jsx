@@ -230,11 +230,14 @@ const Profile = () => {
           <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3">{profile.name}</h3>
 
           <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-lg">
-            <img
-              src={profile.profileImage ? `http://localhost:8000${profile.profileImage}` : "/default-avatar.png"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+          {profile.profileImage && (
+  <img
+    src={`http://localhost:8000${profile.profileImage}`}
+    alt="Profile"
+    className="w-full h-full object-cover"
+  />
+)}
+
             {editMode && (
               <input
                 type="file"

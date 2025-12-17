@@ -293,8 +293,14 @@ export const getPostsByUser = async (req, res) => {
       createdBy: req.params.id,
     })
       .sort({ createdAt: -1 })
-      .populate("createdBy", "name profileImage");
-
+      .populate({
+  path: "createdBy",
+  select: "name profileImage followers following",
+  populate: [
+    { path: "followers", select: "name profileImage" },
+    { path: "following", select: "name profileImage" }
+  ]
+});
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
