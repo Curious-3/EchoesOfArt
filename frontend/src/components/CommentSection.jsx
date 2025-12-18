@@ -18,9 +18,15 @@ const CommentSection = ({ postId }) => {
 
     const fetchComments = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8000/api/comments/${postId}`
-        );
+      const res = await axios.get(
+  `http://localhost:8000/api/comments/${postId}`,
+  {
+    headers: {
+      Authorization: `Bearer ${user?.token || localStorage.getItem("token")}`,
+    },
+  }
+);
+   
         setComments(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Fetch comments error:", err);
@@ -81,6 +87,35 @@ const CommentSection = ({ postId }) => {
       console.error("Add comment error:", err);
     }
   };
+const handleDeleteComment = async (commentId) => {
+  await axios.delete(
+    `http://localhost:8000/api/comments/delete/${commentId}`,
+    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  );
+
+  setComments(prev => prev.filter(c => c._id !== commentId));
+};
+
+const handleEditComment = async (comment, newText) => {
+  if (!newText.trim()) return;
+
+  const res = await axios.put(
+    `http://localhost:8000/api/comments/edit/${comment._id}`,
+    { text: newText },
+    {
+      headers: {
+        Authorization: `Bearer ${user?.token || localStorage.getItem("token")}`,
+      },
+    }
+  );
+
+  setComments((prev) =>
+    prev.map((c) =>
+      c._id === comment._id ? res.data.comment : c
+    )
+  );
+};
+
 
   return (
     <div className="mt-2">
@@ -94,14 +129,18 @@ const CommentSection = ({ postId }) => {
       </button>
 
       {/* Drawer */}
-      <CommentDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        comments={comments}
-        text={text}
-        setText={setText}
-        handleAddComment={handleAddComment}
-      />
+     <CommentDrawer
+  isOpen={isDrawerOpen}
+  onClose={() => setIsDrawerOpen(false)}
+  comments={comments}
+  text={text}
+  setText={setText}
+  handleAddComment={handleAddComment}
+  user={user}
+  onEdit={handleEditComment}
+  onDelete={handleDeleteComment}
+/>
+
     </div>
   );
 };
