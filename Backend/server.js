@@ -4,6 +4,10 @@ import { Server } from "socket.io";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import commentSocket from "./socket/commentSocket.js";
+import path from "path";
+import express from "express";
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 dotenv.config();
 connectDB();

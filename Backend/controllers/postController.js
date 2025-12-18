@@ -3,11 +3,13 @@ import Post from "../models/Post.js";
 import Saved from "../models/Saved.js";
 import Liked from "../models/Liked.js";
 import cloudinary from "../config/cloudinary.js";
-import User from "../models/User.js";
+import { generateTagsFromImage } from "../utils/geminiTags.js";
+
 
 /* ================= HELPER ================= */
 const addLikeCount = async (posts) => {
   if (!posts || !posts.length) return [];
+
   return Promise.all(
     posts.map(async (post) => {
       const likeCount = await Liked.countDocuments({ post: post._id });
@@ -17,68 +19,93 @@ const addLikeCount = async (posts) => {
 };
 
 /* ================= CREATE POST ================= */
+
+
 export const createPost = async (req, res) => {
   try {
-    const files = req.files;
-    if (!files?.file)
+    console.log("📥 createPost API hit");
+
+    if (!req.files?.file) {
+      console.log("❌ No media file received");
       return res.status(400).json({ message: "Media file is required" });
+    }
 
-    const mediaResult = await cloudinary.uploader.upload(files.file[0].path, {
-      resource_type: "auto",
-    });
+    /* ================= UPLOAD MAIN MEDIA ================= */
+    console.log("☁️ Uploading main media to Cloudinary...");
+    const mediaResult = await cloudinary.uploader.upload(
+      req.files.file[0].path,
+      { resource_type: "auto" }
+    );
+    console.log("✅ Media uploaded:", mediaResult.secure_url);
 
+    /* ================= THUMBNAIL ================= */
     let thumbnailUrl = "";
-    if (files.thumbnail) {
+    if (req.files.thumbnail) {
+      console.log("🖼️ Uploading thumbnail...");
       const thumb = await cloudinary.uploader.upload(
-        files.thumbnail[0].path,
+        req.files.thumbnail[0].path,
         { resource_type: "image" }
       );
       thumbnailUrl = thumb.secure_url;
+      console.log("✅ Thumbnail uploaded:", thumbnailUrl);
     }
 
+    /* ================= TAG GENERATION ================= */
+    let tags = [];
+
+    if (req.body.tags && req.body.tags.trim() !== "") {
+      console.log("🏷️ Using MANUAL tags");
+      tags = req.body.tags
+        .split(",")
+        .map((t) => t.trim().toLowerCase());
+
+      console.log("📝 Manual tags:", tags);
+    } else {
+      console.log("🤖 Generating AUTO tags using Gemini...");
+      tags = await generateTagsFromImage({
+  imagePath: req.files.file[0].path,
+  title: req.body.title,
+  description: req.body.description,
+});
+
+
+      console.log("✨ Gemini generated tags:", tags);
+}
+
+    /* ================= CREATE POST ================= */
+    console.log("💾 Saving post to database...");
     const post = await Post.create({
       title: req.body.title,
       description: req.body.description,
       mediaUrl: mediaResult.secure_url,
       mediaType: req.body.mediaType,
       thumbnailUrl,
-      tags: req.body.tags?.split(","),
+      tags,
       category: req.body.category,
       createdBy: req.user._id,
     });
 
-    const updateField = `postStats.${req.body.mediaType}s`;
-    await User.findByIdAndUpdate(req.user._id, {
-      $inc: { [updateField]: 1 },
-    });
+    console.log("✅ Post created with ID:", post._id);
+    console.log("📌 Final tags saved:", post.tags);
 
-    res.status(201).json({ message: "Post created", post });
+    res.status(201).json(post);
   } catch (err) {
+    console.error("🔥 createPost error:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
+
+
+
 /* ================= GET ALL POSTS ================= */
 export const getAllPosts = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 0;
-    const limit = Number(req.query.limit) || 10;
-
     const posts = await Post.find()
       .populate("createdBy", "name profileImage")
-      .sort({ createdAt: -1 })
-      .skip(page * limit)
-      .limit(limit);
+      .sort({ createdAt: -1 });
 
-    const postsWithLikes = await addLikeCount(posts);
-    const totalPosts = await Post.countDocuments();
-
-    res.status(200).json({
-      page,
-      limit,
-      totalPosts,
-      posts: postsWithLikes,
-    });
+    res.status(200).json(await addLikeCount(posts));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -87,11 +114,12 @@ export const getAllPosts = async (req, res) => {
 /* ================= GET POST BY ID ================= */
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate(
-      "createdBy",
-      "name email"
-    );
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await Post.findById(req.params.id)
+      .populate("createdBy", "name profileImage email");
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
     post.views += 1;
     await post.save();
@@ -107,18 +135,42 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (post.createdBy.toString() !== req.user._id.toString())
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
+    }
 
-    const updated = await Post.findByIdAndUpdate(
-      req.params.id,
-      { title: req.body.title, description: req.body.description },
-      { new: true }
-    );
+    post.title = req.body.title || post.title;
+    post.description = req.body.description || post.description;
+    post.category = req.body.category || post.category;
+    post.mediaType = req.body.mediaType || post.mediaType;
 
-    res.status(200).json(updated);
+    if (req.body.tags) {
+      post.tags = req.body.tags.split(",");
+    }
+
+    if (req.files?.file) {
+      const mediaResult = await cloudinary.uploader.upload(
+        req.files.file[0].path,
+        { resource_type: "auto" }
+      );
+      post.mediaUrl = mediaResult.secure_url;
+    }
+
+    if (req.files?.thumbnail) {
+      const thumb = await cloudinary.uploader.upload(
+        req.files.thumbnail[0].path,
+        { resource_type: "image" }
+      );
+      post.thumbnailUrl = thumb.secure_url;
+    }
+
+    await post.save();
+    res.status(200).json({ message: "Post updated", post });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -128,32 +180,38 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (post.createdBy.toString() !== req.user._id.toString())
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
-
-    const updateField = `postStats.${post.mediaType}s`;
-    await User.findByIdAndUpdate(req.user._id, {
-      $inc: { [updateField]: -1 },
-    });
+    }
 
     await post.deleteOne();
-    res.status(200).json({ message: "Post deleted" });
+    res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-/* ================= MY UPLOADS ================= */
-export const getMyUploads = async (req, res) => {
+/* ================= SIMILAR POSTS ================= */
+export const getSimilarPosts = async (req, res) => {
   try {
-    const posts = await Post.find({ createdBy: req.user._id }).sort({
-      createdAt: -1,
-    });
-    res.status(200).json(await addLikeCount(posts));
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const current = await Post.findById(req.params.id);
+    if (!current) return res.status(404).json([]);
+
+    const posts = await Post.find({
+      _id: { $ne: current._id },
+      category: current.category,
+    })
+      .populate("createdBy", "name profileImage")
+      .limit(6);
+
+    res.status(200).json(posts);
+  } catch {
+    res.status(500).json([]);
   }
 };
 
@@ -171,50 +229,44 @@ export const getExplorePosts = async (req, res) => {
     } = req.query;
 
     const query = {};
-
     if (search) query.title = { $regex: search, $options: "i" };
     if (mediaType) query.mediaType = mediaType;
     if (category) query.category = category;
     if (tag) query.tags = tag;
 
-    // 🔹 BASE SORT (not likes)
-    let baseSort = { createdAt: -1 };
-    if (sort === "oldest") baseSort = { createdAt: 1 };
-    if (sort === "views") baseSort = { views: -1 };
+    let sortQuery = { createdAt: -1 };
+    if (sort === "oldest") sortQuery = { createdAt: 1 };
+    if (sort === "views") sortQuery = { views: -1 };
 
-    // 🔹 STEP 1: fetch ALL matching posts (NO pagination yet)
     const posts = await Post.find(query)
       .populate("createdBy", "name profileImage")
-      .sort(baseSort);
+      .sort(sortQuery);
 
-    // 🔹 STEP 2: attach likeCount
-    let postsWithLikes = await Promise.all(
-      posts.map(async (post) => {
-        const likeCount = await Liked.countDocuments({ post: post._id });
-        return { ...post._doc, likeCount };
-      })
-    );
+    let postsWithLikes = await addLikeCount(posts);
 
-    // 🔹 STEP 3: MOST LIKED SORT (🔥 IMPORTANT)
     if (sort === "likes") {
       postsWithLikes.sort((a, b) => b.likeCount - a.likeCount);
     }
 
-    // 🔹 STEP 4: PAGINATION AFTER SORT
     const start = Number(page) * Number(limit);
-    const end = start + Number(limit);
-    const paginatedPosts = postsWithLikes.slice(start, end);
-
-    res.status(200).json(paginatedPosts);
-  } catch (error) {
-    console.error("Explore posts error:", error);
-    res.status(500).json({
-      message: "Failed to fetch explore posts",
-      error: error.message,
-    });
+    res.status(200).json(postsWithLikes.slice(start, start + Number(limit)));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
+/* ================= MY UPLOADS ================= */
+export const getMyUploads = async (req, res) => {
+  try {
+    const posts = await Post.find({ createdBy: req.user._id })
+      .populate("createdBy", "name profileImage")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(await addLikeCount(posts));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 /* ================= SAVED POSTS ================= */
 export const getSavedPosts = async (req, res) => {
@@ -234,7 +286,6 @@ export const getSavedPosts = async (req, res) => {
   }
 };
 
-/* ================= ADD / REMOVE SAVED ================= */
 export const addSavedPost = async (req, res) => {
   try {
     const { postId } = req.body;
@@ -246,10 +297,12 @@ export const addSavedPost = async (req, res) => {
     let saved = await Saved.findOne({ user: userId });
     if (!saved) saved = await Saved.create({ user: userId });
 
-    if (!saved[`${post.mediaType}s`].includes(postId))
-      saved[`${post.mediaType}s`].push(postId);
+    const key = `${post.mediaType}s`;
+    if (!saved[key].includes(postId)) {
+      saved[key].push(postId);
+      await saved.save();
+    }
 
-    await saved.save();
     res.status(200).json({ message: "Saved" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -264,24 +317,49 @@ export const removeSavedPost = async (req, res) => {
     const post = await Post.findById(postId);
     const saved = await Saved.findOne({ user: userId });
 
-    saved[`${post.mediaType}s`] = saved[`${post.mediaType}s`].filter(
-      (id) => id.toString() !== postId
-    );
+    if (!post || !saved) {
+      return res.status(404).json({ message: "Not found" });
+    }
 
+    const key = `${post.mediaType}s`;
+    saved[key] = saved[key].filter((id) => id.toString() !== postId);
     await saved.save();
+
     res.status(200).json({ message: "Removed" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+/* ================= POSTS BY USER ================= */
+export const getPostsByUser = async (req, res) => {
+  try {
+    const posts = await Post.find({
+      createdBy: req.params.id,
+    })
+      .sort({ createdAt: -1 })
+      .populate({
+  path: "createdBy",
+  select: "name profileImage followers following",
+  populate: [
+    { path: "followers", select: "name profileImage" },
+    { path: "following", select: "name profileImage" }
+  ]
+});
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 /* ================= LIKE SYSTEM ================= */
 export const getLikedPosts = async (req, res) => {
   try {
-    const likes = await Liked.find({ user: req.user._id }).populate({
-      path: "post",
-      populate: { path: "createdBy", select: "name email" },
-    });
+    const likes = await Liked.find({ user: req.user._id })
+      .populate({
+        path: "post",
+        populate: { path: "createdBy", select: "name profileImage" },
+      });
 
     res.status(200).json(likes.filter((l) => l.post));
   } catch (err) {
@@ -292,12 +370,15 @@ export const getLikedPosts = async (req, res) => {
 export const addLike = async (req, res) => {
   try {
     const { postId } = req.body;
+
     const exists = await Liked.findOne({
       user: req.user._id,
       post: postId,
     });
 
-    if (exists) return res.status(400).json({ message: "Already liked" });
+    if (exists) {
+      return res.status(400).json({ message: "Already liked" });
+    }
 
     await Liked.create({ user: req.user._id, post: postId });
     res.status(201).json({ message: "Liked" });
@@ -312,28 +393,33 @@ export const removeLike = async (req, res) => {
       user: req.user._id,
       post: req.body.postId,
     });
+
     res.status(200).json({ message: "Unliked" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
- 
-// ================= GET POSTS BY DATE =================
+
+/* ================= ANALYTICS ================= */
 export const getPostsByDate = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const posts = await Post.find({ createdBy: req.user._id });
+    const data = {};
 
-    const posts = await Post.find({ createdBy: userId }).select("createdAt");
-
-    const postsByDate = {};
-    posts.forEach((post) => {
+    for (const post of posts) {
       const date = post.createdAt.toISOString().split("T")[0];
-      postsByDate[date] = (postsByDate[date] || 0) + 1;
-    });
+      const likes = await Liked.countDocuments({ post: post._id });
 
-    res.status(200).json(postsByDate);
-  } catch (error) {
-    console.error("Error fetching posts by date:", error);
-    res.status(500).json({ message: "Error fetching posts by date" });
+      if (!data[date]) {
+        data[date] = { date, posts: 0, likes: 0 };
+      }
+
+      data[date].posts += 1;
+      data[date].likes += likes;
+    }
+
+    res.status(200).json(Object.values(data));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

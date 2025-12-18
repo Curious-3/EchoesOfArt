@@ -1,32 +1,31 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import SavedWritings from "./pages/SavedWritings";
-import FollowedAuthors from "./pages/FollowedAuthors";
-import ExploreWritings from "./pages/ExploreWritings";
-import SingleWriting from "./pages/SingleWriting";
-import WritingPage from "./pages/WritingPage";
-import LandingPage from "./pages/LandingPage";
-import WritingEditor from './components/WritingEditor';
-import MyWritings from './components/MyWritings';
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Upload from "./pages/Upload";
-import Saved from "./pages/Saved";
-import MyUploads from "./pages/MyUploads";
-import VerifyEmail from "./pages/verifyEmail";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
+/* ===== AUTH ===== */
 import { AuthProvider } from "./context/AuthProvider";
-import "./App.css";
-import Profile from "./pages/Profile";
+
+/* ===== LAYOUT ===== */
 import Layout from "./components/Layout";
 
-import Feedback from "./pages/Feedback"
-import AboutUs from "./pages/AboutUs"
-import ContactUs from "./pages/ContactUs"
+/* ===== PAGES ===== */
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import VerifyEmail from "./pages/verifyEmail";
+import Upload from "./pages/Upload";
+import Profile from "./pages/Profile";
+import Saved from "./pages/Saved";
+import MyUploads from "./pages/MyUploads";
+import PostDetails from "./pages/PostDetails";
+import CreatorProfile from "./pages/CreatorProfile";
+import WritingPage from "./pages/WritingPage";
+import SingleWriting from "./pages/SingleWriting";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
+import Feedback from "./pages/Feedback";
 
+import "./App.css";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,13 +33,15 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
+        <Toaster position="top-right" />
+
         <Routes>
-          {/* Public pages */}
+          {/* ================= PUBLIC ROUTES ================= */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
 
-          {/* Pages with layout */}
+          {/* ================= HOME ================= */}
           <Route
             path="/"
             element={
@@ -49,6 +50,7 @@ const App = () => {
               </Layout>
             }
           />
+
           <Route
             path="/home"
             element={
@@ -57,19 +59,41 @@ const App = () => {
               </Layout>
             }
           />
+
+          {/* ================= POSTS ================= */}
           <Route
-            path="/upload"
+            path="/post/:id"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <Upload />
+                <PostDetails />
               </Layout>
             }
           />
+
+          <Route
+            path="/profile/:creatorId"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <CreatorProfile />
+              </Layout>
+            }
+          />
+
+          {/* ================= USER ================= */}
           <Route
             path="/profile"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
                 <Profile />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/upload"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <Upload />
               </Layout>
             }
           />
@@ -82,6 +106,7 @@ const App = () => {
               </Layout>
             }
           />
+
           <Route
             path="/my-uploads"
             element={
@@ -90,8 +115,8 @@ const App = () => {
               </Layout>
             }
           />
-       
 
+          {/* ================= WRITINGS ================= */}
           <Route
             path="/writing"
             element={
@@ -101,7 +126,7 @@ const App = () => {
             }
           />
 
-           <Route
+          <Route
             path="/writing/:id"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
@@ -109,52 +134,44 @@ const App = () => {
               </Layout>
             }
           />
-  
+
+          {/* ================= EXPLORE ================= */}
           <Route
             path="/explore-art"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <LandingPage searchTerm={searchTerm} explore={true} />
+                <LandingPage searchTerm={searchTerm} explore />
               </Layout>
             }
           />
 
-
+          {/* ================= STATIC PAGES ================= */}
           <Route
             path="/about"
             element={
-              <>
-                <Header />
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
                 <AboutUs />
-                <Footer />
-              </>
+              </Layout>
             }
           />
-
-         
 
           <Route
             path="/contact"
             element={
-              <>
-                <Header />
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
                 <ContactUs />
-                <Footer />
-              </>
+              </Layout>
             }
           />
 
           <Route
             path="/feedback"
             element={
-              <>
-                <Header />
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
                 <Feedback />
-                <Footer />
-              </>
+              </Layout>
             }
           />
-
         </Routes>
       </Router>
     </AuthProvider>

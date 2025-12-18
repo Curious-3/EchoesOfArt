@@ -1,6 +1,57 @@
+// controllers/commentController.js
 import Comment from "../models/Comment.js";
-import User from "../models/User.js";
+import Post from "../models/Post.js";
 
+// ✏️ Edit comment (only comment owner)
+export const updateComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { text } = req.body;
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    if (comment.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    comment.text = text;
+    await comment.save();
+
+    res.json({ message: "Comment updated", comment });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// 🗑️ Delete comment (comment owner OR post owner)
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    const post = await Post.findById(comment.postId);
+
+    const isCommentOwner =
+      comment.userId.toString() === req.user._id.toString();
+
+    const isPostOwner =
+      post?.userId?.toString() === req.user._id.toString();
+
+    if (!isCommentOwner && !isPostOwner) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await comment.deleteOne();
+    res.json({ message: "Comment deleted", commentId });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ================= CREATE COMMENT ================= */
 export const createComment = async (req, res) => {
   try {
     console.log("createComment route hit");
@@ -24,13 +75,14 @@ export const createComment = async (req, res) => {
     };
     res.status(201).json({ comment: formattedComment });
   } catch (error) {
-    res.status(500).json({ message: error.message});
+    console.error("Create comment error:", error);
+    res.status(500).json({ message: "Failed to add comment" });
   }
 };
 
+/* ================= GET COMMENTS BY POST ================= */
 export const getCommentsByPost = async (req, res) => {
   try {
-
     const { postId } = req.params;
        const comments = await Comment.find({ postId })
   .populate("userId", "name profileImage")
@@ -44,6 +96,7 @@ const formattedComments = comments.map(c => ({
 }));
 res.json(formattedComments);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Get comments error:", error);
+    res.status(500).json({ message: "Failed to fetch comments" });
   }
 };
