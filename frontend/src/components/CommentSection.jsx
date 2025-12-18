@@ -110,10 +110,13 @@ const handleEditComment = async (comment, newText) => {
   );
 
   setComments((prev) =>
-    prev.map((c) =>
-      c._id === comment._id ? res.data.comment : c
-    )
-  );
+  prev.map((c) =>
+    c._id === comment._id
+      ? { ...c, text: res.data.comment.text }
+      : c
+  )
+);
+
 };
 
 

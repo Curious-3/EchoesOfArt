@@ -48,15 +48,18 @@ const CommentDrawer = ({
                 {/* USER ROW */}
                 <div className="flex items-start gap-3">
                   {/* USER IMAGE */}
-                  <img
-                    src={
-                      comment.userImage
-                        ? `http://localhost:8000${comment.userImage}`
-                        : "/default-avatar.png"
-                    }
-                    alt="user"
-                    className="w-9 h-9 rounded-full object-cover"
-                  />
+                  {comment.userImage ? (
+  <img
+    src={`http://localhost:8000${comment.userImage}`}
+    alt="user"
+    className="w-9 h-9 rounded-full object-cover"
+  />
+) : (
+  <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+    {comment.username?.charAt(0).toUpperCase()}
+  </div>
+)}
+
 
                   <div className="flex-1">
                     {/* NAME + ACTIONS */}
