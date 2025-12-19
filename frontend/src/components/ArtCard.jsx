@@ -8,8 +8,7 @@ import { useNavigate } from "react-router-dom";
 const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
   const navigate = useNavigate();
 
-  const creatorName =
-    art?.createdBy?.name || "Unknown Creator";
+  const creatorName = art?.createdBy?.name || "Unknown Creator";
 
   return (
     <div
@@ -78,6 +77,21 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
             Category:{" "}
             <span className="font-medium">{art.category}</span>
           </p>
+        )}
+
+        {/* ================= TAGS ================= */}
+        {art.tags && art.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {art.tags.map((tag, index) => (
+              <span
+                key={index}
+                onClick={(e) => e.stopPropagation()}
+                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         )}
       </div>
     </div>
