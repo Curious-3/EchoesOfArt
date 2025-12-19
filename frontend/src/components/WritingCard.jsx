@@ -2,6 +2,12 @@ import React from "react";
 import { BookmarkIcon, HeartIcon } from "@heroicons/react/24/solid";
 import { Link } from "react-router-dom";
 
+/* 🔹 Helper: strip HTML + limit chars */
+const getPreviewText = (html, limit = 50) => {
+  const text = html.replace(/<[^>]+>/g, "");
+  return text.length > limit ? text.slice(0, limit) + "..." : text;
+};
+
 const WritingCard = ({ writing }) => {
   return (
     <Link
@@ -19,7 +25,22 @@ const WritingCard = ({ writing }) => {
         justify-between
       "
     >
-      {/* Title */}
+      {/* 🔹 CATEGORY BADGE */}
+      {writing.category && (
+        <span
+          className="
+            inline-block mb-2 
+            px-3 py-1 
+            text-xs font-semibold 
+            bg-blue-100 text-blue-700 
+            rounded-full w-fit
+          "
+        >
+          {writing.category}
+        </span>
+      )}
+
+      {/* 🔹 TITLE */}
       <h2
         className="
           text-xl font-bold 
@@ -32,17 +53,17 @@ const WritingCard = ({ writing }) => {
         {writing.title}
       </h2>
 
-      {/* Preview text */}
-      <p className="mt-3 text-gray-700 text-sm line-clamp-4 leading-relaxed">
-        {writing.content.replace(/<[^>]+>/g, "")}
+      {/* 🔹 CONTENT PREVIEW (50 chars max) */}
+      <p className="mt-3 text-gray-700 text-sm leading-relaxed">
+        {getPreviewText(writing.content, 50)}
       </p>
 
-      {/* Footer Row */}
+      {/* 🔹 FOOTER */}
       <div className="mt-4 flex items-center justify-between">
-        {/* Left: Author */}
+        {/* Author */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-blue-800 font-semibold">
-            {writing.userId?.name?.[0] || "A"}
+            {writing.userId?.name?.[0]?.toUpperCase() || "A"}
           </div>
 
           <div>
@@ -50,12 +71,12 @@ const WritingCard = ({ writing }) => {
               {writing.userId?.name || "Anonymous"}
             </p>
             <p className="text-xs text-gray-500">
-              {new Date(writing.createdAt).toLocaleDateString()}
+              {new Date(writing.createdAt).toLocaleDateString("en-IN")}
             </p>
           </div>
         </div>
 
-        {/* Right: Action Icons */}
+        {/* Icons */}
         <div className="flex gap-2">
           <button
             className="
