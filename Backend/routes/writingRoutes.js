@@ -13,6 +13,7 @@ import {
   addReply,
   deleteReply,
   toggleReaction,
+  editReply,
   reportWriting
 } from "../controllers/writingController.js";
 import { protect } from "../middleware/authMiddleware.js";
@@ -39,6 +40,7 @@ router.delete("/comment/:id/:commentId", protect, deleteComment);
 
 // replies
 router.post("/comment/:id/:commentId/reply", protect, addReply);
+router.put("/comment/:id/:commentId/reply/:replyId", protect, editReply);
 router.delete("/comment/:id/:commentId/reply/:replyId", protect, deleteReply);
 
 //  reactions
