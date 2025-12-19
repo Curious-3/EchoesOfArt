@@ -41,7 +41,7 @@ const MyWritings = ({ userToken }) => {
 
   const handleEdit = (writing) => {
     localStorage.setItem("editingWriting", JSON.stringify(writing));
-    navigate("/writing?edit=true");
+    navigate("/writing/write?edit=true");
 
   };
 
