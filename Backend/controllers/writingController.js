@@ -1,8 +1,10 @@
 import Writing from "../models/Writing.js";
+import User from "../models/User.js";
+
 
 // CREATE / UPDATE writing
 export const saveWriting = async (req, res) => {
-  const { writingId, title, content, status } = req.body;
+  const { writingId, title, content, status, category } = req.body;
 
   try {
     let writing;
@@ -10,7 +12,7 @@ export const saveWriting = async (req, res) => {
     if (writingId) {
       writing = await Writing.findOneAndUpdate(
         { _id: writingId, userId: req.user._id },
-        { title, content, status, updatedAt: Date.now() },
+        { title, content, status,category, updatedAt: Date.now() },
         { new: true }
       );
     } else {
@@ -18,7 +20,8 @@ export const saveWriting = async (req, res) => {
         userId: req.user._id,
         title,
         content,
-        status
+        status,
+        category,
       });
       await writing.save();
     }
@@ -45,14 +48,25 @@ export const getPublishedWritings = async (req, res) => {
   try {
     const { search = "" } = req.query;
 
+    // 1️⃣ find users matching creator name
+    const users = await User.find(
+      { name: { $regex: search, $options: "i" } },
+      "_id"
+    );
+
+    const userIds = users.map((u) => u._id);
+
+    // 2️⃣ build query
     const query = {
       status: "published",
       $or: [
         { title: { $regex: search, $options: "i" } },
-        { content: { $regex: search, $options: "i" } }
+        { content: { $regex: search, $options: "i" } },
+        { userId: { $in: userIds } } // 🔥 creator match
       ]
     };
 
+    // 3️⃣ fetch writings
     const writings = await Writing.find(query)
       .populate("userId", "name email")
       .sort({ createdAt: -1 });
@@ -102,68 +116,75 @@ export const deleteWriting = async (req, res) => {
 };
 
 //  LIKE / UNLIKE
+//  LIKE / UNLIKE  (FIXED - minimal change)
 export const toggleLike = async (req, res) => {
   try {
     const writing = await Writing.findById(req.params.id);
-    if (!writing) return res.status(404).json({ success: false, message: "Not found" });
-
-    const userId = req.user._id.toString();
-    const index = writing.likes.findIndex((id) => id.toString() === userId);
-
-    let liked;
-
-    if (index === -1) {
-      writing.likes.push(userId);
-      liked = true;
-    } else {
-      writing.likes.splice(index, 1);
-      liked = false;
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
     }
 
-    await writing.save();
+    const userId = req.user._id;
+
+    const alreadyLiked = writing.likes.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    const updatedWriting = await Writing.findByIdAndUpdate(
+      req.params.id,
+      alreadyLiked
+        ? { $pull: { likes: userId } }
+        : { $addToSet: { likes: userId } },
+      { new: true }
+    );
 
     res.json({
       success: true,
-      liked,
-      totalLikes: writing.likes.length
+      liked: !alreadyLiked,
+      totalLikes: updatedWriting.likes.length
     });
   } catch (error) {
-    console.error("Like error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("LIKE ERROR:", error);
+    res.status(500).json({ success: false, message: "Like failed" });
   }
 };
 
+
+
 //  BOOKMARK / UNBOOKMARK
+//  BOOKMARK / UNBOOKMARK (FIXED - minimal change)
 export const toggleBookmark = async (req, res) => {
   try {
     const writing = await Writing.findById(req.params.id);
-    if (!writing) return res.status(404).json({ success: false, message: "Not found" });
-
-    const userId = req.user._id.toString();
-    const index = writing.bookmarkedBy.findIndex((id) => id.toString() === userId);
-
-    let bookmarked;
-
-    if (index === -1) {
-      writing.bookmarkedBy.push(userId);
-      bookmarked = true;
-    } else {
-      writing.bookmarkedBy.splice(index, 1);
-      bookmarked = false;
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
     }
 
-    await writing.save();
+    const userId = req.user._id;
+
+    const alreadySaved = writing.bookmarkedBy.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    const updatedWriting = await Writing.findByIdAndUpdate(
+      req.params.id,
+      alreadySaved
+        ? { $pull: { bookmarkedBy: userId } }
+        : { $addToSet: { bookmarkedBy: userId } },
+      { new: true }
+    );
 
     res.json({
       success: true,
-      bookmarked,
-      totalBookmarks: writing.bookmarkedBy.length
+      bookmarked: !alreadySaved,
+      totalBookmarks: updatedWriting.bookmarkedBy.length
     });
   } catch (error) {
-    console.error("Bookmark error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("BOOKMARK ERROR:", error);
+    res.status(500).json({ success: false, message: "Bookmark failed" });
   }
 };
+
 
 //  ADD COMMENT
 export const addComment = async (req, res) => {
@@ -194,18 +215,23 @@ export const addComment = async (req, res) => {
 
 //  EDIT COMMENT
 export const editComment = async (req, res) => {
-  const { commentId, text } = req.body;
+  const commentId = req.params.commentId;
+  const { text } = req.body;
 
   if (!text?.trim()) {
-    return res.status(400).json({ success: false, message: "Comment cannot be empty" });
+    return res.status(400).json({ success: false, message: "Empty comment" });
   }
 
   try {
     const writing = await Writing.findById(req.params.id);
-    if (!writing) return res.status(404).json({ success: false, message: "Not found" });
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
 
     const comment = writing.comments.id(commentId);
-    if (!comment) return res.status(404).json({ success: false, message: "Comment not found" });
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
 
     if (comment.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Not allowed" });
@@ -220,6 +246,7 @@ export const editComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // DELETE COMMENT
 export const deleteComment = async (req, res) => {
@@ -304,6 +331,49 @@ export const deleteReply = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// ✏️ EDIT REPLY
+export const editReply = async (req, res) => {
+  const { commentId, replyId } = req.params;
+  const { text } = req.body;
+
+  if (!text?.trim()) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Reply cannot be empty" });
+  }
+
+  try {
+    const writing = await Writing.findById(req.params.id);
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
+
+    const comment = writing.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) {
+      return res.status(404).json({ success: false, message: "Reply not found" });
+    }
+
+    // 🔐 only reply owner can edit
+    if (reply.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not allowed" });
+    }
+
+    reply.text = text;
+    await writing.save();
+
+    res.json({ success: true, comments: writing.comments });
+  } catch (error) {
+    console.error("Edit reply error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 //  ADD / TOGGLE REACTION on comment
 export const toggleReaction = async (req, res) => {
