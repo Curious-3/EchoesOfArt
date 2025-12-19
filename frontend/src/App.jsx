@@ -75,23 +75,23 @@ const App = () => {
               </Layout>
             }
           />
-<Route
-  path="/post/:id"
-  element={
-    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-      <PostDetails />
-    </Layout>
-  }
-/>
+          <Route
+            path="/post/:id"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <PostDetails />
+              </Layout>
+            }
+          />
 
-<Route
-  path="/profile/:creatorId"
-  element={
-    <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-      <CreatorProfile />
-    </Layout>
-  }
-/>
+          <Route
+            path="/profile/:creatorId"
+            element={
+              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+                <CreatorProfile />
+              </Layout>
+            }
+          />
 
           <Route
             path="/saved"
@@ -109,7 +109,7 @@ const App = () => {
               </Layout>
             }
           />
-       
+
 
           <Route
             path="/writing"
@@ -118,17 +118,18 @@ const App = () => {
                 <WritingPage />
               </Layout>
             }
-          />
+          >
+            <Route index element={<ExploreWritings searchTerm={searchTerm} />} />
+            <Route path="write" element={<WritingEditor />} />
+            <Route path="my" element={<MyWritings />} />
+            <Route path="saved" element={<SavedWritings />} />
+            <Route path="following" element={<FollowedAuthors />} />
+            <Route path=":id" element={<SingleWriting />} /> 
+          </Route>
 
-           <Route
-            path="/writing/:id"
-            element={
-              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <SingleWriting />
-              </Layout>
-            }
-          />
-  
+
+        
+
           <Route
             path="/explore-art"
             element={
@@ -150,7 +151,7 @@ const App = () => {
             }
           />
 
-         
+
 
           <Route
             path="/contact"

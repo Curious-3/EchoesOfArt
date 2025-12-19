@@ -166,7 +166,6 @@ const LandingPage = ({ searchTerm = "" }) => {
   return (
     <>
       <Toaster />
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       <main
         className={`min-h-screen bg-[#f0f9ff] transition-all ${

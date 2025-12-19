@@ -1,100 +1,72 @@
-import React, { useEffect, useState } from "react";
-import WritingEditor from "../components/WritingEditor";
-import MyWritings from "../components/MyWritings";
-import ExploreWritings from "../pages/ExploreWritings";
-import SavedWritings from "../pages/SavedWritings";
-import FollowedAuthors from "../pages/FollowedAuthors";
-import { useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useSearchParams } from "react-router-dom";
 
 const WritingPage = () => {
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const token = storedUser?.token || null;
-
-  const [activeTab, setActiveTab] = useState("write");
   const [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    const isEditing = searchParams.get("edit");
-    const storedDraft = localStorage.getItem("editingWriting");
-
-    if (isEditing || storedDraft) {
-      setActiveTab("write"); // force Write tab
-    }
-  }, [searchParams]);
-
 
   return (
     <div className="flex flex-col w-full px-4 md:px-8 py-10">
 
-      {/* TABS */}
-      <div className="flex flex-wrap gap-4 mb-8">
-        <button
-          onClick={() => setActiveTab("write")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "write" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
-        >
-          ✍️ Write
-        </button>
-
-        <button
-          onClick={() => setActiveTab("my")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "my" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
-        >
-          📚 My Writings
-        </button>
-
-        <button
-          onClick={() => setActiveTab("explore")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "explore" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
+      {/* TABS (URL BASED) */}
+      <div className="flex flex-wrap gap-4 mb-8 justify-center">
+        <NavLink
+          to="/writing"
+          end
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full transition ${
+              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`
+          }
         >
           🔍 Explore
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => setActiveTab("saved")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "saved" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
+        <NavLink
+          to="/writing/write"
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full transition ${
+              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`
+          }
+        >
+          ✍️ Write
+        </NavLink>
+
+        <NavLink
+          to="/writing/my"
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full transition ${
+              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`
+          }
+        >
+          📚 My Writings
+        </NavLink>
+
+        <NavLink
+          to="/writing/saved"
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full transition ${
+              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`
+          }
         >
           🔖 Saved
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => setActiveTab("follow")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "follow" ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
+        <NavLink
+          to="/writing/following"
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full transition ${
+              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`
+          }
         >
           👥 Following
-        </button>
+        </NavLink>
       </div>
 
-      {/* TAB CONTENT */}
-      {activeTab === "write" && (
-        <>
-          <h2 className="text-3xl font-bold mb-6 text-center">Write Your Masterpiece</h2>
-          <WritingEditor userToken={token} />
-        </>
-      )}
-
-      {activeTab === "my" && (
-        <>
-          <h2 className="text-3xl font-bold mb-6 text-center">My Writings</h2>
-          <MyWritings userToken={token} />
-        </>
-      )}
-
-      {activeTab === "explore" && <ExploreWritings />}
-
-      {activeTab === "saved" && <SavedWritings />}
-
-      {activeTab === "follow" && <FollowedAuthors />}
-
+      {/* TAB CONTENT (CHANGES VIA URL) */}
+      <Outlet />
     </div>
   );
 };
