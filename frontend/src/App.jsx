@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+
 
 /* ===== AUTH ===== */
 import { AuthProvider } from "./context/AuthProvider";
@@ -24,6 +25,13 @@ import SingleWriting from "./pages/SingleWriting";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Feedback from "./pages/Feedback";
+import ExploreWritings from "./pages/ExploreWritings";
+import SavedWritings from "./pages/SavedWritings";
+import FollowedAuthors from "./pages/FollowedAuthors";
+
+/* ===== COMPONENTS (IMPORTANT FIX) ===== */
+import MyWritings from "./components/MyWritings";
+import WritingEditor from "./components/WritingEditor";
 
 import "./App.css";
 
@@ -50,6 +58,8 @@ const App = () => {
               </Layout>
             }
           />
+
+           <Route path="/explore-art" element={<Navigate to="/" replace />} />
 
           <Route
             path="/home"
@@ -88,20 +98,12 @@ const App = () => {
               </Layout>
             }
           />
-          <Route
-            path="/post/:id"
-            element={
-              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <PostDetails />
-              </Layout>
-            }
-          />
 
           <Route
-            path="/profile/:creatorId"
+            path="/upload"
             element={
               <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <CreatorProfile />
+                <Upload />
               </Layout>
             }
           />
@@ -124,7 +126,6 @@ const App = () => {
             }
           />
 
-
           {/* ================= WRITINGS ================= */}
           <Route
             path="/writing"
@@ -139,20 +140,8 @@ const App = () => {
             <Route path="my" element={<MyWritings />} />
             <Route path="saved" element={<SavedWritings />} />
             <Route path="following" element={<FollowedAuthors />} />
-            <Route path=":id" element={<SingleWriting />} /> 
+            <Route path=":id" element={<SingleWriting />} />
           </Route>
-
-
-        
-
-          <Route
-            path="/explore-art"
-            element={
-              <Layout searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-                <LandingPage searchTerm={searchTerm} explore />
-              </Layout>
-            }
-          />
 
           {/* ================= STATIC PAGES ================= */}
           <Route
@@ -163,8 +152,6 @@ const App = () => {
               </Layout>
             }
           />
-
-
 
           <Route
             path="/contact"

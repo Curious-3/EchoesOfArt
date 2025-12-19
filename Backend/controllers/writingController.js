@@ -215,18 +215,23 @@ export const addComment = async (req, res) => {
 
 //  EDIT COMMENT
 export const editComment = async (req, res) => {
-  const { commentId, text } = req.body;
+  const commentId = req.params.commentId;
+  const { text } = req.body;
 
   if (!text?.trim()) {
-    return res.status(400).json({ success: false, message: "Comment cannot be empty" });
+    return res.status(400).json({ success: false, message: "Empty comment" });
   }
 
   try {
     const writing = await Writing.findById(req.params.id);
-    if (!writing) return res.status(404).json({ success: false, message: "Not found" });
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
 
     const comment = writing.comments.id(commentId);
-    if (!comment) return res.status(404).json({ success: false, message: "Comment not found" });
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
 
     if (comment.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Not allowed" });
@@ -241,6 +246,7 @@ export const editComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // DELETE COMMENT
 export const deleteComment = async (req, res) => {
@@ -325,6 +331,49 @@ export const deleteReply = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// ✏️ EDIT REPLY
+export const editReply = async (req, res) => {
+  const { commentId, replyId } = req.params;
+  const { text } = req.body;
+
+  if (!text?.trim()) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Reply cannot be empty" });
+  }
+
+  try {
+    const writing = await Writing.findById(req.params.id);
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
+
+    const comment = writing.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) {
+      return res.status(404).json({ success: false, message: "Reply not found" });
+    }
+
+    // 🔐 only reply owner can edit
+    if (reply.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not allowed" });
+    }
+
+    reply.text = text;
+    await writing.save();
+
+    res.json({ success: true, comments: writing.comments });
+  } catch (error) {
+    console.error("Edit reply error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 //  ADD / TOGGLE REACTION on comment
 export const toggleReaction = async (req, res) => {
