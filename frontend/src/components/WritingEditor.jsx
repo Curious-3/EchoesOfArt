@@ -4,72 +4,110 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
 
+/* 🔥 GRADIENT OPTIONS (FAST + ZERO LOAD) */
+const GRADIENTS = [
+  "linear-gradient(135deg, #667eea, #764ba2)",
+  "linear-gradient(135deg, #ff758c, #ff7eb3)",
+  "linear-gradient(135deg, #43cea2, #185a9d)",
+  "linear-gradient(135deg, #f7971e, #ffd200)",
+  "linear-gradient(135deg, #232526, #414345)",
+];
+
+const CATEGORIES = [
+  "Poetry",
+  "Story",
+  "Thoughts",
+  "Love",
+  "Life",
+  "Motivation",
+  "Sad / Healing",
+  "Spiritual",
+];
+
 const WritingEditor = ({ userToken }) => {
   const { quill, quillRef } = useQuill();
+
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
   const [writingId, setWritingId] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // 🎨 background gradient
+  const [bgStyle, setBgStyle] = useState("");
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const finalToken = userToken || storedUser?.token;
 
-  console.log("FINAL TOKEN:", finalToken);
-
- useEffect(() => {
+  /* ================= LOAD EDITING DRAFT ================= */
+  useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("editingWriting") || "null");
-    if (stored && quill) {
-      setTitle(stored.title);
-      setWritingId(stored._id);
-      quill.root.innerHTML = stored.content;
-      setTimeout(() => {
-  localStorage.removeItem("editingWriting");
-}, 100);
 
+    if (stored && quill) {
+      setTitle(stored.title || "");
+      setCategory(stored.category || "");
+      setWritingId(stored._id || null);
+      setBgStyle(stored.bgStyle || "");
+      quill.root.innerHTML = stored.content || "";
+
+      // clear after load
+      setTimeout(() => {
+        localStorage.removeItem("editingWriting");
+      }, 100);
     }
   }, [quill]);
 
+  /* ================= SAVE DRAFT ================= */
   const saveDraft = async () => {
-    if (!finalToken) {
-      toast.error("Login required!");
-      return;
+    if (!finalToken) return toast.error("Login required!");
+
+    if (!category) {
+      return toast.error("Please select a category");
     }
 
     const content = quill?.root?.innerHTML;
+
     if (!title && !content?.trim()) {
-      toast.error("Nothing to save!");
-      return;
+      return toast.error("Nothing to save!");
     }
 
     try {
       setLoading(true);
+
       const res = await axios.post(
         "http://localhost:8000/api/writing/save",
-        { writingId, title, content, status: "draft" },
-        { headers: { Authorization: `Bearer ${finalToken}` } }
+        {
+          writingId,
+          title,
+          content,
+          category,
+          bgStyle,
+          status: "draft",
+        },
+        {
+          headers: { Authorization: `Bearer ${finalToken}` },
+        }
       );
 
       setWritingId(res.data.writing._id);
       toast.success("Draft saved!");
     } catch (err) {
-  console.error(err);
-
-  if (err.response?.status === 401) {
-    toast.error("Session expired. Please login again.");
-    localStorage.removeItem("user");
-    return;
-  }
-
-  toast.error("Failed to save");
-}
-finally {
+      console.error(err);
+      toast.error("Failed to save draft");
+    } finally {
       setLoading(false);
     }
   };
 
+  /* ================= PUBLISH ================= */
   const publishWriting = async () => {
-    if (!finalToken) return toast.error("Login first!") ;
+    if (!finalToken) return toast.error("Login first!");
+
+    if (!category) {
+      return toast.error("Please select a category");
+    }
 
     const content = quill?.root?.innerHTML;
+
     if (!title || !content?.trim()) {
       return toast.error("Fill title & content!");
     }
@@ -79,30 +117,33 @@ finally {
 
       const res = await axios.post(
         "http://localhost:8000/api/writing/save",
-        { writingId, title, content, status: "published" },
-        { headers: { Authorization: `Bearer ${finalToken}` } }
+        {
+          writingId,
+          title,
+          content,
+          category,
+          bgStyle,
+          status: "published",
+        },
+        {
+          headers: { Authorization: `Bearer ${finalToken}` },
+        }
       );
 
       setWritingId(res.data.writing._id);
       toast.success("Published!");
-    }catch (err) {
-  console.error(err);
-
-  if (err.response?.status === 401) {
-    toast.error("Session expired. Please login again.");
-    localStorage.removeItem("user");
-    return;
-  }
-
-  toast.error("Failed to publish");
-}
-finally {
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to publish");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md mx-auto">
+    <div className="w-full max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+      {/* TITLE */}
       <input
         type="text"
         placeholder="Enter title..."
@@ -111,8 +152,48 @@ finally {
         className="w-full mb-4 p-3 border rounded-md text-lg"
       />
 
-      <div ref={quillRef} className="h-96 bg-white border rounded-md" />
+      {/* CATEGORY (COMPULSORY) */}
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="w-full mb-4 p-3 border rounded-md"
+      >
+        <option value="">Select Category *</option>
+        {CATEGORIES.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
 
+      {/* 🎨 GRADIENT PICKER */}
+      <div className="flex gap-3 mb-4">
+        {GRADIENTS.map((g, i) => (
+          <button
+            key={i}
+            onClick={() => setBgStyle(g)}
+            className={`w-14 h-14 rounded-lg border-2 transition ${
+              bgStyle === g ? "border-blue-500 scale-105" : "border-gray-300"
+            }`}
+            style={{ background: g }}
+            title="Select background"
+          />
+        ))}
+      </div>
+
+      {/* ✍️ EDITOR */}
+      <div
+        className="rounded-xl p-4 min-h-[350px] border"
+        style={{ background: bgStyle || "#ffffff" }}
+      >
+        <div
+          ref={quillRef}
+          className="bg-transparent"
+          style={{ minHeight: "300px" }}
+        />
+      </div>
+
+      {/* ACTION BUTTONS */}
       <div className="mt-4 flex gap-3">
         <button
           onClick={saveDraft}

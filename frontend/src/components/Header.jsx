@@ -82,6 +82,14 @@ const Header = ({ searchTerm, setSearchTerm }) => {
         </span>
       </div>
 
+{/* Explore Art */}
+<button
+  onClick={() => navigate("/")}
+  className="text-sm md:text-base font-semibold text-white/90 hover:text-white transition"
+>
+  Explore Art
+</button>
+
       {/* Center: Search */}
       <div className="flex-1 flex justify-center">
         <div className="w-full max-w-[550px] relative">
