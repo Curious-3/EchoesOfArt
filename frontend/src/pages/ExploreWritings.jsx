@@ -1,16 +1,30 @@
-// src/pages/ExploreWritings.jsx
 import React, { useEffect, useState } from "react";
 import WritingCard from "../components/WritingCard";
+import useDebounce from "../hooks/useDebounce";
 
-const ExploreWritings = () => {
+const ExploreWritings = ({ searchTerm = "" }) => {
   const [writings, setWritings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ LOG INSIDE COMPONENT
+  console.log("SearchTerm:", searchTerm);
+
+  // 🔥 Debounced search value
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
   useEffect(() => {
     const fetchWritings = async () => {
+      setLoading(true);
       try {
-        const res = await fetch("http://localhost:8000/api/writing/published");
+        const url = debouncedSearch
+          ? `http://localhost:8000/api/writing/published?search=${encodeURIComponent(
+              debouncedSearch
+            )}`
+          : `http://localhost:8000/api/writing/published`;
+
+        const res = await fetch(url);
         const data = await res.json();
+
         if (data.success) {
           setWritings(data.writings);
         }
@@ -22,7 +36,7 @@ const ExploreWritings = () => {
     };
 
     fetchWritings();
-  }, []);
+  }, [debouncedSearch]);
 
   if (loading) {
     return <div className="p-6 text-center">Loading writings...</div>;
@@ -35,7 +49,9 @@ const ExploreWritings = () => {
       </h2>
 
       {writings.length === 0 ? (
-        <p className="text-center text-gray-600">No writings published yet.</p>
+        <p className="text-center text-gray-600">
+          No writings found.
+        </p>
       ) : (
         <div
           className="

@@ -43,15 +43,27 @@ export const getUserWritings = async (req, res) => {
 // ALL published
 export const getPublishedWritings = async (req, res) => {
   try {
-    const writings = await Writing.find({ status: "published" })
+    const { search = "" } = req.query;
+
+    const query = {
+      status: "published",
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } }
+      ]
+    };
+
+    const writings = await Writing.find(query)
       .populate("userId", "name email")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, writings });
   } catch (error) {
+    console.error("Search error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
 
 // SINGLE writing
 export const getWritingById = async (req, res) => {
