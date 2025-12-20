@@ -34,6 +34,7 @@ import MyWritings from "./components/MyWritings";
 import WritingEditor from "./components/WritingEditor";
 
 import "./App.css";
+import CreatorPublishedWritings from "./pages/CreatorPublishedWritings";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -140,9 +141,11 @@ const App = () => {
             <Route path="my" element={<MyWritings />} />
             <Route path="saved" element={<SavedWritings />} />
             <Route path="following" element={<FollowedAuthors />} />
-            <Route path=":id" element={<SingleWriting />} />
-          </Route>
-
+            <Route path=":id" element={<SingleWriting />} /> </Route>
+<Route
+  path="/creator/:creatorId/writings"
+  element={<CreatorPublishedWritings />}
+/>
           {/* ================= STATIC PAGES ================= */}
           <Route
             path="/about"

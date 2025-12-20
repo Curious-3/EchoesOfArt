@@ -4,7 +4,7 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
 
-/* 🔥 GRADIENT OPTIONS (FAST + ZERO LOAD) */
+/* 🔥 GRADIENT OPTIONS */
 const GRADIENTS = [
   "linear-gradient(135deg, #667eea, #764ba2)",
   "linear-gradient(135deg, #ff758c, #ff7eb3)",
@@ -38,40 +38,69 @@ const WritingEditor = ({ userToken }) => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const finalToken = userToken || storedUser?.token;
 
-  /* ================= LOAD EDITING DRAFT ================= */
+  /* ================= LOAD EDIT MODE ================= */
   useEffect(() => {
+    if (!quill) return;
+
     const stored = JSON.parse(localStorage.getItem("editingWriting") || "null");
+    if (!stored) return;
 
-    if (stored && quill) {
-      setTitle(stored.title || "");
-      setCategory(stored.category || "");
-      setWritingId(stored._id || null);
-      setBgStyle(stored.bgStyle || "");
+    setTitle(stored.title || "");
+    setCategory(stored.category || "");
+    setWritingId(stored._id || null);
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(stored.content || "", "text/html");
+
+      const bgWrapper = doc.querySelector(".writing-bg");
+      if (bgWrapper) {
+        setBgStyle(bgWrapper.style.background || "");
+        quill.root.innerHTML = bgWrapper.innerHTML;
+      } else {
+        quill.root.innerHTML = stored.content || "";
+      }
+    } catch {
       quill.root.innerHTML = stored.content || "";
-
-      // clear after load
-      setTimeout(() => {
-        localStorage.removeItem("editingWriting");
-      }, 100);
     }
+
+    localStorage.removeItem("editingWriting");
   }, [quill]);
+
+  /* ================= HELPER ================= */
+  const buildContentWithBg = () => {
+    const innerHTML = quill?.root?.innerHTML || "";
+    return `
+      <div class="writing-bg" style="background:${bgStyle}; padding:16px;">
+        ${innerHTML}
+      </div>
+    `;
+  };
+
+  const extractBgFromContent = (html) => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      return doc.querySelector(".writing-bg")?.style.background || "";
+    } catch {
+      return "";
+    }
+  };
 
   /* ================= SAVE DRAFT ================= */
   const saveDraft = async () => {
     if (!finalToken) return toast.error("Login required!");
+    if (!category) return toast.error("Please select a category");
 
-    if (!category) {
-      return toast.error("Please select a category");
-    }
-
-    const content = quill?.root?.innerHTML;
-
-    if (!title && !content?.trim()) {
+    const content = buildContentWithBg();
+    if (!title && !content.trim()) {
       return toast.error("Nothing to save!");
     }
 
     try {
       setLoading(true);
+
+      const safeBgStyle = bgStyle || extractBgFromContent(content);
 
       const res = await axios.post(
         "http://localhost:8000/api/writing/save",
@@ -80,7 +109,7 @@ const WritingEditor = ({ userToken }) => {
           title,
           content,
           category,
-          bgStyle,
+          bgStyle: safeBgStyle,
           status: "draft",
         },
         {
@@ -101,19 +130,17 @@ const WritingEditor = ({ userToken }) => {
   /* ================= PUBLISH ================= */
   const publishWriting = async () => {
     if (!finalToken) return toast.error("Login first!");
+    if (!category) return toast.error("Please select a category");
 
-    if (!category) {
-      return toast.error("Please select a category");
-    }
-
-    const content = quill?.root?.innerHTML;
-
-    if (!title || !content?.trim()) {
+    const content = buildContentWithBg();
+    if (!title || !content.trim()) {
       return toast.error("Fill title & content!");
     }
 
     try {
       setLoading(true);
+
+      const safeBgStyle = bgStyle || extractBgFromContent(content);
 
       const res = await axios.post(
         "http://localhost:8000/api/writing/save",
@@ -122,7 +149,7 @@ const WritingEditor = ({ userToken }) => {
           title,
           content,
           category,
-          bgStyle,
+          bgStyle: safeBgStyle,
           status: "published",
         },
         {
@@ -141,8 +168,7 @@ const WritingEditor = ({ userToken }) => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
-
+    <div className="w-full max-w-3xl mx-auto p-6 rounded-lg shadow-md bg-transparent">
       {/* TITLE */}
       <input
         type="text"
@@ -152,7 +178,7 @@ const WritingEditor = ({ userToken }) => {
         className="w-full mb-4 p-3 border rounded-md text-lg"
       />
 
-      {/* CATEGORY (COMPULSORY) */}
+      {/* CATEGORY */}
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
@@ -176,7 +202,6 @@ const WritingEditor = ({ userToken }) => {
               bgStyle === g ? "border-blue-500 scale-105" : "border-gray-300"
             }`}
             style={{ background: g }}
-            title="Select background"
           />
         ))}
       </div>
@@ -186,14 +211,10 @@ const WritingEditor = ({ userToken }) => {
         className="rounded-xl p-4 min-h-[350px] border"
         style={{ background: bgStyle || "#ffffff" }}
       >
-        <div
-          ref={quillRef}
-          className="bg-transparent"
-          style={{ minHeight: "300px" }}
-        />
+        <div ref={quillRef} style={{ minHeight: "300px" }} />
       </div>
 
-      {/* ACTION BUTTONS */}
+      {/* ACTIONS */}
       <div className="mt-4 flex gap-3">
         <button
           onClick={saveDraft}

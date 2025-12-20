@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -13,6 +13,8 @@ const SingleWriting = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const token = storedUser?.token || null;
   const userId = storedUser?.id || storedUser?._id;
+  const navigate = useNavigate();
+
 
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -352,14 +354,23 @@ const handleEditReply = async (commentId, replyId) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-10">
+      <div className="max-w-4xl mx-auto bg-transparent shadow-xl rounded-2xl p-10">
 
         <h1 className="text-5xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           {writing.title}
         </h1>
 
         <div className="text-center text-gray-600 mb-6">
-          <p className="font-semibold">{writing.userId?.name || "Anonymous"}</p>
+         <p
+  onClick={() =>
+    writing.userId?._id &&
+    navigate(`/creator/${writing.userId._id}/writings`)
+  }
+  className="font-semibold text-blue-600 cursor-pointer hover:underline"
+>
+  {writing.userId?.name || "Anonymous"}
+</p>
+
           <button
             onClick={handleFollow}
             className={`mt-2 px-3 py-1 text-xs rounded-full border ${
@@ -399,15 +410,14 @@ const handleEditReply = async (commentId, replyId) => {
           </button>
         </div>
 
-        <div
-          className="p-8 rounded-xl mb-10"
-          style={{ background: writing.bgStyle || "#fff" }}
-        >
-          <div
-            className="prose prose-xl max-w-none"
-            dangerouslySetInnerHTML={{ __html: writing.content }}
-          />
-        </div>
+    <div className="p-6 rounded bg-transparent">
+  <div
+    className="writing-content"
+    style={{ background: "transparent" }}
+    dangerouslySetInnerHTML={{ __html: writing.content }}
+  />
+</div>
+
 
          {/* 💬 COMMENTS */}
 <div className="border-t pt-8 mt-10">

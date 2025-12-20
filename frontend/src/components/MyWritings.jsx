@@ -39,11 +39,37 @@ const MyWritings = ({ userToken }) => {
 
   const filtered = writings.filter((w) => w.status === activeTab);
 
-  const handleEdit = (writing) => {
-    localStorage.setItem("editingWriting", JSON.stringify(writing));
-    navigate("/writing/write?edit=true");
+ const handleEdit = (writing) => {
+  let bgStyle = "";
+  let cleanContent = writing.content;
 
-  };
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(writing.content, "text/html");
+
+    const bgWrapper = doc.querySelector(".writing-bg");
+
+    if (bgWrapper) {
+      bgStyle = bgWrapper.style.background || "";
+      cleanContent = bgWrapper.innerHTML; // 👈 ONLY inner content
+    }
+  } catch (err) {
+    console.error("Failed to parse writing content", err);
+  }
+
+  localStorage.setItem(
+    "editingWriting",
+    JSON.stringify({
+      _id: writing._id,
+      title: writing.title,
+      category: writing.category,
+      content: cleanContent, // ✅ editor-safe content
+      bgStyle,               // ✅ restore background
+    })
+  );
+
+  navigate("/writing/write?edit=true");
+};
 
   const deleteWriting = async (id) => {
     try {
