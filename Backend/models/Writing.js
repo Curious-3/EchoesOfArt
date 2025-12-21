@@ -101,6 +101,14 @@ const WritingSchema = new mongoose.Schema({
     required: true,
   },
 
+
+    /* 🏷️ TAGS (AI GENERATED + EDITABLE BY CREATOR) */
+  tags: {
+    type: [String],
+    default: [],
+  },
+
+
   /* 🎨 BACKGROUND STYLE */
   bgStyle: {
     type: String,
