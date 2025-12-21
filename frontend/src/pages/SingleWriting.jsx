@@ -13,6 +13,10 @@ const SingleWriting = () => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const token = storedUser?.token || null;
   const userId = storedUser?.id || storedUser?._id;
+  // 🔐 check if logged-in user is creator of this writing
+const isCreator =
+  writing?.userId?._id?.toString() === userId?.toString();
+
   const navigate = useNavigate();
 
 
@@ -333,6 +337,50 @@ const handleEditReply = async (commentId, replyId) => {
   }
 };
 
+// 🟢 CREATOR: SHOW FLAGGED COMMENT (UNFLAG)
+const handleUnflagComment = async (commentId) => {
+  if (!token) return toast.error("Login required");
+
+  try {
+    const res = await axios.patch(
+      `http://localhost:8000/api/writing/comment/${id}/${commentId}/unflag`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setWriting((prev) => ({
+      ...prev,
+      comments: res.data.comments,
+    }));
+
+    toast.success("Comment approved");
+  } catch (err) {
+    console.error(err);
+    toast.error("Could not approve comment");
+  }
+};
+
+// 🔴 CREATOR: DELETE FLAGGED COMMENT
+const handleDeleteFlaggedComment = async (commentId) => {
+  if (!token) return toast.error("Login required");
+
+  try {
+    const res = await axios.delete(
+      `http://localhost:8000/api/writing/comment/${id}/${commentId}/force-delete`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setWriting((prev) => ({
+      ...prev,
+      comments: res.data.comments,
+    }));
+
+    toast.success("Comment deleted");
+  } catch (err) {
+    console.error(err);
+    toast.error("Could not delete comment");
+  }
+};
 
   /* ================= REPORT ================= */
   const handleReport = async () => {
@@ -478,6 +526,12 @@ const handleEditReply = async (commentId, replyId) => {
       Cancel
     </button>
   </div>
+) : c.isFlagged &&
+  (c.userId?._id || c.userId)?.toString() !== userId?.toString() ? (
+  // 🚫 HIDDEN COMMENT (PUBLIC VIEW)
+  <p className="text-sm mt-1 italic text-gray-400">
+    This comment is hidden due to offensive content.
+  </p>
 ) : (
   <p className="text-sm mt-1">{c.text}</p>
   
@@ -487,6 +541,26 @@ const handleEditReply = async (commentId, replyId) => {
         <span className="text-xs text-gray-500">
           {new Date(c.createdAt).toLocaleString()}
         </span>
+
+        {/* 🛠️ CREATOR CONTROLS FOR FLAGGED COMMENTS */}
+{c.isFlagged && isCreator && (
+  <div className="mt-2 flex gap-2 text-xs">
+    <button
+      onClick={() => handleUnflagComment(c._id)}
+      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+    >
+      Show anyway
+    </button>
+
+    <button
+      onClick={() => handleDeleteFlaggedComment(c._id)}
+      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+    >
+      Delete
+    </button>
+  </div>
+)}
+
 
 {/* 🧵 Replies list */}
 {c.replies?.length > 0 && (

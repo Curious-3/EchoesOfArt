@@ -1,6 +1,6 @@
 import Writing from "../models/Writing.js";
 import User from "../models/User.js";
-import { generateTagsFromText } from "../utils/geminiTags.js";
+import { generateTagsFromText, moderateCommentWithGemini, } from "../utils/geminiTags.js";
 
 
 // CREATE / UPDATE writing
@@ -199,16 +199,26 @@ export const addComment = async (req, res) => {
   try {
     const writing = await Writing.findById(req.params.id);
     if (!writing) return res.status(404).json({ success: false, message: "Not found" });
+     
+      // 🤖 AI moderation (Level 2 – soft)
+    const moderationResult = await moderateCommentWithGemini(text);
+
+    const isFlagged = moderationResult !== "SAFE";
 
     writing.comments.push({
       userId: req.user._id,
       username: req.user.name,
-      text
+      text,
+       isFlagged, // 🚫 flagged if offensive
     });
 
     await writing.save();
 
-    res.json({ success: true, comments: writing.comments });
+    res.json({ 
+      success: true, 
+      comments: writing.comments,
+       moderated: isFlagged,
+       });
   } catch (error) {
     console.error("Add comment error:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -459,6 +469,77 @@ export const generateTagsWithAI = async (req, res) => {
       success: false,
       message: "AI tag generation failed",
     });
+  }
+};
+
+// 🟢 CREATOR: UNFLAG AI FLAGGED COMMENT (SHOW ANYWAY)
+export const unflagComment = async (req, res) => {
+  const { id, commentId } = req.params;
+
+  try {
+    const writing = await Writing.findById(id);
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
+
+    // 🔐 only creator of the post
+    if (writing.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not allowed" });
+    }
+
+    const comment = writing.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    // ✅ unflag
+    comment.isFlagged = false;
+
+    await writing.save();
+
+    res.json({
+      success: true,
+      message: "Comment approved by creator",
+      comments: writing.comments,
+    });
+  } catch (error) {
+    console.error("Unflag comment error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+// 🔴 CREATOR: DELETE FLAGGED COMMENT
+export const deleteFlaggedComment = async (req, res) => {
+  const { id, commentId } = req.params;
+
+  try {
+    const writing = await Writing.findById(id);
+    if (!writing) {
+      return res.status(404).json({ success: false, message: "Writing not found" });
+    }
+
+    // 🔐 only creator of the post
+    if (writing.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not allowed" });
+    }
+
+    const comment = writing.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    comment.deleteOne();
+    await writing.save();
+
+    res.json({
+      success: true,
+      message: "Flagged comment deleted",
+      comments: writing.comments,
+    });
+  } catch (error) {
+    console.error("Delete flagged comment error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

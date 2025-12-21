@@ -47,6 +47,12 @@ const CommentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+    /* 🚫 OFFENSIVE COMMENT FLAG (AI MODERATION) */
+  isFlagged: {
+    type: Boolean,
+    default: false,
+  },
+
   reactions: {
     type: [ReactionSchema],
     default: [],
