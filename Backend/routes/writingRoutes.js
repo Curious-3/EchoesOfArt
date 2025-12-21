@@ -15,7 +15,9 @@ import {
   toggleReaction,
   editReply,
   reportWriting,
-  generateTagsWithAI 
+  generateTagsWithAI,
+   unflagComment,       
+  deleteFlaggedComment 
 } from "../controllers/writingController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -42,6 +44,20 @@ router.put("/bookmark/:id", protect, toggleBookmark);
 router.post("/comment/:id", protect, addComment);
 router.put("/comment/:id/:commentId", protect, editComment);
 router.delete("/comment/:id/:commentId", protect, deleteComment);
+
+// 🚫 AI FLAGGED COMMENT — CREATOR ACTIONS
+router.patch(
+  "/comment/:id/:commentId/unflag",
+  protect,
+  unflagComment
+);
+
+router.delete(
+  "/comment/:id/:commentId/force-delete",
+  protect,
+  deleteFlaggedComment
+);
+
 
 // replies
 router.post("/comment/:id/:commentId/reply", protect, addReply);
