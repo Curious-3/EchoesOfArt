@@ -32,6 +32,11 @@ const WritingEditor = ({ userToken }) => {
   const [writingId, setWritingId] = useState(null);
   const [loading, setLoading] = useState(false);
 
+    // AI TAGS
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [loadingTags, setLoadingTags] = useState(false);
+
   // 🎨 background gradient
   const [bgStyle, setBgStyle] = useState("");
 
@@ -48,6 +53,7 @@ const WritingEditor = ({ userToken }) => {
     setTitle(stored.title || "");
     setCategory(stored.category || "");
     setWritingId(stored._id || null);
+    setTags(stored.tags || []);
 
     try {
       const parser = new DOMParser();
@@ -87,6 +93,40 @@ const WritingEditor = ({ userToken }) => {
     }
   };
 
+
+    /* ================= 🤖 GENERATE TAGS (GEMINI) ================= */
+  const generateTags = async () => {
+    if (!title && !quill?.root?.innerText?.trim()) {
+      return toast.error("Write something before generating tags");
+    }
+
+    try {
+      setLoadingTags(true);
+
+      const res = await axios.post(
+        "http://localhost:8000/api/writing/generate-tags",
+        {
+          title,
+          content: quill.root.innerText,
+        },
+        {
+          headers: { Authorization: `Bearer ${finalToken}` },
+        }
+      );
+
+      if (res.data?.tags) {
+        setTags(res.data.tags);
+        toast.success("AI tags generated");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate tags");
+    } finally {
+      setLoadingTags(false);
+    }
+  };
+
+
   /* ================= SAVE DRAFT ================= */
   const saveDraft = async () => {
     if (!finalToken) return toast.error("Login required!");
@@ -109,6 +149,7 @@ const WritingEditor = ({ userToken }) => {
           title,
           content,
           category,
+          tags,
           bgStyle: safeBgStyle,
           status: "draft",
         },
@@ -149,6 +190,7 @@ const WritingEditor = ({ userToken }) => {
           title,
           content,
           category,
+          tags,
           bgStyle: safeBgStyle,
           status: "published",
         },
@@ -191,6 +233,59 @@ const WritingEditor = ({ userToken }) => {
           </option>
         ))}
       </select>
+
+
+      {/* 🏷️ TAGS */}
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-2">
+          <h3 className="font-medium">Tags</h3>
+          <button
+            type="button"
+            onClick={generateTags}
+            disabled={loadingTags}
+            className="text-sm px-3 py-1 bg-blue-500 text-white rounded-md"
+          >
+            {loadingTags ? "Generating..." : "Generate with AI"}
+          </button>
+        </div>
+
+        {/* TAG CHIPS */}
+        <div className="flex flex-wrap gap-2 mb-2">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full flex items-center gap-2"
+            >
+              {tag}
+              <button
+                onClick={() =>
+                  setTags(tags.filter((_, i) => i !== index))
+                }
+                className="text-xs text-red-500"
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+        </div>
+
+        {/* ADD CUSTOM TAG */}
+        <input
+          type="text"
+          placeholder="Add custom tag & press Enter"
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && tagInput.trim()) {
+              e.preventDefault();
+              setTags([...new Set([...tags, tagInput.toLowerCase()])]);
+              setTagInput("");
+            }
+          }}
+          className="w-full p-2 border rounded-md text-sm"
+        />
+      </div>
+
 
       {/* 🎨 GRADIENT PICKER */}
       <div className="flex gap-3 mb-4">

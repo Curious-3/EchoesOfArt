@@ -1,10 +1,11 @@
 import Writing from "../models/Writing.js";
 import User from "../models/User.js";
+import { generateTagsFromText } from "../utils/geminiTags.js";
 
 
 // CREATE / UPDATE writing
 export const saveWriting = async (req, res) => {
-  const { writingId, title, content, status, category } = req.body;
+  const { writingId, title, content, status, category, tags } = req.body;
 
   try {
     let writing;
@@ -12,7 +13,7 @@ export const saveWriting = async (req, res) => {
     if (writingId) {
       writing = await Writing.findOneAndUpdate(
         { _id: writingId, userId: req.user._id },
-        { title, content, status,category, updatedAt: Date.now() },
+        { title, content, status, category, tags, updatedAt: Date.now() },
         { new: true }
       );
     } else {
@@ -22,6 +23,7 @@ export const saveWriting = async (req, res) => {
         content,
         status,
         category,
+        tags,
       });
       await writing.save();
     }
@@ -426,3 +428,37 @@ export const reportWriting = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+// 🤖 AI TAG GENERATION (GEMINI ONLY)
+export const generateTagsWithAI = async (req, res) => {
+  const { title, content } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({
+      success: false,
+      message: "Title and content are required for tag generation",
+    });
+  }
+
+  try {
+
+    const tags = await generateTagsFromText({
+      title,
+      content,
+    });
+
+
+    res.json({
+      success: true,
+      tags,
+    });
+  } catch (error) {
+    console.error("Gemini tag error:", error);
+    res.status(500).json({
+      success: false,
+      message: "AI tag generation failed",
+    });
+  }
+};
+

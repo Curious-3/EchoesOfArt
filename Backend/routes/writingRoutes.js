@@ -14,11 +14,16 @@ import {
   deleteReply,
   toggleReaction,
   editReply,
-  reportWriting
+  reportWriting,
+  generateTagsWithAI 
 } from "../controllers/writingController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.get("/published", getPublishedWritings);
+// 🤖 AI TAG GENERATION (GEMINI)
+router.post("/generate-tags", protect, generateTagsWithAI);
 
 router.post("/save", protect, saveWriting);
 router.get("/my-writings", protect, getUserWritings);
