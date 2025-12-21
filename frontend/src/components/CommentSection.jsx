@@ -41,20 +41,14 @@ const CommentSection = ({ postId }) => {
   useEffect(() => {
     socket.emit("join_post", postId);
 
-    const handleNewComment = (newComment) => {
-      setComments((prev) => {
-        // 🔥 DUPLICATE PROTECTION
-        if (prev.some((c) => c._id === newComment._id)) {
-          return prev;
-        }
-        return [newComment, ...prev];
-      });
-    };
+    // listen for realtime comments
+    socket.on("comment_added", (newComment) => {
+      setComments((prev) => [newComment, ...prev]);
+    });
 
-    socket.on("comment_added", handleNewComment);
-
+    // cleanup to avoid duplicate listeners
     return () => {
-      socket.off("comment_added", handleNewComment);
+      socket.off("comment_added");
     };
   }, [postId]);
 
@@ -74,13 +68,13 @@ const CommentSection = ({ postId }) => {
         }
       );
 
-      // ❌ UI update HERE मत करो
-      // ✅ Socket will update UI
+      const newComment = res.data.comment;
 
-      socket.emit("new_comment", {
-        postId,
-        comment: res.data,
-      });
+      // send real-time comment
+      socket.emit("new_comment", { postId, comment: newComment });
+
+      // show instantly for the current user
+      setComments((prev) => [newComment, ...prev]);
 
       setText("");
     } catch (err) {

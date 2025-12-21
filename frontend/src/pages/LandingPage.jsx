@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { debounce } from "lodash";
 import ArtCard from "../components/ArtCard";
+import ExploreWritings from "./ExploreWritings";
 
 const LandingPage = ({ searchTerm = "" }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [arts, setArts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
   const [user, setUser] = useState(null);
+
+  const [activeTab, setActiveTab] = useState("posts");
 
   const [page, setPage] = useState(0);
   const limit = 10;
@@ -55,9 +56,9 @@ const LandingPage = ({ searchTerm = "" }) => {
 
   /* ================= FETCH POSTS ================= */
   const fetchPosts = async () => {
-    if (loading || !hasMore) return;
-    setLoading(true);
+    if (loading || !hasMore || activeTab !== "posts") return;
 
+    setLoading(true);
     try {
       const res = await axios.get(
         "http://localhost:8000/api/posts/explore",
@@ -87,9 +88,8 @@ const LandingPage = ({ searchTerm = "" }) => {
 
   useEffect(() => {
     fetchPosts();
-  }, [page]);
+  }, [page, activeTab]);
 
-  /* ❌ NO arts clear → flicker fix */
   useEffect(() => {
     setPage(0);
     setHasMore(true);
@@ -97,6 +97,8 @@ const LandingPage = ({ searchTerm = "" }) => {
 
   /* ================= INFINITE SCROLL ================= */
   useEffect(() => {
+    if (activeTab !== "posts") return;
+
     const onScroll = debounce(() => {
       if (
         window.innerHeight + window.scrollY >=
@@ -113,7 +115,7 @@ const LandingPage = ({ searchTerm = "" }) => {
       onScroll.cancel();
       window.removeEventListener("scroll", onScroll);
     };
-  }, [loading, hasMore]);
+  }, [loading, hasMore, activeTab]);
 
   /* ================= SAVE ================= */
   const handleToggleSavePost = async (postId) => {
@@ -147,7 +149,11 @@ const LandingPage = ({ searchTerm = "" }) => {
     setArts((prev) =>
       prev.map((art) =>
         art._id === postId
-          ? { ...art, likeCount: (art.likeCount || 0) + (isLiked ? -1 : 1) }
+          ? {
+              ...art,
+              likeCount:
+                (art.likeCount || 0) + (isLiked ? -1 : 1),
+            }
           : art
       )
     );
@@ -167,30 +173,58 @@ const LandingPage = ({ searchTerm = "" }) => {
     <>
       <Toaster />
 
-      <main
-        className={`min-h-screen bg-[#f0f9ff] transition-all ${
-          sidebarOpen ? "ml-64" : "ml-20"
-        }`}
-      >
-        <h2 className="text-3xl mt-24 font-bold text-center">
-          Featured Artworks
-        </h2>
+      {/* 🔘 STICKY HEADER */}
+      <div className="sticky top-0 z-50 flex justify-center gap-4 py-4 bg-[#f0f9ff] border-b">
+        <button
+          onClick={() => setActiveTab("posts")}
+          className={`px-6 py-2 rounded-full font-semibold ${
+            activeTab === "posts"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200"
+          }`}
+        >
+          🖼️ Posts
+        </button>
 
-        <div className="max-w-[1300px] mx-auto px-4 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pb-24 mt-8">
-          {arts.map((art) => (
-            <ArtCard
-              key={art._id}
-              art={art}
-              liked={likedPosts.includes(art._id)}
-              saved={savedPosts.includes(art._id)}
-              onLike={handleToggleLikePost}
-              onSave={handleToggleSavePost}
-            />
-          ))}
-        </div>
+        <button
+          onClick={() => setActiveTab("writings")}
+          className={`px-6 py-2 rounded-full font-semibold ${
+            activeTab === "writings"
+              ? "bg-purple-600 text-white"
+              : "bg-gray-200"
+          }`}
+        >
+          ✍️ Writings
+        </button>
+      </div>
 
-        {loading && <p className="text-center mb-6">Loading…</p>}
-        {!hasMore && <p className="text-center mb-6">End of posts</p>}
+      {/* MAIN CONTENT */}
+      <main className="min-h-screen bg-[#f0f9ff]">
+        {activeTab === "posts" ? (
+          <>
+            <h2 className="text-3xl font-bold text-center mt-6">
+              Featured Artworks
+            </h2>
+
+            <div className="max-w-[1300px] mx-auto px-4 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pb-24 mt-8">
+              {arts.map((art) => (
+                <ArtCard
+                  key={art._id}
+                  art={art}
+                  liked={likedPosts.includes(art._id)}
+                  saved={savedPosts.includes(art._id)}
+                  onLike={handleToggleLikePost}
+                  onSave={handleToggleSavePost}
+                />
+              ))}
+            </div>
+
+            {loading && <p className="text-center">Loading…</p>}
+            {!hasMore && <p className="text-center">End of posts</p>}
+          </>
+        ) : (
+          <ExploreWritings searchTerm={searchTerm} />
+        )}
       </main>
     </>
   );

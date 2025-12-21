@@ -53,13 +53,16 @@ const ExploreWritings = ({ searchTerm = "" }) => {
           No writings found.
         </p>
       ) : (
-        <div
-          className="
-            flex gap-6 overflow-x-auto pb-4
-            snap-x snap-mandatory
-            scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100
-          "
-        >
+      <div
+  className="
+    grid gap-25
+    grid-cols-4
+    sm:grid-cols-2
+    md:grid-cols-3
+    lg:grid-cols-4
+  "
+>
+
           {writings.map((w) => (
             <div key={w._id} className="snap-start">
               <WritingCard writing={w} />
