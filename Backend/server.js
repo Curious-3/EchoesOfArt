@@ -16,7 +16,8 @@ connectDB();
 const server = http.createServer(app);
 
 // Setup Socket.io
-const io = new Server(server, {
+export let io;
+io = new Server(server, {
   cors: { origin: "*" },
 });
 
