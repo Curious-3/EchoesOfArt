@@ -5,7 +5,8 @@ import toast from "react-hot-toast";
 
 const SingleWriting = () => {
   const { id } = useParams();
-  const [writing, setWriting] = useState(null);
+const [writing, setWriting] = useState(null);
+const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [reportReason, setReportReason] = useState("");
@@ -82,6 +83,25 @@ const getReactionCount = (comment, emoji) => {
     fetchWriting();
   }, [id, userId]);
 
+
+  /* ================= FETCH COMMENTS ================= */
+useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/writing-comments/${id}`
+      );
+      setComments(res.data.comments || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load comments");
+    }
+  };
+
+  fetchComments();
+}, [id, token]);
+
+
   if (loading) return <div className="p-6 text-center">Loading...</div>;
   if (!writing) return <div className="p-6 text-center">Writing not found</div>;
 
@@ -142,7 +162,7 @@ const handleComment = async () => {
 
   try {
     const res = await axios.post(
-      `http://localhost:8000/api/writing/comment/${id}`,
+      `http://localhost:8000/api/writing-comments/${id}`,
       { text: commentText.trim() },
       {
         headers: {
@@ -151,12 +171,7 @@ const handleComment = async () => {
       }
     );
 
-    // 🔥 update comments from backend
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
-
+    setComments((prev) => [res.data.comment, ...prev]);
     setCommentText("");
   } catch (err) {
     console.error(err);
@@ -164,12 +179,13 @@ const handleComment = async () => {
   }
 };
 
+
 const handleReaction = async (commentId, emoji) => {
   if (!token) return toast.error("Login required");
 
   try {
     const res = await axios.put(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/reaction`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/reaction`,
       { emoji },
       {
         headers: {
@@ -179,10 +195,9 @@ const handleReaction = async (commentId, emoji) => {
     );
 
     // 🔥 refresh comments with reactions
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+   setComments((prev) =>
+  prev.map((c) => (c._id === res.data.comment._id ? res.data.comment : c))
+);
   } catch (err) {
     console.error(err);
     toast.error("Could not react");
@@ -195,19 +210,16 @@ const handleEditComment = async (commentId) => {
 
   try {
     const res = await axios.put(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}`,
-      { text: editText },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}`,
+      { text: editText.trim() },
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+      prev.map((c) =>
+        c._id === res.data.comment._id ? res.data.comment : c
+      )
+    );
 
     setEditingCommentId(null);
     setEditText("");
@@ -219,28 +231,25 @@ const handleEditComment = async (commentId) => {
 
 
 
+
 const handleDeleteComment = async (commentId) => {
   if (!token) return toast.error("Login required");
 
   try {
-    const res = await axios.delete(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    await axios.delete(
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+      prev.filter((c) => c._id !== commentId)
+    );
   } catch (err) {
     console.error(err);
     toast.error("Could not delete comment");
   }
 };
+
 
 const handleReply = async (commentId) => {
   if (!token) return toast.error("Login required");
@@ -248,19 +257,16 @@ const handleReply = async (commentId) => {
 
   try {
     const res = await axios.post(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/reply`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/reply`,
       { text: replyText.trim() },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+      prev.map((c) =>
+        c._id === res.data.comment._id ? res.data.comment : c
+      )
+    );
 
     setReplyText("");
     setActiveReplyCommentId(null);
@@ -270,6 +276,7 @@ const handleReply = async (commentId) => {
   }
 };
 
+
 // EDIT REPLY HANDLER
 
 const handleEditReply = async (commentId, replyId) => {
@@ -278,15 +285,16 @@ const handleEditReply = async (commentId, replyId) => {
 
   try {
     const res = await axios.put(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/reply/${replyId}`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/reply/${replyId}`,
       { text: editReplyText.trim() },
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+      prev.map((c) =>
+        c._id === res.data.comment._id ? res.data.comment : c
+      )
+    );
 
     setEditingReplyId(null);
     setEditReplyText("");
@@ -294,6 +302,7 @@ const handleEditReply = async (commentId, replyId) => {
     toast.error("Could not edit reply");
   }
 };
+
 
 
   /* ================= FOLLOW ================= */
@@ -318,24 +327,26 @@ const handleEditReply = async (commentId, replyId) => {
     localStorage.setItem("followedAuthors", JSON.stringify(updated));
   };
 
-  const handleDeleteReply = async (commentId, replyId) => {
+ const handleDeleteReply = async (commentId, replyId) => {
   if (!token) return toast.error("Login required");
 
   try {
     const res = await axios.delete(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/reply/${replyId}`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/reply/${replyId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+      prev.map((c) =>
+        c._id === res.data.comment._id ? res.data.comment : c
+      )
+    );
   } catch (err) {
     console.error(err);
     toast.error("Could not delete reply");
   }
 };
+
 
 // 🟢 CREATOR: SHOW FLAGGED COMMENT (UNFLAG)
 const handleUnflagComment = async (commentId) => {
@@ -343,15 +354,17 @@ const handleUnflagComment = async (commentId) => {
 
   try {
     const res = await axios.patch(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/unflag`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/unflag`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+    setComments((prev) =>
+  prev.map((c) =>
+    c._id === res.data.comment._id ? res.data.comment : c
+  )
+);
+
 
     toast.success("Comment approved");
   } catch (err) {
@@ -366,14 +379,15 @@ const handleDeleteFlaggedComment = async (commentId) => {
 
   try {
     const res = await axios.delete(
-      `http://localhost:8000/api/writing/comment/${id}/${commentId}/force-delete`,
+      `http://localhost:8000/api/writing-comments/${id}/${commentId}/force-delete`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setWriting((prev) => ({
-      ...prev,
-      comments: res.data.comments,
-    }));
+ setComments((prev) =>
+  prev.filter((c) => c._id !== commentId)
+);
+
+
 
     toast.success("Comment deleted");
   } catch (err) {
@@ -490,13 +504,13 @@ const handleDeleteFlaggedComment = async (commentId) => {
 
   {/* Comment list */}
   <div className="space-y-4">
-    {writing.comments?.length === 0 && (
+    {comments.length === 0 && (
       <p className="text-gray-500 text-sm">No comments yet.</p>
     )}
 
    {(showAllComments
-  ? writing.comments
-  : writing.comments.slice(0, 2)
+  ? comments
+  : comments.slice(0, 2)
 )?.map((c) => (
 
       <div
@@ -733,14 +747,14 @@ const handleDeleteFlaggedComment = async (commentId) => {
   </div>
 </div>
 
-{writing.comments?.length > 2 && (
+{comments.length > 2 && (
   <button
     onClick={() => setShowAllComments(!showAllComments)}
     className="text-sm text-blue-600 mt-4 hover:underline"
   >
     {showAllComments
       ? "Hide comments"
-      : `View all ${writing.comments.length} comments`}
+      : `View all ${comments.length} comments`}
   </button>
 )}
 
