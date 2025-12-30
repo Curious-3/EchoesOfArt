@@ -25,7 +25,7 @@ const CommentSection = ({ postId }) => {
     if (!isDrawerOpen || !postId) return;
 
     axios
-      .get(`http://localhost:8000/api/comments/${postId}`)
+      .get(`http://localhost:8000/api/comments/post/${postId}`)
       .then((res) => setComments(res.data))
       .catch(console.error);
   }, [isDrawerOpen, postId]);
@@ -105,7 +105,7 @@ const CommentSection = ({ postId }) => {
     if (!text.trim()) return;
 
     await axios.post(
-      `http://localhost:8000/api/comments/${postId}`,
+      `http://localhost:8000/api/comments/post/${postId}`,
       { text },
       { headers: { Authorization: `Bearer ${token}` } }
     );
