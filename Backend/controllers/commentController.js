@@ -1,6 +1,6 @@
 // controllers/commentController.js
 import Comment from "../models/Comment.js";
-import Post from "../models/Post.js";
+//import Post from "../models/Post.js";
 import { io } from "../server.js";
 
 // ✏️ Edit comment (only comment owner)
@@ -32,7 +32,7 @@ export const updateComment = async (req, res) => {
     };
 
     res.json(formattedComment);
-    io.to(comment.postId.toString()).emit("comment_updated", formattedComment);
+    io.to(comment.targetId.toString()).emit("comment_updated", formattedComment);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -48,22 +48,19 @@ export const deleteComment = async (req, res) => {
     const comment = await Comment.findById(commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    const post = await Post.findById(comment.postId);
+    
 
     const isCommentOwner =
       comment.userId.toString() === req.user._id.toString();
 
-    const isPostOwner =
-      post?.userId?.toString() === req.user._id.toString();
-
-    if (!isCommentOwner && !isPostOwner) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+      if (!isCommentOwner) {
+  return res.status(403).json({ message: "Not authorized" });
+}
 
     await comment.deleteOne();
     res.json({ message: "Comment deleted", commentId });
 
-    io.to(comment.postId.toString()).emit("comment_deleted", commentId);
+    io.to(comment.targetId.toString()).emit("comment_deleted", commentId);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -74,13 +71,15 @@ export const deleteComment = async (req, res) => {
 export const createComment = async (req, res) => {
   try {
     const { text } = req.body;
-    const { postId } = req.params;
+    const { targetId, targetType } = req.params;
 
-    const comment = await Comment.create({
-      postId,
-      userId: req.user._id,
-      text,
-    });
+const comment = await Comment.create({
+  targetId,
+  targetType, // "post" OR "writing"
+  userId: req.user._id,
+  text,
+});
+
 
     await comment.populate("userId", "name profileImage");
 
@@ -95,7 +94,8 @@ export const createComment = async (req, res) => {
     };
 
     res.status(201).json(formattedComment);
-    io.to(postId.toString()).emit("comment_added", formattedComment);
+ io.to(targetId.toString()).emit("comment_added", formattedComment);
+
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -105,9 +105,15 @@ export const createComment = async (req, res) => {
 
 /* ================= GET COMMENTS BY POST ================= */
 export const getCommentsByPost = async (req, res) => {
-  const comments = await Comment.find({ postId: req.params.postId })
+  const { targetId, targetType } = req.params;
+
+  const comments = await Comment.find({
+    targetId,
+    targetType,
+  })
     .populate("userId", "name profileImage")
     .sort({ createdAt: -1 });
+
 
   const formatted = comments.map(c => ({
   _id: c._id,
@@ -128,37 +134,50 @@ export const getCommentsByPost = async (req, res) => {
   res.json(formatted);
 };
 
+
+
 export const addReply = async (req, res) => {
   try {
+    console.log("🔥 ADD REPLY CONTROLLER HIT");
+
     const { commentId } = req.params;
     const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({ message: "Reply text missing" });
+    }
 
     const comment = await Comment.findById(commentId);
-    if (!comment)
+    if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
+    }
 
+    // ✅ DO NOT manually create _id
     const reply = {
-      _id: new Comment()._id,
       userId: req.user._id,
-      username: req.user.name,   // ✅ IMPORTANT
+      username: req.user.name,
       text,
       createdAt: new Date(),
     };
 
+      //console.log(reply.username);
     comment.replies.push(reply);
     await comment.save();
 
-    res.json({ reply });
+    const savedReply = comment.replies[comment.replies.length - 1];
 
-    io.to(comment.postId.toString()).emit("reply_added", {
+    res.status(200).json({ reply: savedReply });
+
+    // socket emit
+    io.to(comment.targetId.toString()).emit("reply_added", {
       commentId,
-      reply,
+      reply: savedReply,
     });
+
   } catch (err) {
+    console.error("❌ ADD REPLY ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 
 
 export const reactToComment = async (req, res) => {
@@ -191,12 +210,17 @@ export const reactToComment = async (req, res) => {
 
     await comment.save();
 
-    const comments = await Comment.find({ postId: comment.postId })
+    const comments = await Comment.find({ targetId: comment.targetId })
       .populate("userId", "name profileImage")
       .sort({ createdAt: -1 });
 
-    res.json({ comments });
-io.to(comment.postId.toString()).emit("reaction_updated", {
+    res.json({
+  commentId,
+  reactions: comment.reactions,
+});
+
+
+io.to(comment.targetId.toString()).emit("reaction_updated", {
   commentId,
   reactions: comment.reactions,
 });
@@ -224,10 +248,7 @@ export const editReply = async (req, res) => {
     reply.text = text;
     await comment.save();
 
-    res.json({ success: true });
-
-    // 🔥 SEND ONLY REPLY, NOT COMMENT
-    io.to(comment.postId.toString()).emit("reply_updated", {
+    res.json({
       commentId,
       reply: {
         _id: reply._id,
@@ -237,12 +258,18 @@ export const editReply = async (req, res) => {
       },
     });
 
+    io.to(comment.targetId.toString()).emit("reply_updated", {
+      commentId,
+      reply: {
+        _id: reply._id,
+        text: reply.text,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Edit reply failed" });
   }
 };
-
-
 
 
 export const deleteReply = async (req, res) => {
@@ -259,22 +286,19 @@ export const deleteReply = async (req, res) => {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    comment.replies = comment.replies.filter(
-      r => r._id.toString() !== replyId
-    );
-
+    reply.deleteOne();
     await comment.save();
 
-    res.json({ success: true });
+    res.json({ commentId, replyId });
 
-    // 🔥 DO NOT EMIT comment_deleted
-    io.to(comment.postId.toString()).emit("reply_deleted", {
+    io.to(comment.targetId.toString()).emit("reply_deleted", {
       commentId,
       replyId,
     });
-
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Delete reply failed" });
   }
 };
+
 

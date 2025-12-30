@@ -6,7 +6,7 @@ import postRoutes from "./routes/postRoutes.js";
 import savedRoutes from "./routes/savedRoutes.js";
 import likedRoutes from "./routes/liked.js";
 import writingRoutes from "./routes/writingRoutes.js";
-import commentRoutes from "./routes/commentRoutes.js";
+import commentRoutes from "./routes/commentRoutes.js"; 
 
 const app = express();
 
@@ -18,13 +18,13 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authRoutes);
 
-// Posts (normal posts)
+// Posts (image / video)
 app.use("/api/posts", postRoutes);
 
-// Writing (poetry / thoughts / long content)
+// Writing (poetry / thoughts)
 app.use("/api/writing", writingRoutes);
 
-// Generic comments (for posts)
+// ✅ ONE unified comment system (posts + writing)
 app.use("/api/comments", commentRoutes);
 
 // Saved / Liked
