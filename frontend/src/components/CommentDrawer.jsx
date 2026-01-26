@@ -60,7 +60,7 @@ const CommentDrawer = ({
                       onEdit(c._id, editText);
                       setEditingCommentId(null);
                     }}
-                    className="bg-blue-600 text-white px-3 rounded"
+                    className="bg-amber-600 text-white px-3 rounded"
                   >
                     Save
                   </button>
@@ -112,7 +112,7 @@ const CommentDrawer = ({
                   />
                   <button
                     onClick={() => onReply(c._id)}
-                    className="bg-blue-600 text-white px-3 rounded"
+                    className="bg-amber-600 text-white px-3 rounded"
                   >
                     Reply
                   </button>
@@ -124,7 +124,7 @@ const CommentDrawer = ({
                   onClick={() =>
                     setShowReplies((p) => ({ ...p, [c._id]: !p[c._id] }))
                   }
-                  className="text-sm text-blue-600 mt-2"
+                  className="text-sm text-amber-600 mt-2"
                 >
                   {repliesVisible
                     ? "Hide replies"
@@ -153,14 +153,14 @@ const CommentDrawer = ({
             <input
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="flex-grow border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="flex-grow border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
             />
             <button
               onClick={() => {
                 onEditReply(c._id, r._id, editText);
                 setEditingReplyId(null);
               }}
-              className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+              className="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-700"
             >
               Save
             </button>
@@ -190,7 +190,7 @@ const CommentDrawer = ({
                       setEditingReplyId(r._id);
                       setEditText(r.text);
                     }}
-                    className="hover:text-blue-600"
+                    className="hover:text-amber-600"
                   >
                     Edit
                   </button>
@@ -221,7 +221,7 @@ const CommentDrawer = ({
           className="border p-2 flex-grow"
           placeholder="Add a comment..."
         />
-        <button className="bg-blue-600 text-white px-4 rounded">
+        <button className="bg-amber-600 text-white px-4 rounded">
           Send
         </button>
       </form>

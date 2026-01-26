@@ -138,7 +138,7 @@ export const getCommentsByPost = async (req, res) => {
 
 export const addReply = async (req, res) => {
   try {
-    console.log("🔥 ADD REPLY CONTROLLER HIT");
+    
 
     const { commentId } = req.params;
     const { text } = req.body;
@@ -159,7 +159,7 @@ export const addReply = async (req, res) => {
       createdAt: new Date(),
     };
 
-      //console.log(reply.username);
+    
     comment.replies.push(reply);
     await comment.save();
 

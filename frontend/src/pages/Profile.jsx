@@ -167,7 +167,7 @@ const Profile = () => {
     datasets: [
       {
         data: [totalPosts, totalWritings, totalMyUploads],
-        backgroundColor: ["#a855f7", "#ec4899", "#6366f1"],
+        backgroundColor: ["#D97706", "#EA580C", "#F59E0B"],
       },
     ],
   };
@@ -217,14 +217,14 @@ const Profile = () => {
 
   return (
     <div className="pb-32">
-      <div className="max-w-4xl mx-auto mt-16 p-8 bg-white shadow-2xl rounded-3xl">
+      <div className="max-w-4xl mx-auto mt-16 p-8 bg-amber-50 shadow-2xl rounded-3xl">
 
         {/* HEADER */}
         <div className="flex justify-between mb-8">
-          <h2 className="text-4xl font-bold text-indigo-600">My Profile</h2>
+          <h2 className="text-4xl font-bold text-amber-600">My Profile</h2>
           <button
             onClick={() => setEditMode(!editMode)}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-xl"
+            className="px-6 py-2 bg-amber-600 text-white rounded-xl"
           >
             {editMode ? "Cancel" : "Edit"}
           </button>
@@ -235,7 +235,7 @@ const Profile = () => {
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-3">{profile.name}</h3>
 
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500">
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-500">
               {profile.profileImage && (
                 <img
                   src={`http://localhost:8000${profile.profileImage}`}
@@ -308,7 +308,7 @@ const Profile = () => {
 
   {/* First Name */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-amber-900 mb-1">
       First Name
     </label>
     <input
@@ -316,13 +316,13 @@ const Profile = () => {
       name="firstName"
       value={profile.firstName || ""}
       onChange={handleChange}
-      className="w-full p-3 border rounded-xl"
+      className="w-full p-3 border border-amber-300 rounded-xl bg-amber-50"
     />
   </div>
 
   {/* Last Name */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-amber-900 mb-1">
       Last Name
     </label>
     <input
@@ -330,13 +330,13 @@ const Profile = () => {
       name="lastName"
       value={profile.lastName || ""}
       onChange={handleChange}
-      className="w-full p-3 border rounded-xl"
+      className="w-full p-3 border border-amber-300 rounded-xl bg-amber-50"
     />
   </div>
 
   {/* Full Name */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-amber-900 mb-1">
       Full Name
     </label>
     <input
@@ -344,26 +344,26 @@ const Profile = () => {
       name="name"
       value={profile.name || ""}
       onChange={handleChange}
-      className="w-full p-3 border rounded-xl"
+      className="w-full p-3 border border-amber-300 rounded-xl bg-amber-50"
     />
   </div>
 
   {/* Email */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-amber-900 mb-1">
       Email
     </label>
     <input
       type="email"
       value={profile.email || ""}
       disabled
-      className="w-full p-3 border rounded-xl bg-gray-200 cursor-not-allowed"
+      className="w-full p-3 border border-amber-300 rounded-xl bg-amber-200 cursor-not-allowed"
     />
   </div>
 
   {/* Interests */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-amber-900 mb-1">
       Interests
     </label>
     <input
@@ -388,7 +388,7 @@ const Profile = () => {
   {editMode && (
     <button
       type="submit"
-      className="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700"
+      className="w-full py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700"
     >
       Save Changes
     </button>
@@ -408,7 +408,7 @@ const Profile = () => {
 const Stat = ({ title, value, onClick }) => (
   <div
     onClick={onClick}
-    className="cursor-pointer p-6 bg-indigo-100 rounded-xl text-center hover:scale-105"
+    className="cursor-pointer p-6 bg-amber-100 rounded-xl text-center hover:scale-105"
   >
     <p className="font-semibold">{title}</p>
     <p className="text-3xl font-bold">{value}</p>
@@ -416,16 +416,16 @@ const Stat = ({ title, value, onClick }) => (
 );
 
 const Graph = ({ title, data }) => (
-  <div className="mt-8 p-6 bg-white rounded-xl shadow">
-    <h4 className="text-xl font-bold text-center mb-4">{title}</h4>
+  <div className="mt-8 p-6 bg-amber-50 rounded-xl shadow">
+    <h4 className="text-xl font-bold text-center mb-4 text-amber-900">{title}</h4>
     <Line
       data={{
         labels: data.map((i) => i.date),
         datasets: [
           {
             data: data.map((i) => i.count),
-            borderColor: "#6366f1",
-            backgroundColor: "rgba(99,102,241,0.3)",
+            borderColor: "#D97706",
+            backgroundColor: "rgba(217,119,6,0.3)",
             fill: true,
           },
         ],

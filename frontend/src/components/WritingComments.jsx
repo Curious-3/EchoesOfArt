@@ -228,7 +228,7 @@ const handleDeleteReply = async (commentId, replyId) => {
         />
         <button
           onClick={handleComment}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="px-4 py-2 bg-amber-600 text-white rounded-lg"
         >
           Post
         </button>
@@ -237,7 +237,7 @@ const handleDeleteReply = async (commentId, replyId) => {
       {(showAllComments ? comments : comments.slice(0, 2)).map((c) => (
      <div
   key={c._id}
-  className="p-5 bg-white rounded-2xl border border-gray-300 mb-6"
+  className="p-5 bg-amber-50 rounded-2xl border border-gray-300 mb-6"
 >
 
           <p className="font-semibold text-sm">
@@ -294,7 +294,7 @@ const handleDeleteReply = async (commentId, replyId) => {
                   setEditingCommentId(c._id);
                   setEditText(c.text);
                 }}
-                className="text-blue-600 hover:underline"
+                className="text-amber-600 hover:underline"
               >
                 ✏️ Edit
               </button>
@@ -338,7 +338,7 @@ const handleDeleteReply = async (commentId, replyId) => {
                             setEditingReplyId(r._id);
                             setEditReplyText(r.text);
                           }}
-                          className="text-blue-600 hover:underline"
+                          className="text-amber-600 hover:underline"
                         >
                           Edit
                         </button>
@@ -361,7 +361,7 @@ const handleDeleteReply = async (commentId, replyId) => {
                     [c._id]: !p[c._id],
                   }))
                 }
-                className="text-xs text-blue-600 hover:underline"
+                className="text-xs text-amber-600 hover:underline"
               >
                 {expandedReplies[c._id]
                   ? "Hide replies"
@@ -377,7 +377,7 @@ const handleDeleteReply = async (commentId, replyId) => {
                 activeReplyCommentId === c._id ? null : c._id
               )
             }
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-amber-600 hover:underline"
           >
             ↩️ Reply
           </button>
@@ -392,7 +392,7 @@ const handleDeleteReply = async (commentId, replyId) => {
               />
               <button
                 onClick={() => handleReply(c._id)}
-                className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm"
+                className="px-3 py-1 bg-amber-600 text-white rounded-lg text-sm"
               >
                 Reply
               </button>
@@ -404,7 +404,7 @@ const handleDeleteReply = async (commentId, replyId) => {
       {comments.length > 2 && (
         <button
           onClick={() => setShowAllComments(!showAllComments)}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-amber-600 hover:underline"
         >
           {showAllComments ? "Hide comments" : "View all comments"}
         </button>

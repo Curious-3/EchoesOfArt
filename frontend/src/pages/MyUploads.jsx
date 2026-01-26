@@ -124,7 +124,7 @@ const MyUploads = ({ searchTerm }) => {
                       setEditData({ ...editData, title: e.target.value })
                     }
                     placeholder="Title"
-                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                   <textarea
                     value={editData.description}
@@ -132,12 +132,12 @@ const MyUploads = ({ searchTerm }) => {
                       setEditData({ ...editData, description: e.target.value })
                     }
                     placeholder="Description"
-                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleUpdate(post._id)}
-                      className="flex-1 bg-blue-500 text-white rounded-md py-2 hover:bg-blue-600"
+                      className="flex-1 bg-amber-500 text-white rounded-md py-2 hover:bg-amber-600"
                     >
                       Save
                     </button>

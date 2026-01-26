@@ -93,7 +93,7 @@ const ExploreFilters = ({ filters, setFilters }) => {
               tag: "",
             })
           }
-          className="text-sm text-blue-600 hover:underline ml-auto"
+          className="text-sm text-amber-600 hover:underline ml-auto"
         >
           Clear all
         </button>

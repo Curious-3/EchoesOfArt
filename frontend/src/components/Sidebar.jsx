@@ -29,7 +29,7 @@ const Sidebar = ({ open, setOpen }) => {
       className={`fixed top-16 left-0 h-[calc(100vh-4rem)] 
       transition-all duration-300 
       ${open ? "w-56" : "w-16"} 
-      bg-[#004aad] z-[120] overflow-visible`}
+      bg-gradient-to-b from-amber-600 to-amber-500 z-[120] overflow-visible`}
     >
       {user && (
         <nav className="flex flex-col mt-4">

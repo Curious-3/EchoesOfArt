@@ -23,45 +23,41 @@ const addLikeCount = async (posts) => {
 
 export const createPost = async (req, res) => {
   try {
-    console.log("📥 createPost API hit");
 
     if (!req.files?.file) {
-      console.log("❌ No media file received");
       return res.status(400).json({ message: "Media file is required" });
     }
 
     /* ================= UPLOAD MAIN MEDIA ================= */
-    console.log("☁️ Uploading main media to Cloudinary...");
+  
     const mediaResult = await cloudinary.uploader.upload(
       req.files.file[0].path,
       { resource_type: "auto" }
     );
-    console.log("✅ Media uploaded:", mediaResult.secure_url);
+    
 
     /* ================= THUMBNAIL ================= */
     let thumbnailUrl = "";
     if (req.files.thumbnail) {
-      console.log("🖼️ Uploading thumbnail...");
+  
       const thumb = await cloudinary.uploader.upload(
         req.files.thumbnail[0].path,
         { resource_type: "image" }
       );
       thumbnailUrl = thumb.secure_url;
-      console.log("✅ Thumbnail uploaded:", thumbnailUrl);
+  
     }
 
     /* ================= TAG GENERATION ================= */
     let tags = [];
 
     if (req.body.tags && req.body.tags.trim() !== "") {
-      console.log("🏷️ Using MANUAL tags");
+  
       tags = req.body.tags
         .split(",")
         .map((t) => t.trim().toLowerCase());
 
-      console.log("📝 Manual tags:", tags);
-    } else {
-      console.log("🤖 Generating AUTO tags using Gemini...");
+    } else{
       tags = await generateTagsFromImage({
   imagePath: req.files.file[0].path,
   title: req.body.title,
@@ -69,11 +65,11 @@ export const createPost = async (req, res) => {
 });
 
 
-      console.log("✨ Gemini generated tags:", tags);
+    
 }
 
     /* ================= CREATE POST ================= */
-    console.log("💾 Saving post to database...");
+  
     const post = await Post.create({
       title: req.body.title,
       description: req.body.description,
@@ -84,9 +80,6 @@ export const createPost = async (req, res) => {
       category: req.body.category,
       createdBy: req.user._id,
     });
-
-    console.log("✅ Post created with ID:", post._id);
-    console.log("📌 Final tags saved:", post.tags);
 
     res.status(201).json(post);
   } catch (err) {

@@ -19,7 +19,7 @@ const WritingPost = ({
 
   return (
     <>
-      <h1 className="text-5xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      <h1 className="text-5xl font-extrabold text-center mb-6 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
         {writing.title}
       </h1>
 
@@ -30,7 +30,7 @@ const WritingPost = ({
             writing.userId?._id &&
             navigate(`/creator/${writing.userId._id}/writings`)
           }
-          className="font-semibold text-blue-600 cursor-pointer hover:underline"
+          className="font-semibold text-amber-600 cursor-pointer hover:underline"
         >
           {writing.userId?.name || "Anonymous"}
         </p>
@@ -38,7 +38,7 @@ const WritingPost = ({
         <button
           onClick={onFollow}
           className={`mt-2 px-3 py-1 text-xs rounded-full border ${
-            followed ? "bg-blue-600 text-white" : "bg-white text-blue-600"
+            followed ? "bg-amber-600 text-white" : "bg-white text-amber-600"
           }`}
         >
           {followed ? "Following" : "Follow"}

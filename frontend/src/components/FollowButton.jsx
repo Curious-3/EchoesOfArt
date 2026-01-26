@@ -11,7 +11,7 @@ const FollowButton = ({ creatorId, onFollowChange }) => {
       onClick={toggleFollow}
       disabled={loading}
       className={`px-4 py-1.5 rounded-full text-sm font-medium transition
-        ${following ? "bg-gray-900 text-white" : "bg-blue-600 text-white"}
+        ${following ? "bg-gray-900 text-white" : "bg-amber-600 text-white"}
       `}
     >
       {loading ? "..." : following ? "Following" : "Follow"}

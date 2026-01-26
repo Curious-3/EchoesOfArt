@@ -1,9 +1,10 @@
 /* Global styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: var(--bg-warm);
+    color: var(--text-dark);
 }
 
 /* Header */
@@ -12,11 +13,12 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #D97706 0%, #EA580C 100%);
+    box-shadow: 0 8px 16px rgba(217, 119, 6, 0.2);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-radius: 0 0 12px 12px;
 }
 
 header .logo {
@@ -33,27 +35,32 @@ header .logo img {
 header .logo span {
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 header .search-bar input {
     width: 400px;
     padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
     outline: none;
     font-size: 16px;
+    background-color: rgba(255,255,255,0.95);
+    color: var(--text-dark);
+    transition: all 0.3s ease;
 }
 
 header .search-bar input:focus {
-    border-color: #ff7f50;
-    box-shadow: 0 0 5px rgba(255,127,80,0.5);
+    border-color: rgba(255,255,255,0.6);
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    background-color: #fff;
 }
 
 header .user-area button,
 header .user-area .user-initial {
-    background-color: #ff7f50;
-    color: white;
+    background-color: rgba(255,255,255,0.95);
+    color: var(--primary-dark);
     border: none;
     border-radius: 50%;
     width: 40px;
@@ -62,16 +69,19 @@ header .user-area .user-initial {
     cursor: pointer;
     text-align: center;
     line-height: 40px;
+    transition: all 0.3s ease;
 }
 
 header .user-area button {
-    border-radius: 8px;
+    border-radius: 10px;
     width: auto;
-    padding: 8px 15px;
+    padding: 8px 16px;
 }
 
 header .user-area button:hover {
-    background-color: #ff5722;
+    background-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* Main layout */
@@ -83,12 +93,14 @@ main {
 /* Sidebar */
 .sidebar {
     width: 220px;
-    background-color: #fff;
+    background: linear-gradient(180deg, #FEF5E7 0%, #FFFBF0 100%);
     padding: 20px;
-    box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 12px rgba(0,0,0,0.08);
     height: calc(100vh - 80px);
     position: sticky;
     top: 80px;
+    border-right: 2px solid var(--border-warm);
+    border-radius: 0 12px 12px 0;
 }
 
 .sidebar ul {
@@ -99,17 +111,22 @@ main {
 .sidebar ul li {
     padding: 12px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 10px;
     margin-bottom: 10px;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+    font-weight: 500;
 }
 
 .sidebar ul li:hover {
-    background-color: #f0f0f0;
+    background-color: rgba(217, 119, 6, 0.1);
+    color: var(--primary-dark);
+    transform: translateX(4px);
 }
 
 .sidebar p {
-    color: #888;
+    color: var(--text-light);
+    font-size: 14px;
 }
 
 /* Art grid */
@@ -123,11 +140,12 @@ main {
 
 /* Art card */
 .art-card {
-    background-color: #fff;
-    border-radius: 12px;
+    background-color: var(--bg-cream);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-warm);
 }
 
 .art-card img {
@@ -143,23 +161,26 @@ main {
 .art-card .info h3 {
     font-size: 18px;
     margin: 0;
-    color: #333;
+    color: var(--primary-dark);
+    font-weight: 600;
 }
 
 .art-card .info p {
     font-size: 14px;
-    color: #666;
+    color: var(--text-light);
 }
 
 .art-card:hover {
-    transform: scale(1.03);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(217, 119, 6, 0.2);
+    border-color: var(--secondary-warm);
 }
 
 /* Login Modal */
 .login-modal {
     position: fixed;
     inset: 0;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -167,34 +188,49 @@ main {
 }
 
 .login-modal .modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #FEF5E7 0%, #FFFBF0 100%);
+    padding: 40px;
+    border-radius: 20px;
     width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: 2px solid var(--border-warm);
 }
 
 .login-modal input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    border-radius: 10px;
+    border: 2px solid var(--border-warm);
     outline: none;
+    background-color: var(--bg-cream);
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.login-modal input:focus {
+    border-color: var(--primary-warm);
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.2);
 }
 
 .login-modal button {
     width: 100%;
-    padding: 10px;
-    background-color: #ff7f50;
+    padding: 12px;
+    background: linear-gradient(135deg, #D97706 0%, #EA580C 100%);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 .login-modal button:hover {
-    background-color: #ff5722;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
 }
 
 /* Media Queries */

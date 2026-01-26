@@ -13,7 +13,7 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
   return (
     <div
       onClick={() => navigate(`/post/${art._id}`)}
-      className="bg-white rounded-2xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden relative"
+      className="bg-amber-50 rounded-2xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden relative"
     >
       {/* ================= MEDIA ================= */}
       <img
@@ -50,7 +50,7 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
         >
           <BookmarkIcon
             className={`w-5 h-5 ${
-              saved ? "text-blue-600" : "text-gray-400"
+              saved ? "text-amber-600" : "text-gray-400"
             }`}
           />
         </button>
@@ -64,7 +64,7 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
 
       {/* ================= TEXT ================= */}
       <div className="p-4 pt-6">
-        <h3 className="font-semibold text-lg text-blue-900">
+        <h3 className="font-semibold text-lg text-amber-900">
           {art.title}
         </h3>
 
@@ -86,7 +86,7 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
               <span
                 key={index}
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+                className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full"
               >
                 #{tag}
               </span>

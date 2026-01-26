@@ -44,7 +44,7 @@ const ExploreWritings = ({ searchTerm = "" }) => {
 
   return (
     <div className="px-4 md:px-8 py-10 max-w-7xl mx-auto">
-      <h2 className="text-4xl font-extrabold mb-8 text-center text-blue-900">
+      <h2 className="text-4xl font-extrabold mb-8 text-center text-amber-900">
         ✨ Explore Writings
       </h2>
 

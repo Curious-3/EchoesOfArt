@@ -136,7 +136,7 @@ const CreatorPublishedWritings = () => {
                 {w.title}
               </h3>
 
-              <p className="mt-4 text-sm text-blue-600 font-medium">
+              <p className="mt-4 text-sm text-amber-600 font-medium">
                 Read →
               </p>
             </div>

@@ -181,7 +181,7 @@ const isCreator =
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white py-12 px-4">
       <div className="max-w-4xl mx-auto bg-transparent shadow-xl rounded-2xl p-10">
 
 <WritingPost

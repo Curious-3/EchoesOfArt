@@ -92,7 +92,6 @@ export const getUserById = async (req, res) => {
 export const followUser = async (req, res) => {
   try {
     const userToFollow = await User.findById(req.params.id);
-    console.log("Inside folowuser",userToFollow);
     const loggedUser = await User.findById(req.user._id);
 
     if (!userToFollow) return res.status(404).json({ message: "User not found" });
@@ -123,7 +122,7 @@ export const followUser = async (req, res) => {
 export const unfollowUser = async (req, res) => {
   try {
     const userToUnfollow = await User.findById(req.params.id);
-    console.log("Inside unfollowuser",unfollowUser);
+  
     const loggedUser = await User.findById(req.user._id);
 
     if (!userToUnfollow) return res.status(404).json({ message: "User not found" });

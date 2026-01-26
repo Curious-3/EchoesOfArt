@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 /** Moved out so it doesn't get redefined each render */
 const HeaderShell = ({ children }) => (
   <header className="fixed top-0 left-0 w-full z-[150]">
-    <div className="backdrop-blur-2xl bg-gradient-to-r from-blue-900/90 via-blue-700/85 to-blue-500/90 shadow-lg border-b border-white/15">
+    <div className="backdrop-blur-2xl bg-gradient-to-r from-amber-900/90 via-amber-700/85 to-amber-500/90 shadow-lg border-b border-white/15">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
         {children}
       </div>
@@ -108,9 +108,9 @@ const Header = ({ searchTerm, setSearchTerm }) => {
               // IMPORTANT: do not trim/transform here
               setSearchTerm(e.target.value);
             }}
-            className="w-full px-5 py-2.5 rounded-full bg-sky-50/95 text-blue-900 text-sm md:text-base shadow-md outline-none transition-all duration-300 focus:shadow-xl focus:shadow-blue-300 focus:ring-2 focus:ring-blue-400"
+            className="w-full px-5 py-2.5 rounded-full bg-amber-50/95 text-amber-900 text-sm md:text-base shadow-md outline-none transition-all duration-300 focus:shadow-xl focus:shadow-amber-300 focus:ring-2 focus:ring-amber-400"
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-blue-500">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-amber-500">
             ⌕
           </span>
         </div>
@@ -120,7 +120,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
       {!user ? (
         <button
           onClick={handleSignIn}
-          className="px-5 py-2.5 rounded-full bg-white text-blue-700 text-sm font-semibold shadow-md hover:bg-blue-100 hover:-translate-y-0.5 transition-all duration-300"
+          className="px-5 py-2.5 rounded-full bg-white text-amber-700 text-sm font-semibold shadow-md hover:bg-amber-100 hover:-translate-y-0.5 transition-all duration-300"
         >
           Sign In
         </button>
@@ -130,7 +130,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             onClick={handleAvatarClick}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/30 cursor-pointer hover:bg-white/25 transition-all duration-300"
           >
-            <div className="w-9 h-9 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center text-blue-700 font-semibold shadow-md">
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center text-amber-700 font-semibold shadow-md">
               {user?.profileImage ? (
                 <img
                   src={
@@ -146,7 +146,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
               )}
             </div>
             <div className="hidden sm:flex flex-col">
-              <span className="text-xs text-blue-100">Welcome</span>
+              <span className="text-xs text-amber-100">Welcome</span>
               <span className="text-sm font-semibold text-white truncate max-w-[120px]">
                 {user?.name || user?.email}
               </span>
@@ -155,7 +155,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
 
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded-full bg-white/90 text-blue-700 text-xs md:text-sm font-semibold shadow-md hover:bg-blue-100 hover:-translate-y-0.5 transition-all duration-300"
+            className="px-4 py-2 rounded-full bg-white/90 text-amber-700 text-xs md:text-sm font-semibold shadow-md hover:bg-amber-100 hover:-translate-y-0.5 transition-all duration-300"
           >
             Logout
           </button>

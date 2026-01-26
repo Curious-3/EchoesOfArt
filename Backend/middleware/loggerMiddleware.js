@@ -10,7 +10,6 @@ export const requestLogger = (req, res, next) => {
       "Headers:",
       req.headers.authorization ? "Auth header present" : "No auth header"
     );
-    console.log("--------------------------------------------------------");
   }
   next();
 };

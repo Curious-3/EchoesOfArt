@@ -3,9 +3,9 @@ import { FaEnvelope, FaPhone, FaFax, FaMapMarkerAlt } from "react-icons/fa";
 
 const ContactUs = () => {
   return (
-    <div className="font-poppins text-slate-800 max-w-6xl mx-auto px-5 py-10">
+    <div className="font-poppins text-amber-900 max-w-6xl mx-auto px-5 py-10">
       {/* Hero Section */}
-      <section className="text-center py-20 px-6 bg-gradient-to-tr from-blue-600 to-blue-400 text-white rounded-2xl mb-16">
+      <section className="text-center py-20 px-6 bg-gradient-to-tr from-amber-600 to-amber-400 text-white rounded-2xl mb-16">
         <h1 className="text-4xl sm:text-5xl font-bold mb-5">
           Get in Touch with Echoes Of Art
         </h1>
@@ -17,30 +17,30 @@ const ContactUs = () => {
 
       {/* Contact Cards */}
       <section className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 mb-16">
-        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
-          <FaEnvelope className="text-3xl text-blue-600 mb-4 mx-auto" />
-          <h3 className="text-xl font-semibold text-blue-700 mb-2">Email Us</h3>
-          <p className="text-slate-700">contact@echoesofart.com</p>
+        <div className="bg-amber-50 p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
+          <FaEnvelope className="text-3xl text-amber-600 mb-4 mx-auto" />
+          <h3 className="text-xl font-semibold text-amber-700 mb-2">Email Us</h3>
+          <p className="text-amber-900">contact@echoesofart.com</p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
-          <FaPhone className="text-3xl text-blue-600 mb-4 mx-auto" />
-          <h3 className="text-xl font-semibold text-blue-700 mb-2">Call Us</h3>
-          <p className="text-slate-700">+91 98765 43210</p>
+        <div className="bg-amber-50 p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
+          <FaPhone className="text-3xl text-amber-600 mb-4 mx-auto" />
+          <h3 className="text-xl font-semibold text-amber-700 mb-2">Call Us</h3>
+          <p className="text-amber-900">+91 98765 43210</p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
-          <FaFax className="text-3xl text-blue-600 mb-4 mx-auto" />
-          <h3 className="text-xl font-semibold text-blue-700 mb-2">Fax</h3>
-          <p className="text-slate-700">+91 11 2345 6789</p>
+        <div className="bg-amber-50 p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
+          <FaFax className="text-3xl text-amber-600 mb-4 mx-auto" />
+          <h3 className="text-xl font-semibold text-amber-700 mb-2">Fax</h3>
+          <p className="text-amber-900">+91 11 2345 6789</p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
-          <FaMapMarkerAlt className="text-3xl text-blue-600 mb-4 mx-auto" />
-          <h3 className="text-xl font-semibold text-blue-700 mb-2">Our Office</h3>
-          <p className="text-slate-700">Echoes Of Art HQ</p>
-          <p className="text-slate-700">Connaught Place, Delhi</p>
-          <p className="text-slate-700">India</p>
+        <div className="bg-amber-50 p-8 rounded-2xl text-center shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all">
+          <FaMapMarkerAlt className="text-3xl text-amber-600 mb-4 mx-auto" />
+          <h3 className="text-xl font-semibold text-amber-700 mb-2">Our Office</h3>
+          <p className="text-amber-900">Echoes Of Art HQ</p>
+          <p className="text-amber-900">Connaught Place, Delhi</p>
+          <p className="text-amber-900">India</p>
         </div>
       </section>
 

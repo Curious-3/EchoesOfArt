@@ -153,7 +153,7 @@ const Register = () => {
 
   // ===================== UI =====================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-amber-900 px-4">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 text-white">
         <div className="flex items-center justify-center gap-2 mb-6">
           <Paintbrush className="w-8 h-8 text-pink-400" />

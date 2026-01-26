@@ -174,12 +174,12 @@ const LandingPage = ({ searchTerm = "" }) => {
       <Toaster />
 
       {/* 🔘 STICKY HEADER */}
-      <div className="sticky top-0 z-50 flex justify-center gap-4 py-4 bg-[#f0f9ff] border-b">
+      <div className="sticky top-0 z-50 flex justify-center gap-4 py-4 bg-[#FEF5E7] border-b">
         <button
           onClick={() => setActiveTab("posts")}
           className={`px-6 py-2 rounded-full font-semibold ${
             activeTab === "posts"
-              ? "bg-blue-600 text-white"
+              ? "bg-amber-600 text-white"
               : "bg-gray-200"
           }`}
         >
@@ -199,7 +199,7 @@ const LandingPage = ({ searchTerm = "" }) => {
       </div>
 
       {/* MAIN CONTENT */}
-      <main className="min-h-screen bg-[#f0f9ff]">
+      <main className="min-h-screen bg-[#FEF5E7]">
         {activeTab === "posts" ? (
           <>
             <h2 className="text-3xl font-bold text-center mt-6">

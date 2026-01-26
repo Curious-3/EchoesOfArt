@@ -243,7 +243,7 @@ const WritingEditor = ({ userToken }) => {
             type="button"
             onClick={generateTags}
             disabled={loadingTags}
-            className="text-sm px-3 py-1 bg-blue-500 text-white rounded-md"
+            className="text-sm px-3 py-1 bg-amber-500 text-white rounded-md"
           >
             {loadingTags ? "Generating..." : "Generate with AI"}
           </button>
@@ -254,7 +254,7 @@ const WritingEditor = ({ userToken }) => {
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full flex items-center gap-2"
+              className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full flex items-center gap-2"
             >
               {tag}
               <button
@@ -294,7 +294,7 @@ const WritingEditor = ({ userToken }) => {
             key={i}
             onClick={() => setBgStyle(g)}
             className={`w-14 h-14 rounded-lg border-2 transition ${
-              bgStyle === g ? "border-blue-500 scale-105" : "border-gray-300"
+              bgStyle === g ? "border-amber-500 scale-105" : "border-gray-300"
             }`}
             style={{ background: g }}
           />

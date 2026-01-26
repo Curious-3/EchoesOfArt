@@ -98,7 +98,7 @@ const Upload = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </label>
 
@@ -107,7 +107,7 @@ const Upload = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </label>
 
@@ -127,7 +127,7 @@ const Upload = () => {
           <select
             value={mediaType}
             onChange={(e) => setMediaType(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-400"
           >
             <option value="image">Image</option>
             <option value="video">Video</option>
@@ -154,7 +154,7 @@ const Upload = () => {
             type="text"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </label>
 
@@ -164,7 +164,7 @@ const Upload = () => {
             type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         </label>
 
@@ -173,8 +173,8 @@ const Upload = () => {
           disabled={loading}
           className={`mt-2 py-2 rounded-md font-medium text-white ${
             loading
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
+              ? "bg-amber-300 cursor-not-allowed"
+              : "bg-amber-500 hover:bg-amber-600"
           }`}
         >
           {loading ? "Uploading..." : "Upload"}

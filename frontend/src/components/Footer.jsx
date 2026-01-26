@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="
-      bg-gradient-to-r from-blue-900 to-blue-600
+      bg-gradient-to-r from-amber-900 to-amber-600
       text-white shadow-md
       flex items-center justify-center
       h-20 px-6
@@ -25,7 +25,7 @@ const Footer = () => {
         </div>
 
         {/* Center Links */}
-        <div className="flex gap-6 text-blue-100 font-medium text-sm">
+        <div className="flex gap-6 text-amber-100 font-medium text-sm">
           <Link to="/" className="hover:text-white transition">Home</Link>
           <Link to="/about" className="hover:text-white transition">About</Link>
           <Link to="/contact" className="hover:text-white transition">Contact</Link>
@@ -38,7 +38,7 @@ const Footer = () => {
             <div
               key={i}
               className="w-9 h-9 flex justify-center items-center bg-white/20 
-                         rounded-full hover:bg-white hover:text-blue-600 
+                         rounded-full hover:bg-white hover:text-amber-600 
                          transition cursor-pointer"
             >
               <Icon className="text-lg" />

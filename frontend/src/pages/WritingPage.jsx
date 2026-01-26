@@ -13,7 +13,7 @@ const WritingPage = () => {
           end
           className={({ isActive }) =>
             `px-4 py-2 rounded-full transition ${
-              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+              isActive ? "bg-amber-600 text-white" : "bg-gray-200 hover:bg-gray-300"
             }`
           }
         >
@@ -24,7 +24,7 @@ const WritingPage = () => {
           to="/writing/write"
           className={({ isActive }) =>
             `px-4 py-2 rounded-full transition ${
-              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+              isActive ? "bg-amber-600 text-white" : "bg-gray-200 hover:bg-gray-300"
             }`
           }
         >
@@ -35,7 +35,7 @@ const WritingPage = () => {
           to="/writing/my"
           className={({ isActive }) =>
             `px-4 py-2 rounded-full transition ${
-              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+              isActive ? "bg-amber-600 text-white" : "bg-gray-200 hover:bg-gray-300"
             }`
           }
         >
@@ -46,7 +46,7 @@ const WritingPage = () => {
           to="/writing/saved"
           className={({ isActive }) =>
             `px-4 py-2 rounded-full transition ${
-              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+              isActive ? "bg-amber-600 text-white" : "bg-gray-200 hover:bg-gray-300"
             }`
           }
         >
@@ -57,7 +57,7 @@ const WritingPage = () => {
           to="/writing/following"
           className={({ isActive }) =>
             `px-4 py-2 rounded-full transition ${
-              isActive ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+              isActive ? "bg-amber-600 text-white" : "bg-gray-200 hover:bg-gray-300"
             }`
           }
         >

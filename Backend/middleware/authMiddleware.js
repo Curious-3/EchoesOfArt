@@ -29,7 +29,6 @@ export const protect = async (req, res, next) => {
 
     //  Attach user to request object
     req.user = user;
- console.log("protect")
     //  Proceed to next middleware or route
     next();
   } catch (err) {

@@ -14,7 +14,7 @@ const WritingCard = ({ writing }) => {
       to={`/writing/${writing._id}`}
       className="
         group 
-        bg-white/70 backdrop-blur-xl
+        bg-amber-50/70 backdrop-blur-xl
         rounded-2xl shadow-lg hover:shadow-2xl
         transition-all duration-300 
         hover:-translate-y-2 
@@ -32,7 +32,7 @@ const WritingCard = ({ writing }) => {
             inline-block mb-2 
             px-3 py-1 
             text-xs font-semibold 
-            bg-blue-100 text-blue-700 
+            bg-amber-100 text-amber-700 
             rounded-full w-fit
           "
         >
@@ -44,8 +44,8 @@ const WritingCard = ({ writing }) => {
       <h2
         className="
           text-xl font-bold 
-          text-blue-900 
-          group-hover:text-blue-700
+          text-amber-900 
+          group-hover:text-amber-700
           transition-colors
           line-clamp-2
         "
@@ -62,7 +62,7 @@ const WritingCard = ({ writing }) => {
       <div className="mt-4 flex items-center justify-between">
         {/* Author */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-blue-800 font-semibold">
+          <div className="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-semibold">
             {writing.userId?.name?.[0]?.toUpperCase() || "A"}
           </div>
 
@@ -85,7 +85,7 @@ const WritingCard = ({ writing }) => {
               hover:scale-110 transition-transform
             "
           >
-            <BookmarkIcon className="w-5 h-5 text-blue-700" />
+            <BookmarkIcon className="w-5 h-5 text-amber-700" />
           </button>
 
           <button
