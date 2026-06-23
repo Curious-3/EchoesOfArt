@@ -153,117 +153,115 @@ const Register = () => {
 
   // ===================== UI =====================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-amber-900 px-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 text-white">
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <Paintbrush className="w-8 h-8 text-pink-400" />
-          <h1 className="text-3xl font-bold tracking-wide">Echoes of Art</h1>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef5e7] via-[#fffaf1] to-[#f8e7cd] px-4 py-10 flex items-center justify-center">
+      <div className="absolute -top-28 -left-24 h-72 w-72 rounded-full bg-amber-300/35 blur-3xl" />
+      <div className="absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-orange-300/30 blur-3xl" />
+
+      <div className="relative w-full max-w-md rounded-3xl border border-amber-200 bg-white/80 p-8 text-amber-950 shadow-[0_24px_70px_rgba(146,64,14,0.18)] backdrop-blur-xl md:p-10">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30">
+            <Paintbrush className="h-7 w-7" />
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-amber-700">
+            Echoes of Art
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-amber-950">
+            Create Your Account
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-amber-800/80">
+            Join the community to share art, writing, and creative inspiration.
+          </p>
         </div>
 
-        <h2 className="text-center text-xl font-semibold mb-6">Create Your Account</h2>
-
-        <form onSubmit={handleRegister} className="space-y-4">
-          {/* Full Name */}
+        <form onSubmit={handleRegister} className="space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm mb-1 ml-1">Full Name</label>
+            <label htmlFor="name" className="mb-2 block text-sm font-medium text-amber-900/80">Full Name</label>
             <input
               id="name"
               type="text"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-              focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="Enter your name"
               value={name}
               onChange={handleNameChange}
               required
             />
-            {nameError && <p className="text-red-400 text-sm mt-1 ml-1">{nameError}</p>}
+            {nameError && <p className="mt-2 text-sm text-red-600">{nameError}</p>}
           </div>
 
-          {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm mb-1 ml-1">Email</label>
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-amber-900/80">Email</label>
             <input
               id="email"
               type="email"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-              focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="you@example.com"
               value={email}
               onChange={handleEmailChange}
               required
             />
-            {emailError && <p className="text-red-400 text-sm mt-1 ml-1">{emailError}</p>}
+            {emailError && <p className="mt-2 text-sm text-red-600">{emailError}</p>}
           </div>
 
-          {/* Username */}
           <div>
-            <label htmlFor="username" className="block text-sm mb-1 ml-1">Username</label>
+            <label htmlFor="username" className="mb-2 block text-sm font-medium text-amber-900/80">Username</label>
             <input
               id="username"
               type="text"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-              focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="Choose a username"
               value={username}
               onChange={handleUsernameChange}
               required
             />
-            {usernameError && <p className="text-red-400 text-sm mt-1 ml-1">{usernameError}</p>}
+            {usernameError && <p className="mt-2 text-sm text-red-600">{usernameError}</p>}
           </div>
 
-          {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm mb-1 ml-1">Password</label>
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-amber-900/80">Password</label>
             <input
               id="password"
               type="password"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-              focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="••••••••"
               value={password}
               onChange={handlePasswordChange}
               required
             />
-            {passwordError && <p className="text-red-400 text-sm mt-1 ml-1">{passwordError}</p>}
+            {passwordError && <p className="mt-2 text-sm text-red-600">{passwordError}</p>}
           </div>
 
-          {/* DOB */}
           <div>
-            <label htmlFor="dob" className="block text-sm mb-1 ml-1">Date of Birth</label>
+            <label htmlFor="dob" className="mb-2 block text-sm font-medium text-amber-900/80">Date of Birth</label>
             <input
               id="dob"
               type="date"
               max={new Date().toISOString().split("T")[0]}
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-              focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               value={dob}
               onChange={handleDobChange}
               required
             />
-            {dobError && <p className="text-red-400 text-sm mt-1 ml-1">{dobError}</p>}
+            {dobError && <p className="mt-2 text-sm text-red-600">{dobError}</p>}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-gradient-to-r from-pink-500 to-purple-600 py-2 rounded-lg 
-            font-semibold tracking-wide shadow-md hover:scale-105 transition-transform duration-200
-            ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+            className={`w-full rounded-2xl bg-gradient-to-r from-amber-600 to-orange-500 py-3 font-semibold tracking-wide text-white shadow-lg shadow-amber-500/25 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/30 ${loading ? "cursor-not-allowed opacity-60 hover:translate-y-0" : ""}`}
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Login link */}
-        <p className="mt-6 text-center text-sm text-gray-200">
+        <p className="mt-6 text-center text-sm text-amber-900/70">
           Already have an account?{" "}
-          <span
+          <button
+            type="button"
             onClick={() => navigate("/login")}
-            className="text-pink-400 hover:underline cursor-pointer"
+            className="font-semibold text-amber-700 transition hover:text-amber-900 hover:underline"
           >
             Login
-          </span>
+          </button>
         </p>
       </div>
     </div>

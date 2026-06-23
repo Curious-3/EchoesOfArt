@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { getStoredUser } from "../utils/authStorage";
 
 // Normalize MongoDB / string ids
 const asString = (id) => {
@@ -20,7 +21,7 @@ const useFollow = (creatorIdRaw, onFollowChange) => {
   // Load logged-in user once
   // -----------------------------
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = getStoredUser();
     setLoggedUser(user);
   }, []);
 

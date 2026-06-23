@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import { getAuthToken } from "../utils/authStorage";
 
 const Upload = () => {
   const { user } = useAuth();
@@ -25,14 +26,7 @@ const Upload = () => {
     );
 
   const getToken = () => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return null;
-    try {
-      const parsed = JSON.parse(storedUser);
-      return parsed.token || localStorage.getItem("token");
-    } catch {
-      return localStorage.getItem("token");
-    }
+    return getAuthToken();
   };
 
   const handleSubmit = async (e) => {

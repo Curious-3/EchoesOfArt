@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { getAuthToken } from "../utils/authStorage";
 
 const MyWritings = ({ userToken }) => {
   const [writings, setWritings] = useState([]);
@@ -10,8 +11,7 @@ const MyWritings = ({ userToken }) => {
 
   const navigate = useNavigate();
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const finalToken = userToken || storedUser?.token;
+  const finalToken = userToken || getAuthToken();
 
   useEffect(() => {
     if (!finalToken) {

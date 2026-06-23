@@ -4,6 +4,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { debounce } from "lodash";
 import ArtCard from "../components/ArtCard";
 import ExploreWritings from "./ExploreWritings";
+import useDebounce from "../hooks/useDebounce";
+import { getStoredUser } from "../utils/authStorage";
 
 const LandingPage = ({ searchTerm = "" }) => {
   const [arts, setArts] = useState([]);
@@ -25,9 +27,11 @@ const LandingPage = ({ searchTerm = "" }) => {
     tag: "",
   });
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   /* ================= LOAD USER ================= */
   useEffect(() => {
-    const loggedUser = JSON.parse(localStorage.getItem("user"));
+    const loggedUser = getStoredUser();
     setUser(loggedUser);
     if (!loggedUser?.token) return;
 
@@ -54,46 +58,43 @@ const LandingPage = ({ searchTerm = "" }) => {
       });
   }, []);
 
-  /* ================= FETCH POSTS ================= */
-  const fetchPosts = async () => {
-    if (loading || !hasMore || activeTab !== "posts") return;
+  useEffect(() => {
+    if (activeTab !== "posts") return;
 
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        "http://localhost:8000/api/posts/explore",
-        {
+    const fetchPosts = async () => {
+      if (loading || !hasMore) return;
+
+      setLoading(true);
+      try {
+        const res = await axios.get("http://localhost:8000/api/posts/explore", {
           params: {
             page,
             limit,
-            search: searchTerm,
+            search: debouncedSearchTerm,
             ...filters,
           },
-        }
-      );
+        });
 
-      const newPosts = res.data || [];
+        const newPosts = res.data || [];
 
-      setArts((prev) =>
-        page === 0 ? newPosts : [...prev, ...newPosts]
-      );
+        setArts((prev) => (page === 0 ? newPosts : [...prev, ...newPosts]));
 
-      if (newPosts.length < limit) setHasMore(false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (newPosts.length < limit) setHasMore(false);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
     fetchPosts();
-  }, [page, activeTab]);
+  }, [page, activeTab, debouncedSearchTerm, filters, loading, hasMore]);
 
   useEffect(() => {
+    setArts([]);
     setPage(0);
     setHasMore(true);
-  }, [filters, searchTerm]);
+  }, [filters, debouncedSearchTerm, activeTab]);
 
   /* ================= INFINITE SCROLL ================= */
   useEffect(() => {

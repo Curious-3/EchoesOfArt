@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import { Paintbrush } from "lucide-react";
+import { getStoredUser } from "../utils/authStorage";
 
 const Login = () => {
   const [identifier, setIdentifier] = useState(""); // Can be email or username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { setUser } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) navigate("/home");
-  }, [navigate]);
+    if (user?.token || getStoredUser()?.token) navigate("/home");
+  }, [navigate, user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,7 +33,6 @@ const Login = () => {
         throw new Error("Invalid login response from server");
       }
 
-      // Save user + token in localStorage
       const userData = {
         id: user._id,
         name: user.name,
@@ -41,14 +41,7 @@ const Login = () => {
         token,
       };
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      // Update global context
-      setUser(userData);
-
-      // Set default axios header for authenticated requests
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      login(userData, token);
 
       // Redirect to home
       navigate("/home");
@@ -59,27 +52,38 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-amber-900 px-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 text-white">
-        <div className="flex items-center justify-center mb-6">
-          <h1 className="text-3xl font-bold tracking-wide">Echoes of Art</h1>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef5e7] via-[#fffaf1] to-[#f8e7cd] px-4 py-10 flex items-center justify-center">
+      <div className="absolute -top-28 -left-24 h-72 w-72 rounded-full bg-amber-300/35 blur-3xl" />
+      <div className="absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-orange-300/30 blur-3xl" />
+
+      <div className="relative w-full max-w-md rounded-3xl border border-amber-200 bg-white/80 p-8 text-amber-950 shadow-[0_24px_70px_rgba(146,64,14,0.18)] backdrop-blur-xl md:p-10">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30">
+            <Paintbrush className="h-7 w-7" />
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-amber-700">
+            Echoes of Art
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-amber-950">
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-amber-800/80">
+            Sign in to continue exploring art, stories, and creative voices.
+          </p>
         </div>
 
-        <h2 className="text-center text-xl font-semibold mb-6">Welcome Back</h2>
-
         {error && (
-          <p className="bg-red-500/20 border border-red-400 text-red-200 px-3 py-2 rounded-md text-sm mb-4 text-center">
+          <p className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 text-center">
             {error}
           </p>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm mb-1 ml-1">Email or Username</label>
+            <label className="mb-2 block text-sm font-medium text-amber-900/80">Email or Username</label>
             <input
               type="text"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-                         focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="Enter your email or username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
@@ -88,11 +92,10 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm mb-1 ml-1">Password</label>
+            <label className="mb-2 block text-sm font-medium text-amber-900/80">Password</label>
             <input
               type="password"
-              className="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 
-                         focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-300 text-white"
+              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-amber-950 placeholder:text-amber-500 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200/60"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -102,21 +105,21 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 py-2 rounded-lg 
-                       font-semibold tracking-wide shadow-md hover:scale-105 transition-transform duration-200"
+            className="w-full rounded-2xl bg-gradient-to-r from-amber-600 to-orange-500 py-3 font-semibold tracking-wide text-white shadow-lg shadow-amber-500/25 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/30"
           >
             Login
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-200">
+        <p className="mt-6 text-center text-sm text-amber-900/70">
           Don’t have an account?{" "}
-          <span
+          <button
+            type="button"
             onClick={() => navigate("/register")}
-            className="text-pink-400 hover:underline cursor-pointer"
+            className="font-semibold text-amber-700 transition hover:text-amber-900 hover:underline"
           >
             Register
-          </span>
+          </button>
         </p>
       </div>
     </div>

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
+import { getAuthToken } from "../utils/authStorage";
 
 /* 🔥 GRADIENT OPTIONS */
 const GRADIENTS = [
@@ -40,8 +41,7 @@ const WritingEditor = ({ userToken }) => {
   // 🎨 background gradient
   const [bgStyle, setBgStyle] = useState("");
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const finalToken = userToken || storedUser?.token;
+  const finalToken = userToken || getAuthToken();
 
   /* ================= LOAD EDIT MODE ================= */
   useEffect(() => {

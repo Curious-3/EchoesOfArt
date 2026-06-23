@@ -16,6 +16,7 @@ const HeaderShell = ({ children }) => (
 const Header = ({ searchTerm, setSearchTerm }) => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const [logoSrc, setLogoSrc] = useState("/logo.jpeg");
 
   // Debounced query used only for searching
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -73,8 +74,13 @@ const Header = ({ searchTerm, setSearchTerm }) => {
       {/* Left: Logo */}
       <div className="flex items-center gap-3 cursor-pointer" onClick={handleLogoClick}>
         <img
-          src="logo.jpeg"
+          src={logoSrc}
           alt="Logo"
+          onError={() => {
+            if (logoSrc !== "/logo.png") {
+              setLogoSrc("/logo.png");
+            }
+          }}
           className="w-11 h-11 rounded-2xl object-cover shadow-md border border-white/40 transition-transform duration-300 hover:scale-110"
         />
         <span className="text-2xl font-extrabold tracking-wide text-sky-100 drop-shadow-sm">

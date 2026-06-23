@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { getStoredUser } from "../utils/authStorage";
 
 const SavedWritings = () => {
   const [savedWritings, setSavedWritings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const storedUser = getStoredUser();
   const token = storedUser?.token || null;
 
   useEffect(() => {

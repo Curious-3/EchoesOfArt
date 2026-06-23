@@ -5,6 +5,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import WritingComments from "../components/WritingComments";
 import WritingPost from "../components/WritingPost";
+import { getStoredUser } from "../utils/authStorage";
 
 
 
@@ -16,7 +17,7 @@ const [writing, setWriting] = useState(null);
 
   const [reportReason, setReportReason] = useState("");
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const storedUser = getStoredUser();
   const token = storedUser?.token || null;
   const userId = storedUser?.id || storedUser?._id;
   // 🔐 check if logged-in user is creator of this writing

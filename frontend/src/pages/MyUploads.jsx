@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthProvider";
 import toast, { Toaster } from "react-hot-toast";
+import { getAuthToken } from "../utils/authStorage";
 
 const MyUploads = ({ searchTerm }) => {
-  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editData, setEditData] = useState({ title: "", description: "" });
 
   const getToken = () => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return null;
-    try {
-      const parsed = JSON.parse(storedUser);
-      return parsed.token || localStorage.getItem("token");
-    } catch {
-      return localStorage.getItem("token");
-    }
+    return getAuthToken();
   };
 
   useEffect(() => {
@@ -107,12 +99,18 @@ const MyUploads = ({ searchTerm }) => {
                 />
               )}
               {post.mediaType === "video" && post.mediaUrl && (
-                <video
-                  src={post.mediaUrl}
-                  controls
-                  className="w-full h-48 object-cover"
-                  poster={post.thumbnailUrl || ""}
-                />
+                <div className="relative">
+                  <img
+                    src={post.thumbnailUrl || post.mediaUrl}
+                    alt={post.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+                    <div className="rounded-full bg-white/85 px-4 py-2 text-sm font-semibold text-amber-700 shadow">
+                      Video
+                    </div>
+                  </div>
+                </div>
               )}
 
               {editingPostId === post._id ? (

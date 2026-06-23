@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import toast, { Toaster } from "react-hot-toast";
 import { Line, Pie } from "react-chartjs-2";
+import { updateStoredUser } from "../utils/authStorage";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,7 +26,7 @@ ChartJS.register(
 );
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
   /* ================= PROFILE ================= */
   const [profile, setProfile] = useState({
@@ -55,6 +56,20 @@ const Profile = () => {
   const [writingsGraph, setWritingsGraph] = useState([]);
   const [uploadsGraph, setUploadsGraph] = useState([]);
 
+  const syncAuthUser = (nextProfile) => {
+    if (!nextProfile) return;
+
+    setUser((current) => {
+      const merged = {
+        ...(current || {}),
+        ...(nextProfile || {}),
+      };
+
+      updateStoredUser(merged);
+      return merged;
+    });
+  };
+
   /* ================= FETCH PROFILE ================= */
   useEffect(() => {
     if (!user?.token) return;
@@ -68,6 +83,7 @@ const Profile = () => {
       setProfile(data.user);
       setFollowers(data.user.followers?.length || 0);
       setFollowing(data.user.following?.length || 0);
+      syncAuthUser(data.user);
       setLoading(false);
     };
 
@@ -175,12 +191,13 @@ const Profile = () => {
   /* ================= HANDLERS ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(
+    const { data } = await axios.put(
       "http://localhost:8000/api/auth/profile",
       profile,
       { headers: { Authorization: `Bearer ${user.token}` } }
     );
     toast.success("Profile updated");
+    syncAuthUser(data.user || profile);
     setEditMode(false);
   };
 
@@ -203,6 +220,7 @@ const Profile = () => {
     );
 
     setProfile((p) => ({ ...p, profileImage: data.user.profileImage }));
+    syncAuthUser(data.user);
   };
   const handleChange = (e) => {
   const { name, value } = e.target;

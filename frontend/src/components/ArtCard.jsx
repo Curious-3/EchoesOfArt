@@ -9,6 +9,10 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
   const navigate = useNavigate();
 
   const creatorName = art?.createdBy?.name || "Unknown Creator";
+  const mediaPreview =
+    art?.mediaType === "video" && art?.thumbnailUrl
+      ? art.thumbnailUrl
+      : art?.mediaUrl;
 
   return (
     <div
@@ -17,7 +21,7 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
     >
       {/* ================= MEDIA ================= */}
       <img
-        src={art.mediaUrl}
+        src={mediaPreview}
         alt={art.title}
         className="w-full h-56 object-cover"
       />

@@ -77,12 +77,19 @@ const PostDetails = () => {
       )}
 
       {post.mediaType === "video" && (
-        <video
-          controls
-          className="w-full max-h-[500px] rounded-xl"
-        >
-          <source src={post.mediaUrl} />
-        </video>
+        <div className="relative w-full max-h-[500px] overflow-hidden rounded-xl bg-black">
+          {post.thumbnailUrl ? (
+            <img
+              src={post.thumbnailUrl}
+              alt={post.title}
+              className="w-full max-h-[500px] object-contain"
+            />
+          ) : (
+            <video controls className="w-full max-h-[500px] rounded-xl">
+              <source src={post.mediaUrl} />
+            </video>
+          )}
+        </div>
       )}
 
       {post.mediaType === "audio" && (
@@ -136,7 +143,7 @@ const PostDetails = () => {
                 className="cursor-pointer group"
               >
                 <img
-                  src={p.mediaUrl}
+                  src={p.mediaType === "video" && p.thumbnailUrl ? p.thumbnailUrl : p.mediaUrl}
                   alt={p.title}
                   className="h-40 w-full object-cover rounded-lg 
                              group-hover:opacity-80 transition"

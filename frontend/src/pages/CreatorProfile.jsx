@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import FollowButton from "../components/FollowButton";
+import { getStoredUser } from "../utils/authStorage";
 
 const CreatorProfile = () => {
   const { creatorId } = useParams();
@@ -10,7 +11,7 @@ const CreatorProfile = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  const loggedUser = getStoredUser();
 
   // ======================== FIX IMAGE URL ========================
   const getImageUrl = (url) => {

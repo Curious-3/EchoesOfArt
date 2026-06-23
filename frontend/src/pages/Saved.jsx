@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ArtCard from "../components/ArtCard";
 import toast, { Toaster } from "react-hot-toast";
+import { getStoredUser } from "../utils/authStorage";
 
 const Saved = () => {
   const [images, setImages] = useState([]);
@@ -13,7 +14,7 @@ const Saved = () => {
   useEffect(() => {
     const fetchSavedPosts = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = getStoredUser();
         if (!user || !user.token) {
           setError("Please login to view saved posts.");
           toast.error("Please login to view saved posts.");

@@ -4,12 +4,13 @@ import { FaRegCommentDots } from "react-icons/fa";
 import { useAuth } from "../context/AuthProvider";
 import CommentDrawer from "./CommentDrawer";
 import { socket } from "../socket";
+import { getStoredUser } from "../utils/authStorage";
 
 const EMOJIS = ["❤️", "🔥", "😂", "😢", "👏"];
 
 const CommentSection = ({ postId }) => {
   const { user } = useAuth();
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const storedUser = getStoredUser();
   const currentUserId = user?._id || storedUser?._id;
   const token = user?.token || storedUser?.token;
 
