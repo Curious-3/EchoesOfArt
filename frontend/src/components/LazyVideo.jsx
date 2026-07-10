@@ -34,12 +34,18 @@ const LazyVideo = ({ src, poster, className }) => {
           preload="metadata"
           className={className}
         />
-      ) : (
+      ) : poster ? (
         <img
           src={poster}
           alt="Video Placeholder"
           className={className}
         />
+      ) : (
+        <div
+          className={`${className} flex items-center justify-center bg-black/90 text-white/80`}
+        >
+          <span className="text-sm tracking-wide">Video preview</span>
+        </div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { getAuthToken } from "../utils/authStorage";
+import LazyVideo from "../components/LazyVideo";
 
 const MyUploads = ({ searchTerm }) => {
   const [posts, setPosts] = useState([]);
@@ -99,18 +100,11 @@ const MyUploads = ({ searchTerm }) => {
                 />
               )}
               {post.mediaType === "video" && post.mediaUrl && (
-                <div className="relative">
-                  <img
-                    src={post.thumbnailUrl || post.mediaUrl}
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-                    <div className="rounded-full bg-white/85 px-4 py-2 text-sm font-semibold text-amber-700 shadow">
-                      Video
-                    </div>
-                  </div>
-                </div>
+                <LazyVideo
+                  src={post.mediaUrl}
+                  poster={post.thumbnailUrl || ""}
+                  className="w-full h-48 object-cover"
+                />
               )}
 
               {editingPostId === post._id ? (

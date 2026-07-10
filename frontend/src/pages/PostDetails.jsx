@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CommentSection from "../components/CommentSection";
+import LazyVideo from "../components/LazyVideo";
 
 const PostDetails = () => {
   const { id } = useParams();
@@ -78,17 +79,11 @@ const PostDetails = () => {
 
       {post.mediaType === "video" && (
         <div className="relative w-full max-h-[500px] overflow-hidden rounded-xl bg-black">
-          {post.thumbnailUrl ? (
-            <img
-              src={post.thumbnailUrl}
-              alt={post.title}
-              className="w-full max-h-[500px] object-contain"
-            />
-          ) : (
-            <video controls className="w-full max-h-[500px] rounded-xl">
-              <source src={post.mediaUrl} />
-            </video>
-          )}
+          <LazyVideo
+            src={post.mediaUrl}
+            poster={post.thumbnailUrl || ""}
+            className="w-full max-h-[500px] rounded-xl object-contain"
+          />
         </div>
       )}
 

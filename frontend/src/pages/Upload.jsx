@@ -38,11 +38,6 @@ const Upload = () => {
       return;
     }
 
-    if ((mediaType === "video" || mediaType === "audio") && !thumbnail) {
-      setError("Thumbnail is required for video and audio.");
-      return;
-    }
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -131,12 +126,11 @@ const Upload = () => {
 
         {(mediaType === "video" || mediaType === "audio") && (
           <label className="flex flex-col text-sm font-medium">
-            Thumbnail*:
+            Thumbnail (optional):
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setThumbnail(e.target.files[0])}
-              required
               className="mt-1"
             />
           </label>

@@ -4,15 +4,14 @@ import {
   ChatBubbleOvalLeftIcon,
 } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
+import LazyVideo from "./LazyVideo";
 
 const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
   const navigate = useNavigate();
 
   const creatorName = art?.createdBy?.name || "Unknown Creator";
   const mediaPreview =
-    art?.mediaType === "video" && art?.thumbnailUrl
-      ? art.thumbnailUrl
-      : art?.mediaUrl;
+    art?.mediaType === "video" ? art.thumbnailUrl || "" : art?.mediaUrl;
 
   return (
     <div
@@ -20,11 +19,21 @@ const ArtCard = ({ art, onLike, onSave, liked, saved }) => {
       className="bg-amber-50 rounded-2xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden relative"
     >
       {/* ================= MEDIA ================= */}
-      <img
-        src={mediaPreview}
-        alt={art.title}
-        className="w-full h-56 object-cover"
-      />
+      {art?.mediaType === "video" ? (
+        <div className="w-full h-56 overflow-hidden">
+          <LazyVideo
+            src={art?.mediaUrl}
+            poster={mediaPreview}
+            className="w-full h-56 object-cover"
+          />
+        </div>
+      ) : (
+        <img
+          src={mediaPreview}
+          alt={art.title}
+          className="w-full h-56 object-cover"
+        />
+      )}
 
       {/* ================= RIGHT TOP (LIKE + SAVE) ================= */}
       <div className="absolute top-3 right-3 flex gap-2 z-10">
