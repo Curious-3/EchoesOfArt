@@ -68,15 +68,15 @@ export const registerUser = async (req, res) => {
       otpExpires,
     });
 
-    // Send OTP Email
-    await sendEmail(
+    // Send OTP Email — fire and forget (don't await, so response isn't blocked by SMTP)
+    sendEmail(
       user.email,
       "Verify your Email - Echoes of Art",
       `<h3>Hi ${user.name},</h3>
        <p>Your OTP for email verification is:</p>
        <h2>${otp}</h2>
        <p>This OTP will expire in 10 minutes.</p>`
-    );
+    ).catch((err) => console.error("OTP email failed:", err));
 
     return res.status(201).json({
       message: "OTP sent to your email. Please verify to activate your account.",
@@ -205,14 +205,14 @@ export const resendOTP = async (req, res) => {
     user.otpExpires = Date.now() + 10 * 60 * 1000;
     await user.save();
 
-    await sendEmail(
+    sendEmail(
       user.email,
       "Resend OTP - Echoes of Art",
       `<h3>Hi ${user.name},</h3>
        <p>Your new OTP is:</p>
        <h2>${otp}</h2>
        <p>Valid for 10 minutes.</p>`
-    );
+    ).catch((err) => console.error("Resend OTP email failed:", err));
 
     return res.json({ message: "OTP resent to your email." });
   } catch (error) {
