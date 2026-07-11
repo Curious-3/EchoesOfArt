@@ -29,18 +29,20 @@ const Register = () => {
   const validateName = (value) => {
     if (!/^[A-Za-z\s]+$/.test(value)) {
       setNameError("Only alphabets and spaces are allowed");
-    } else {
-      setNameError("");
+      return false;
     }
+    setNameError("");
+    return true;
   };
 
   const validateEmail = (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
       setEmailError("Invalid email format");
-    } else {
-      setEmailError("");
+      return false;
     }
+    setEmailError("");
+    return true;
   };
 
   const validateUsername = (value) => {
@@ -48,26 +50,29 @@ const Register = () => {
       setUsernameError(
         "Username must be 3–20 characters long and contain only letters, numbers, or underscores"
       );
-    } else {
-      setUsernameError("");
+      return false;
     }
+    setUsernameError("");
+    return true;
   };
 
   const validatePassword = (value) => {
     if (value.length < 6) {
       setPasswordError("Password must be at least 6 characters long");
-    } else {
-      setPasswordError("");
+      return false;
     }
+    setPasswordError("");
+    return true;
   };
 
   const validateDob = (value) => {
     const today = new Date().toISOString().split("T")[0];
     if (value > today) {
       setDobError("Date of birth cannot be in the future");
-    } else {
-      setDobError("");
+      return false;
     }
+    setDobError("");
+    return true;
   };
 
   // ===================== INPUT HANDLERS =====================
@@ -102,14 +107,14 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Final validation check
-    validateName(name);
-    validateEmail(email);
-    validateUsername(username);
-    validatePassword(password);
-    validateDob(dob);
+    // ✅ Check validation directly from return values (state is async — can't rely on it)
+    const isNameOk = validateName(name);
+    const isEmailOk = validateEmail(email);
+    const isUsernameOk = validateUsername(username);
+    const isPasswordOk = validatePassword(password);
+    const isDobOk = validateDob(dob);
 
-    if (nameError || emailError || usernameError || passwordError || dobError) {
+    if (!isNameOk || !isEmailOk || !isUsernameOk || !isPasswordOk || !isDobOk) {
       toast.error("Please fix the errors before submitting.");
       return;
     }

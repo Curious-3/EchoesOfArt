@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API from "../config/api";
 import toast, { Toaster } from "react-hot-toast";
@@ -20,6 +20,9 @@ const LandingPage = ({ searchTerm = "" }) => {
   const limit = 10;
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  // Refs to avoid stale closures in useEffect without causing infinite loops
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
 
   const [filters, setFilters] = useState({
     sort: "recent",
@@ -61,10 +64,11 @@ const LandingPage = ({ searchTerm = "" }) => {
 
   useEffect(() => {
     if (activeTab !== "posts") return;
+    // Guard using refs to avoid infinite loop (loading/hasMore in deps would re-trigger)
+    if (loadingRef.current || !hasMoreRef.current) return;
 
     const fetchPosts = async () => {
-      if (loading || !hasMore) return;
-
+      loadingRef.current = true;
       setLoading(true);
       try {
         const res = await axios.get(`${API}/api/posts/explore`, {
@@ -77,23 +81,27 @@ const LandingPage = ({ searchTerm = "" }) => {
         });
 
         const newPosts = res.data || [];
-
         setArts((prev) => (page === 0 ? newPosts : [...prev, ...newPosts]));
 
-        if (newPosts.length < limit) setHasMore(false);
+        if (newPosts.length < limit) {
+          hasMoreRef.current = false;
+          setHasMore(false);
+        }
       } catch (err) {
         console.error(err);
       } finally {
+        loadingRef.current = false;
         setLoading(false);
       }
     };
 
     fetchPosts();
-  }, [page, activeTab, debouncedSearchTerm, filters, loading, hasMore]);
+  }, [page, activeTab, debouncedSearchTerm, filters]);
 
   useEffect(() => {
     setArts([]);
     setPage(0);
+    hasMoreRef.current = true;
     setHasMore(true);
   }, [filters, debouncedSearchTerm, activeTab]);
 
@@ -105,8 +113,8 @@ const LandingPage = ({ searchTerm = "" }) => {
       if (
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - 300 &&
-        !loading &&
-        hasMore
+        !loadingRef.current &&
+        hasMoreRef.current
       ) {
         setPage((p) => p + 1);
       }
@@ -117,7 +125,7 @@ const LandingPage = ({ searchTerm = "" }) => {
       onScroll.cancel();
       window.removeEventListener("scroll", onScroll);
     };
-  }, [loading, hasMore, activeTab]);
+  }, [activeTab]);
 
   /* ================= SAVE ================= */
   const handleToggleSavePost = async (postId) => {
