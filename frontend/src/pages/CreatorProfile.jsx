@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import API from "../config/api";
 import FollowButton from "../components/FollowButton";
 import { getStoredUser } from "../utils/authStorage";
 
@@ -17,7 +18,7 @@ const CreatorProfile = () => {
   const getImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    return `http://localhost:8000${url}`;
+    return `${API}${url}`;
   };
 
   // ======================== FETCH CREATOR ========================
@@ -28,7 +29,7 @@ const CreatorProfile = () => {
 
   const fetchCreator = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/users/${creatorId}`);
+      const res = await fetch(`${API}/api/users/${creatorId}`);
       const data = await res.json();
       setCreator(data);
     } catch (err) {
@@ -40,7 +41,7 @@ const CreatorProfile = () => {
   const fetchPosts = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/posts/user/${creatorId}`
+        `${API}/api/posts/user/${creatorId}`
       );
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);

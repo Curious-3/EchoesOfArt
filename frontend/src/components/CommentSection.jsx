@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { FaRegCommentDots } from "react-icons/fa";
 import { useAuth } from "../context/AuthProvider";
 import CommentDrawer from "./CommentDrawer";
@@ -26,7 +27,7 @@ const CommentSection = ({ postId }) => {
     if (!isDrawerOpen || !postId) return;
 
     axios
-      .get(`http://localhost:8000/api/comments/post/${postId}`)
+      .get(`${API}/api/comments/post/${postId}`)
       .then((res) => setComments(res.data))
       .catch(console.error);
   }, [isDrawerOpen, postId]);
@@ -106,7 +107,7 @@ const CommentSection = ({ postId }) => {
     if (!text.trim()) return;
 
     await axios.post(
-      `http://localhost:8000/api/comments/post/${postId}`,
+      `${API}/api/comments/post/${postId}`,
       { text },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -117,7 +118,7 @@ const CommentSection = ({ postId }) => {
     if (!newText.trim()) return;
 
     await axios.put(
-      `http://localhost:8000/api/comments/edit/${commentId}`,
+      `${API}/api/comments/edit/${commentId}`,
       { text: newText },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -125,7 +126,7 @@ const CommentSection = ({ postId }) => {
 
   const handleDeleteComment = async (commentId) => {
     await axios.delete(
-      `http://localhost:8000/api/comments/delete/${commentId}`,
+      `${API}/api/comments/delete/${commentId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   };
@@ -134,7 +135,7 @@ const CommentSection = ({ postId }) => {
     if (!replyText.trim()) return;
 
     await axios.post(
-      `http://localhost:8000/api/comments/${commentId}/reply`,
+      `${API}/api/comments/${commentId}/reply`,
       { text: replyText },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -147,7 +148,7 @@ const CommentSection = ({ postId }) => {
     if (!text.trim()) return;
 
     await axios.put(
-      `http://localhost:8000/api/comments/${commentId}/reply/${replyId}`,
+      `${API}/api/comments/${commentId}/reply/${replyId}`,
       { text },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -155,14 +156,14 @@ const CommentSection = ({ postId }) => {
 
   const handleDeleteReply = async (commentId, replyId) => {
     await axios.delete(
-      `http://localhost:8000/api/comments/${commentId}/reply/${replyId}`,
+      `${API}/api/comments/${commentId}/reply/${replyId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   };
 
   const handleReaction = async (commentId, emoji) => {
     await axios.put(
-      `http://localhost:8000/api/comments/${commentId}/reaction`,
+      `${API}/api/comments/${commentId}/reaction`,
       { emoji },
       { headers: { Authorization: `Bearer ${token}` } }
     );

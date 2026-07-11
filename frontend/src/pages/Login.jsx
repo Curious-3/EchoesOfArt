@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { Paintbrush } from "lucide-react";
@@ -23,7 +24,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/login", {
+      const res = await axios.post(`${API}/api/auth/login`, {
         identifier, // backend can accept either email or username
         password,
       });

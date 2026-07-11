@@ -10,7 +10,14 @@ import commentRoutes from "./routes/commentRoutes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL,
+    process.env.CLIENT_URL,
+  ].filter(Boolean),
+  credentials: true
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
@@ -30,5 +37,10 @@ app.use("/api/comments", commentRoutes);
 // Saved / Liked
 app.use("/api/saved", savedRoutes);
 app.use("/api/liked", likedRoutes);
+
+// ✅ Health check — UptimeRobot ping karega, Render kabhi sleep nahi karega
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is alive 🚀" });
+});
 
 export default app;

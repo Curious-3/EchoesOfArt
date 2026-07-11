@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import CommentSection from "../components/CommentSection";
 import LazyVideo from "../components/LazyVideo";
 
@@ -26,7 +27,7 @@ const PostDetails = () => {
   const fetchPost = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/posts/${id}`
+        `${API}/api/posts/${id}`
       );
       setPost(res.data);
     } catch (err) {
@@ -40,7 +41,7 @@ const PostDetails = () => {
   const fetchSimilarPosts = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/posts/similar/${id}`
+        `${API}/api/posts/similar/${id}`
       );
       setSimilarPosts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import WritingCard from "../components/WritingCard";
+import API from "../config/api";
 import useDebounce from "../hooks/useDebounce";
 
 const ExploreWritings = ({ searchTerm = "" }) => {
@@ -17,10 +18,10 @@ const ExploreWritings = ({ searchTerm = "" }) => {
       setLoading(true);
       try {
         const url = debouncedSearch
-          ? `http://localhost:8000/api/writing/published?search=${encodeURIComponent(
+          ? `${API}/api/writing/published?search=${encodeURIComponent(
               debouncedSearch
             )}`
-          : `http://localhost:8000/api/writing/published`;
+          : `${API}/api/writing/published`;
 
         const res = await fetch(url);
         const data = await res.json();

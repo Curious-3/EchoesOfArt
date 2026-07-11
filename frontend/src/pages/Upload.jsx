@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { getAuthToken } from "../utils/authStorage";
@@ -55,7 +56,7 @@ const Upload = () => {
         return;
       }
 
-      await axios.post("http://localhost:8000/api/posts/", formData, {
+      await axios.post(`${API}/api/posts/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,

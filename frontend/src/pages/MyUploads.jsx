@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import toast, { Toaster } from "react-hot-toast";
 import { getAuthToken } from "../utils/authStorage";
 import LazyVideo from "../components/LazyVideo";
@@ -26,7 +27,7 @@ const MyUploads = ({ searchTerm }) => {
       }
 
       const res = await axios.get(
-        "http://localhost:8000/api/posts/user/my-uploads",
+        `${API}/api/posts/user/my-uploads`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPosts(res.data);
@@ -44,7 +45,7 @@ const MyUploads = ({ searchTerm }) => {
   const handleUpdate = async (id) => {
     try {
       const token = getToken();
-      await axios.put(`http://localhost:8000/api/posts/${id}`, editData, {
+      await axios.put(`${API}/api/posts/${id}`, editData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEditingPostId(null);
@@ -59,7 +60,7 @@ const MyUploads = ({ searchTerm }) => {
   const handleDelete = async (id) => {
     try {
       const token = getToken();
-      await axios.delete(`http://localhost:8000/api/posts/${id}`, {
+      await axios.delete(`${API}/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchUserUploads();

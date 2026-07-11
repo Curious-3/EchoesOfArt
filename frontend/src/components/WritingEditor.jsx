@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
+import API from "../config/api";
 import { getAuthToken } from "../utils/authStorage";
 
 /* 🔥 GRADIENT OPTIONS */
@@ -104,7 +105,7 @@ const WritingEditor = ({ userToken }) => {
       setLoadingTags(true);
 
       const res = await axios.post(
-        "http://localhost:8000/api/writing/generate-tags",
+        `${API}/api/writing/generate-tags`,
         {
           title,
           content: quill.root.innerText,
@@ -143,7 +144,7 @@ const WritingEditor = ({ userToken }) => {
       const safeBgStyle = bgStyle || extractBgFromContent(content);
 
       const res = await axios.post(
-        "http://localhost:8000/api/writing/save",
+        `${API}/api/writing/save`,
         {
           writingId,
           title,
@@ -184,7 +185,7 @@ const WritingEditor = ({ userToken }) => {
       const safeBgStyle = bgStyle || extractBgFromContent(content);
 
       const res = await axios.post(
-        "http://localhost:8000/api/writing/save",
+        `${API}/api/writing/save`,
         {
           writingId,
           title,

@@ -1,6 +1,7 @@
 // src/pages/FollowedAuthors.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 
 const FollowedAuthors = () => {
   const [authorData, setAuthorData] = useState([]);
@@ -20,7 +21,7 @@ const FollowedAuthors = () => {
         }
 
         const res = await axios.get(
-          "http://localhost:8000/api/writing/published"
+          `${API}/api/writing/published`
         );
         const writings = res.data.writings || [];
 

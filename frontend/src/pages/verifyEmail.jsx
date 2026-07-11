@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -24,7 +25,7 @@ const VerifyEmail = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/auth/verify-email",
+        `${API}/api/auth/verify-email`,
         { email, otp },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -50,7 +51,7 @@ const VerifyEmail = () => {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/auth/resend-otp",
+        `${API}/api/auth/resend-otp`,
         { email },
         { headers: { "Content-Type": "application/json" } }
       );

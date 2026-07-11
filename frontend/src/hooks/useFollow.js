@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import API from "../config/api";
 import { getStoredUser } from "../utils/authStorage";
 
 // Normalize MongoDB / string ids
@@ -33,7 +34,7 @@ const useFollow = (creatorIdRaw, onFollowChange) => {
 
   try {
     const res = await axios.get(
-      `http://localhost:8000/api/users/${creatorId}`,
+      `${API}/api/users/${creatorId}`,
       {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
@@ -79,8 +80,8 @@ const useFollow = (creatorIdRaw, onFollowChange) => {
 
     try {
       const endpoint = following
-        ? `http://localhost:8000/api/auth/unfollow/${creatorId}`
-        : `http://localhost:8000/api/auth/follow/${creatorId}`;
+        ? `${API}/api/auth/unfollow/${creatorId}`
+        : `${API}/api/auth/follow/${creatorId}`;
 
       await axios.put(
         endpoint,

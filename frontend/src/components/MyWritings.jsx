@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../utils/authStorage";
@@ -23,7 +24,7 @@ const MyWritings = ({ userToken }) => {
       try {
         setLoading(true);
         const res = await axios.get(
-          "http://localhost:8000/api/writing/my-writings",
+          `${API}/api/writing/my-writings`,
           { headers: { Authorization: `Bearer ${finalToken}` } }
         );
         setWritings(res.data.writings);
@@ -73,7 +74,7 @@ const MyWritings = ({ userToken }) => {
 
   const deleteWriting = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/api/writing/${id}`, {
+      await axios.delete(`${API}/api/writing/${id}`, {
         headers: { Authorization: `Bearer ${finalToken}` },
       });
 

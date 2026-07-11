@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { useAuth } from "../context/AuthProvider";
 import toast, { Toaster } from "react-hot-toast";
 import { Line, Pie } from "react-chartjs-2";
@@ -76,7 +77,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/auth/profile",
+        `${API}/api/auth/profile`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
@@ -94,7 +95,7 @@ const Profile = () => {
   const fetchMyPosts = async () => {
     const id = user?._id || user?.id;
     const res = await axios.get(
-      `http://localhost:8000/api/posts/user/${id}`
+      `${API}/api/posts/user/${id}`
     );
     setPosts(res.data || []);
   };
@@ -102,7 +103,7 @@ const Profile = () => {
   /* ================= FETCH WRITINGS ================= */
   const fetchMyWritings = async () => {
     const res = await axios.get(
-      "http://localhost:8000/api/writing/published"
+      `${API}/api/writing/published`
     );
 
     const id = user?._id || user?.id;
@@ -192,7 +193,7 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await axios.put(
-      "http://localhost:8000/api/auth/profile",
+      `${API}/api/auth/profile`,
       profile,
       { headers: { Authorization: `Bearer ${user.token}` } }
     );
@@ -209,7 +210,7 @@ const Profile = () => {
     fd.append("profileImage", file);
 
     const { data } = await axios.put(
-      "http://localhost:8000/api/auth/profile-image",
+      `${API}/api/auth/profile-image`,
       fd,
       {
         headers: {
@@ -256,7 +257,7 @@ const Profile = () => {
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-500">
               {profile.profileImage && (
                 <img
-                  src={`http://localhost:8000${profile.profileImage}`}
+                  src={`${API}${profile.profileImage}`}
                   className="w-full h-full object-cover"
                   alt="profile"
                 />

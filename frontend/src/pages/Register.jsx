@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { Paintbrush } from "lucide-react";
@@ -123,7 +124,7 @@ const Register = () => {
         dob,
       };
 
-      const res = await axios.post("http://localhost:8000/api/auth/register", payload, {
+      const res = await axios.post(`${API}/api/auth/register`, payload, {
         headers: { "Content-Type": "application/json" },
       });
 

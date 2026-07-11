@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, memo } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import API from "../config/api";
 
 /** Moved out so it doesn't get redefined each render */
 const HeaderShell = ({ children }) => (
@@ -142,7 +143,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
                   src={
                     user.profileImage.startsWith("http")
                       ? user.profileImage
-                      : `http://localhost:8000${user.profileImage}`
+                      : `${API}${user.profileImage}`
                   }
                   alt="Profile"
                   className="w-full h-full object-cover"

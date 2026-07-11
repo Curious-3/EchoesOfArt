@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import ArtCard from "../components/ArtCard";
 import toast, { Toaster } from "react-hot-toast";
 import { getStoredUser } from "../utils/authStorage";
@@ -23,7 +24,7 @@ const Saved = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:8000/api/saved/${user.id}`,
+          `${API}/api/saved/${user.id}`,
           {
             headers: { Authorization: `Bearer ${user.token}` },
           }

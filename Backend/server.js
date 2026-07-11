@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config(); // ✅ Sabse pehle — taaki sab env vars load ho jayein
+
 import http from "http";
 import { Server } from "socket.io";
 import app from "./app.js";
@@ -9,7 +11,6 @@ import express from "express";
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-dotenv.config();
 connectDB();
 
 // Create HTTP server wrapper

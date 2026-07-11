@@ -2,6 +2,7 @@ import { socket } from "../socket";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API from "../config/api";
 import toast from "react-hot-toast";
 import WritingComments from "../components/WritingComments";
 import WritingPost from "../components/WritingPost";
@@ -54,7 +55,7 @@ const isCreator =
     const fetchWriting = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/writing/${id}`
+          `${API}/api/writing/${id}`
         );
 
         const w = res.data.writing;
@@ -98,7 +99,7 @@ const isCreator =
 
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/writing/like/${id}`,
+        `${API}/api/writing/like/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -116,7 +117,7 @@ const isCreator =
 
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/writing/bookmark/${id}`,
+        `${API}/api/writing/bookmark/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -169,7 +170,7 @@ const isCreator =
 
     try {
       await axios.post(
-        `http://localhost:8000/api/writing/report/${id}`,
+        `${API}/api/writing/report/${id}`,
         { reason: reportReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

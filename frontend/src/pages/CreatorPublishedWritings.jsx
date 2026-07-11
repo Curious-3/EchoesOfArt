@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API from "../config/api";
 
 const CreatorPublishedWritings = () => {
   const { creatorId } = useParams();
@@ -13,7 +14,7 @@ const CreatorPublishedWritings = () => {
   const getImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    return `http://localhost:8000${url}`;
+    return `${API}${url}`;
   };
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const CreatorPublishedWritings = () => {
   const fetchCreator = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/users/${creatorId}`
+        `${API}/api/users/${creatorId}`
       );
       setCreator(res.data);
     } catch (err) {
@@ -37,7 +38,7 @@ const CreatorPublishedWritings = () => {
   const fetchWritings = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:8000/api/writing/published"
+      `${API}/api/writing/published`
     );
 
     const allWritings = res.data.writings || [];

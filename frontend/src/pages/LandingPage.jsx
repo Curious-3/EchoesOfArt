@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API from "../config/api";
 import toast, { Toaster } from "react-hot-toast";
 import { debounce } from "lodash";
 import ArtCard from "../components/ArtCard";
@@ -36,7 +37,7 @@ const LandingPage = ({ searchTerm = "" }) => {
     if (!loggedUser?.token) return;
 
     axios
-      .get(`http://localhost:8000/api/saved/${loggedUser.id}`, {
+      .get(`${API}/api/saved/${loggedUser.id}`, {
         headers: { Authorization: `Bearer ${loggedUser.token}` },
       })
       .then((res) => {
@@ -49,7 +50,7 @@ const LandingPage = ({ searchTerm = "" }) => {
       });
 
     axios
-      .get("http://localhost:8000/api/posts/liked", {
+      .get(`${API}/api/posts/liked`, {
         headers: { Authorization: `Bearer ${loggedUser.token}` },
       })
       .then((res) => {
@@ -66,7 +67,7 @@ const LandingPage = ({ searchTerm = "" }) => {
 
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:8000/api/posts/explore", {
+        const res = await axios.get(`${API}/api/posts/explore`, {
           params: {
             page,
             limit,
@@ -129,7 +130,7 @@ const LandingPage = ({ searchTerm = "" }) => {
 
     try {
       await axios.post(
-        `http://localhost:8000/api/saved/${isSaved ? "remove" : "add"}`,
+        `${API}/api/saved/${isSaved ? "remove" : "add"}`,
         { postId },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -161,7 +162,7 @@ const LandingPage = ({ searchTerm = "" }) => {
 
     try {
       await axios.post(
-        `http://localhost:8000/api/posts/liked/${isLiked ? "remove" : "add"}`,
+        `${API}/api/posts/liked/${isLiked ? "remove" : "add"}`,
         { postId },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );

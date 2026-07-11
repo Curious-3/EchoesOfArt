@@ -2,6 +2,7 @@ import { socket } from "../socket";
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API from "../config/api";
 import toast from "react-hot-toast";
 
 const EMOJIS = ["❤️", "🔥", "😂", "😢", "👏"];
@@ -26,7 +27,7 @@ const WritingComments = ({ id, token, userId, isCreator }) => {
     const fetchComments = async () => {
       try {
         const res = await axios.get(
-  `http://localhost:8000/api/comments/writing/${id}`
+  `${API}/api/comments/writing/${id}`
 );
 setComments(res.data || []);
 
@@ -94,7 +95,7 @@ setComments(res.data || []);
     if (!commentText.trim()) return;
 
     const res = await axios.post(
-  `http://localhost:8000/api/comments/writing/${id}`,
+  `${API}/api/comments/writing/${id}`,
   { text: commentText },
   { headers: { Authorization: `Bearer ${token}` } }
 );
@@ -109,7 +110,7 @@ setComments(res.data || []);
     if (!editText.trim()) return;
 
     const res = await axios.put(
-    `http://localhost:8000/api/comments/edit/${commentId}`,
+    `${API}/api/comments/edit/${commentId}`,
       { text: editText },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -127,7 +128,7 @@ setComments(res.data || []);
   /* ================= DELETE COMMENT ================= */
   const handleDeleteComment = async (commentId) => {
     await axios.delete(
-      `http://localhost:8000/api/comments/delete/${commentId}`,
+      `${API}/api/comments/delete/${commentId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
@@ -139,7 +140,7 @@ const handleReply = async (commentId) => {
   if (!replyText.trim()) return;
 
   await axios.post(
-    `http://localhost:8000/api/comments/${commentId}/reply`,
+    `${API}/api/comments/${commentId}/reply`,
     { text: replyText },
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -154,7 +155,7 @@ const handleReply = async (commentId) => {
   if (!editReplyText.trim()) return;
 
   const res = await axios.put(
-    `http://localhost:8000/api/comments/${commentId}/reply/${replyId}`,
+    `${API}/api/comments/${commentId}/reply/${replyId}`,
     { text: editReplyText },
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -182,7 +183,7 @@ const handleReply = async (commentId) => {
   /* ================= DELETE REPLY ================= */
 const handleDeleteReply = async (commentId, replyId) => {
   await axios.delete(
-    `http://localhost:8000/api/comments/${commentId}/reply/${replyId}`,
+    `${API}/api/comments/${commentId}/reply/${replyId}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
@@ -203,7 +204,7 @@ const handleDeleteReply = async (commentId, replyId) => {
   /* ================= REACTION ================= */
   const handleReaction = async (commentId, emoji) => {
   await axios.put(
-    `http://localhost:8000/api/comments/${commentId}/reaction`,
+    `${API}/api/comments/${commentId}/reaction`,
     { emoji },
     { headers: { Authorization: `Bearer ${token}` } }
   );

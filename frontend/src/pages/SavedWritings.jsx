@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import API from "../config/api";
 import toast from "react-hot-toast";
 import { getStoredUser } from "../utils/authStorage";
 
@@ -26,7 +27,7 @@ const SavedWritings = () => {
         }
 
         const res = await axios.get(
-          "http://localhost:8000/api/writing/published"
+          `${API}/api/writing/published`
         );
 
         const all = res.data.writings || [];
@@ -49,7 +50,7 @@ const SavedWritings = () => {
       // Call backend to remove bookmark (if logged in)
       if (token) {
         await axios.put(
-          `http://localhost:8000/api/writing/bookmark/${id}`,
+          `${API}/api/writing/bookmark/${id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );

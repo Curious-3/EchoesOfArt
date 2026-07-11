@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import API from "../config/api";
 import {
   clearAuthSession,
   getAuthToken,
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     axios
-      .get("http://localhost:8000/api/auth/me")
+      .get(`${API}/api/auth/me`)
       .then((res) => {
         const updatedUser = { ...storedUser, ...res.data.user, token };
         setUser(updatedUser);
