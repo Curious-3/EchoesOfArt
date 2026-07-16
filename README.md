@@ -124,19 +124,68 @@ EchoesOfArt/
 │   ├── socket/
 │   │   └── commentSocket.js
 │   └── uploads/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── config/
-│   │   ├── context/
-│   │   ├── hooks/
-│   │   ├── pages/
+├── frontend
+│   ├── public
+│   ├── src
+│   │   ├── assets
+│   │   ├── components
+│   │   │   ├── ArtCard.jsx
+│   │   │   ├── CommentDrawer.jsx
+│   │   │   ├── CommentSection.jsx
+│   │   │   ├── ExploreFilters.jsx
+│   │   │   ├── FollowButton.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── Layout.jsx
+│   │   │   ├── LazyVideo.jsx
+│   │   │   ├── MyWritings.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── WritingCard.jsx
+│   │   │   ├── WritingComments.jsx
+│   │   │   ├── WritingEditor.jsx
+│   │   │   └── WritingPost.jsx
+│   │   │
+│   │   ├── config
+│   │   │   └── api.js
+│   │   │
+│   │   ├── context
+│   │   │   └── AuthProvider.jsx
+│   │   │
+│   │   ├── hooks
+│   │   │   ├── useDebounce.js
+│   │   │   └── useFollow.js
+│   │   │
+│   │   ├── pages
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Upload.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── CreatorProfile.jsx
+│   │   │   ├── PostDetails.jsx
+│   │   │   ├── Saved.jsx
+│   │   │   ├── SavedWritings.jsx
+│   │   │   ├── MyUploads.jsx
+│   │   │   ├── WritingPage.jsx
+│   │   │   ├── SingleWriting.jsx
+│   │   │   ├── ExploreWriting.jsx
+│   │   │   ├── CreatorPublishedWritings.jsx
+│   │   │   ├── FollowedAuthors.jsx
+│   │   │   ├── verifyEmail.jsx
+│   │   │   ├── AboutUs.jsx
+│   │   │   ├── ContactUs.jsx
+│   │   │   └── Feedback.jsx
+│   │   │
+│   │   ├── styles
+│   │   ├── utils
 │   │   ├── socket.js
-│   │   └── utils/
-│   ├── public/
-│   ├── vite.config.js
-│   └── package.json
-├── assets/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── package.json
+│   └── vite.config.js
+│
 └── README.md
 ```
 
