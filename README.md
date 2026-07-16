@@ -16,7 +16,7 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 ![React](https://img.shields.io/badge/React-000000?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-1E1E1E?style=for-the-badge&logo=vite&logoColor=FFD62E)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-004D40?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8)
-![Socket.io Client](https://img.shields.io/badge/Socket.io%20Client-212121?style=for-the-badge&logo=socketdotio&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io%20Client-212121?style=for-the-badge&logo=socketdotio&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-311B92?style=for-the-badge&logo=axios&logoColor=white)
 ![Quill](https://img.shields.io/badge/Quill-1E1E1E?style=for-the-badge)
 ![Chart.js](https://img.shields.io/badge/Chart.js-B71C1C?style=for-the-badge&logo=chartdotjs&logoColor=white)
@@ -62,11 +62,10 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 
 | Technology | Purpose |
 |---|---|
-| **React 19** | UI framework |
-| **Vite** | Fast frontend tooling and development server |
+| **React | UI framework |
 | **Tailwind CSS** | Utility-first styling |
 | **React Router DOM** | Client-side routing |
-| **Socket.io Client** | Real-time updates |
+| **Socket.io ** | Real-time updates |
 | **Axios** | API communication |
 | **Quill / React-Quill** | Rich text writing editor |
 | **Chart.js / react-chartjs-2** | Analytics charts |
@@ -85,7 +84,6 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 | **Multer** | File upload middleware |
 | **Cloudinary** | Cloud file storage |
 | **Nodemailer** | Email and OTP delivery |
-| **dotenv** | Environment configuration |
 
 ---
 
