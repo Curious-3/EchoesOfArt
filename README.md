@@ -34,7 +34,7 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Screenshots](#screenshots)
-- [Made at](#made-at)
+
 
 ---
 
@@ -42,7 +42,7 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 
 - **Authentication** - Register, log in, verify email with OTP, and manage your profile securely.
 - **Creator Profiles** - Follow and unfollow creators, view their profile, and explore their published work.
-- **Writing Platform** - Create, edit, publish, save, bookmark, like, report, and delete writings.
+- **Writing Platform** - Create, edit, publish, save,  like, report, and delete writings.
 - **Community Interaction** - Comment on posts, reply to comments, react to discussions, and keep conversations active.
 - **Content Discovery** - Explore posts, browse similar content, and view personalized feeds.
 - **Saved and Liked Content** - Keep track of posts and writings you want to revisit later.
@@ -77,7 +77,7 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 |---|---|
 | **Node.js** | Runtime environment |
 | **Express.js** | REST API framework |
-| **MongoDB + Mongoose** | Database and ODM |
+| **MongoDB + Mongoose** | Database  |
 | **Socket.io** | Real-time communication |
 | **JWT** | Authentication tokens |
 | **bcryptjs** | Password hashing |
@@ -208,22 +208,23 @@ Create a `.env` file in `Backend/` with values like these:
 | `EMAIL_PASS` | Email account password or app password |
 
 ---
-
+![Landing](./screenshots/landing.png)
 ## Screenshots
 
-Add your project screenshots here for a better first impression.
+| Home | Upload Artwork |
+|------|----------------|
+| ![Landing](./screenshots/landing.png) | ![Upload](screenshots/upload.png) |
 
-- [Profile](assets/images/profile.png)
-- [LeaderBoard](assets/images/LeaderBoard.png)
-- [Community](assets/images/community.png)
-- [Profile Matching](assets/images/profilematch.png)
-- [Chat](assets/images/chat.png)
-- [Code Arena](assets/images/codearena.png)
+| Creator Profile | Explore Gallery |
+|-----------------|-----------------|
+| ![Profile](screenshots/profile.png) | ![](screenshots/explore.png) |
 
----
+| Writing Editor | Comments |
+|----------------|----------|
+| ![](screenshots/writing.png) | ![](screenshots/comments.png) |
 
-## Made at
+| Saved Posts |
+|-------------|
+| ![](screenshots/saved.png) |
 
-<a href="https://weekendofcode.computercodingclub.in/">
-  <img src="https://i.postimg.cc/Z9fC676j/devjam.jpg" height="30px" alt="Weekend of Code" />
-</a>
+
