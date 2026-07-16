@@ -1,8 +1,11 @@
-# EchoesOfArt
+<h1 align="center"> EchoesOfArt</h1>
 
+<p align="center">
+A Full Stack Art Sharing & Creative Writing Platform
+</p>
 <div align="center">
 
-EchoesOfArt is a creative social platform for artists, writers, and readers to share work, discover new creators, follow favorite profiles, save posts, and collaborate through comments, replies, likes, and bookmarks.
+EchoesOfArt is a creative social platform for artists, writers, and readers to share work, discover new creators, follow favorite profiles, save posts, and collaborate through comments, replies, and likes.
 
 </div>
 
@@ -67,9 +70,7 @@ EchoesOfArt is a creative social platform for artists, writers, and readers to s
 | **Axios** | API communication |
 | **Quill / React-Quill** | Rich text writing editor |
 | **Chart.js / react-chartjs-2** | Analytics charts |
-| **Framer Motion** | Motion and UI transitions |
-| **Lucide React / React Icons** | Icon sets |
-| **react-hot-toast / react-toastify** | Toast notifications |
+
 
 ### Backend
 
